@@ -7,8 +7,8 @@ import "./App.css";
 function App() {
 
   return (
-    <div className="">
-      init
+    <div className="h-12 w-12 bg-neutral-400" onClick={e => ipcFetch('scan').then(console.log)}>
+      fix
     </div>
   );
 }

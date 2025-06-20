@@ -16,6 +16,7 @@ async function runCommand() {
   ipc = 0;
   command = null;
   command = new Command("py-spawn", ["py", "main.py"]);
+
   // command = new Command("exe-spawn", ["prod"]);
 
   command.stdout.on("data", (line) => {
@@ -24,13 +25,14 @@ async function runCommand() {
     try {
       data = JSON.parse(line);
     } catch (e) {}
-    if (!data) return;
+    if (!data) return console.log("[stout]", line);
     if (events[data.event]) events[data.event]();
     if (tasks[data.uid]) {
       if (data.err) tasks[data.uid].n(data.err);
       else tasks[data.uid].y(data.res);
       delete tasks[data.uid];
     }
+    if(!data.uid && !data.event) return console.log(data)
   });
 
   command.stderr.on("data", (line) => {
@@ -42,6 +44,7 @@ async function runCommand() {
     ipc = null;
   });
 
+  ipc?.kill && ipc.kill()
   ipc = await command.spawn();
   console.log("new command", command, ipc);
   return ipc;
