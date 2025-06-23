@@ -10,6 +10,7 @@
     "opener:default",
     "shell:default",
     "shell:allow-stdin-write",
+    "shell:allow-execute",
     {
       "identifier": "shell:allow-spawn",
       "allow": [
@@ -23,11 +24,23 @@
       ]
     },
     {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "exec-sh",
+          "cmd": "echo",
+          "args": [
+            "'Hello World'"
+          ]
+        }
+      ]
+    },
+    {
       "identifier": "shell:allow-spawn",
       "allow": [
         {
           "name": "exe-spawn",
-          "cmd": "./server-win.exe",
+          "cmd": "./main.exe",
           "args": ["prod"]
         }
       ]

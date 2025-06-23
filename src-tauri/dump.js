@@ -59,6 +59,7 @@ let relic = {
   size, 
   color,
   perks: rps, 
+  
 }
 
 return relic

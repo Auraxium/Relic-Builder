@@ -1,15 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
 * {
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: 'gmhightop demo'; /* Choose a name for your font */
+  src: url('gmhightop demo.ttf') format('truetype'); /* Specify the path to your TTF file and its format */
+  font-weight: normal; /* Or bold, semi-bold, etc. */
+  font-style: normal; /* Or italic, oblique, etc. */
+}
+
+.nsb {
+  scrollbar-width: none;
+}
+
+.nsb * {
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+  /* display: none; */
+}
+
+/* @media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 35px;
+  }
+} */
+
+::-webkit-scrollbar-track {
+  background: #070707;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #5c5c5c;
+  min-height: 25px;
+}
+
+/* .msb::-webkit-scrollbar-thumb {
+    background: #5c5c5c;
+    min-height: 500px;
+} */
+
+::-webkit-scrollbar-thumb:hover {
+  background: #727171;
+}
+
+.hightop {
+  font-family: 'gmhightop demo', sans-serif; /* Fallback fonts are good practice */
+}
+
+input {
+  padding: 4px;
+}
+
 body {
+  /* font-family: Arial, Helvetica, sans-serif; */
+  /* font-family: 'Poppins', sans-serif; */
+  color: rgb(223, 225, 236);
+  background-color: #141618;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 0;
+  margin: 0;
   width: 100svw;
   height: 100svh;
   overflow: hidden;
-  padding: 0;
-  margin: 0;
 }
 
 .center {
@@ -24,6 +87,19 @@ body {
   height: 100%;
 }
 
+.img {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+
 .pen * {
   pointer-events: none;
+}
+
+.scale {
+  font-size: clamp(12px, 1vw, 48px);
+  white-space: nowrap;
+  overflow: hidden;
 }
