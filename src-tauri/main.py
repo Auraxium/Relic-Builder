@@ -124,6 +124,7 @@ def parse_image(img):
     if id in current_scan:
         dup_count += 1
         if dup_count > 4:
+            log('scan ended to dupes')
             scanning = False
     else: 
         dup_count = 0    
@@ -133,6 +134,8 @@ def parse_image(img):
 
 def scan(*e):
     global scanning
+    global dup_count
+    global current_scan
     if scanning:
         return
     with mss.mss() as sct:
@@ -147,9 +150,8 @@ def scan(*e):
             "width": int(w * 0.32),
         }
         scanning = True
-        
-        global current_scan
         current_scan = {}
+        dup_count = 0
         
         log("starting scan")
         
@@ -165,11 +167,10 @@ def scan(*e):
         log(json.dumps({"event": "scan_finished"}))
         keyboard.unhook_all_hotkeys()
         
-
 def stop_scan():
     global scanning
     scanning = False
-    log("Scanning stopped")
+    log("Scanning stopped to press 9")
     try:
         keyboard.unhook_all_hotkeys()
     except:
@@ -185,14 +186,16 @@ def scan_rdy():
     
 def save(e):
     global data
-    data = {**data, **e}
+    log('saving:')
+    # log(e)
+    data = {**data, "relics": e['relics']}
     with open("save1.json", "w") as f:
         f.write(json.dumps(data))
 
 ports = {
     "test": lambda *e: f"#{format(int(random.random() * 16777215), '06X')}",
     "load": lambda e: {**data, "perks": perks},
-    "save": lambda e: {"relics": e.relics},
+    "save": lambda e: save(e),
     "scan_rdy": lambda e: scan_rdy(),
     "support": lambda e: webbrowser.open("https://ko-fi.com/auraxium/"),
 }
@@ -205,6 +208,7 @@ try:
         if line[0] != "{":
             log(line)
             continue
+        # log(line)
         query = json.loads(line)
         if query['port'] == 'exit':
             break

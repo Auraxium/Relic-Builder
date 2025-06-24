@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, states, varsAt } from "./statics";
+import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, states, varsAt, findBuild } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome } from "@tabler/icons-react";
+import { FixedSizeList as List } from "react-window";
+import AutoSize from "react-virtualized-auto-sizer";
 import "./App.css";
 
 const Relic = ({ relic }) => {
 
-  const List = ({ ind, perk = perks[relic.perks?.[ind]] || '' }) => <div className="text-[clamp(14px,_.85vw,_20px)], border-b-[1px] border-[#777] capitalize flex items-center text-nowrap" style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .05}px), 26px)`, }}>- {perk || ''}</div>
+  const List = ({ ind, perk = perks[relic.perks?.[ind]] || '' }) => <div className="text-[clamp(14px,_.85vw,_20px)], border-b-[1px] border-[#777] capitalize flex items-center text-nowrap, leading-[1.3]" style={{ fontSize: `clamp(16px, calc(1vw - ${(perk.length) * .05}px), 26px)`, }}>- {perk || ''}</div>
   //b 13072c g 062609 r 260606 y 302902
   return (
     <div className="border-[1px] w-full xl:w-[49.3%] h-[160px] border-[#777] bg-neutral-950 gap-2 p-4 flex" style={{ borderColor: color_muted[relic.colorl], backgroundColor: color_muted[relic.colorl] }} >
@@ -62,6 +64,14 @@ function Home({ relics = states.relics }) {
   )
 }
 
+function Builds({builds = states.build}) {
+
+
+  return (
+    <div className=""></div>
+  )
+}
+
 function Create({ edit }) {
   let [form, setForm] = useState({ perks: [] });
   let [search, setSearch] = useState('');
@@ -72,6 +82,7 @@ function Create({ edit }) {
       const normalize = (s) => s.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
       return normalize(a.text).localeCompare(normalize(b.text));
     }), [perks]);
+  console.log(perks_list);
   if (search) search = perks_list.filter(perk => perk.text.includes(search))
   let last = useRef();
   let size = form.perks.length;
@@ -166,7 +177,7 @@ function App() {
     states.setRelics = setRelics;
     states.setPage = setPage;
     init().then(res => {
-      if (!relics) setRelics(res)
+      setRelics(res)
     });
   }, []);
   //#1f1f1f #1f1b24
@@ -184,10 +195,11 @@ function App() {
         <div className="left h-full w-[12%] center">
           <div className="w-[70%] h-[85%] bg-neutral-950 rounded xl p-2 space-y-1">
             <Nav to={'relics'} comp={<Home />} />
+            <Nav to={'Builds'} comp={<Builds />} />
             <Nav to={'add'} comp={<Create />} />
             <Nav to={'Scan'} comp={<Home />} click={() => ipcFetch('scan_rdy')} />
-            <Nav to={'Builds'} comp={<Home />} />
             <Nav to={'sett'} comp={<Home />} />
+            <Nav to={'test'} comp={<Home />} click={e => findBuild(0, 'duchess')}/>
             <div className="" onClick={e => ipcFetch('test').then(console.log)}>asdf</div>
           </div>
         </div>

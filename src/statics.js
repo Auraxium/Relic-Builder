@@ -11,44 +11,102 @@ export let color_muted = { b: "#13072c", g: "#041a06", r: "#260606", y: "#262001
 // export let color_code = { g: "#53802d", r: "#A22A1F", y: "#c1972d", b: "#286187" };
 
 export let perks = [];
+// window.perks = perksk
 export let perks_list = [];
 export let varsAt;
 
 export let chars = {
   duchess: {
-    urns: [
-      ["r", "b", "b"],
-      ["y", "y", "g"],
-      ["b", "y", "w"],
-    ],
-    recs: {
-      77: "dagger reprise",
-    },
+    cups: ["@Urn$rbb", "@Goblet$yyg", "@Chalice$byw"],
+    recs: [58, 57, 56, 71, 72, 73, 80, 301, 330, 155, 184, 209, 210, 214, 269, 268, 267, 285, 284, 283, 297, 296, 295, 299],
   },
-
   universal: {
-    urns: [
-      ["y", "y", "y"],
-      ["g", "g", "g"],
-      ["b", "b", "b"],
-    ],
+    cups: ["Sacred Erdtree Grail$yyy", "Spirit Shelter Grail$ggg", "Giant's Cradle Grail$bbb"],
   },
 };
 
-let tasks = {};
+window.tasks ??= {};
 let events = {
   scan: (e) =>
     states.setRelics((p) => {
       console.log(e.relic);
-      return {...p, [e.relic.id]: e.relic}
+      return { ...p, [e.relic.id]: e.relic };
     }),
-  scan_finished: e => save()
+  scan_finished: (e) => save(),
 };
 
+export function findBuild(picks, char) {
+  let char_str = char;
+  char = chars[char];
+  picks ??= char.recs 
+  picks = new Set([...char.recs]);
+  let colors = { r: [], b: [], g: [], y: [] };
+  let relics = Object.values(states.relics).filter(rel => { //score and filter
+    let score = rel.perks.reduce((acc, e) => acc + picks.has(e), 0);
+    if (score <= 0) return false;
+    rel.score = score;
+    return true;
+  });
+  relics.forEach((rel,i) => colors[rel.color].push(i)) //split color
+
+  let top = []
+  let best = [-999, [], '', ''];
+  for (let cup_str of [...char.cups, ...chars.universal.cups]) {
+    let cup_pool = cup_str.split('$').at(-1).split('').map(c => {
+      if(colors[c]?.length) return colors[c] 
+      if(!colors[c]) return relics.map((e,i)=>i) //if white
+      colors[c].push(relics.length) //empty color
+      let any = Object.values(states.relics).find(rel => rel.color == c)
+      relics.push({...any, score: 0}) 
+      return colors[c];
+    }) //colors map, inds relica
+    let perm = Array(cup_pool.length).fill(0);
+    let size_map = cup_pool.map(c => c.length);
+
+    const rotate = (s = 0) => {
+      if (s > perm.length - 1) {
+        return (perm = Array(size_map.length).fill(0));
+      }
+      if (++perm[s] >= size_map[s]) {
+        perm[s] = 0;
+        rotate(s + 1);
+      }
+    };
+
+    for (let i = 0; i < size_map.reduce((acc, e) => e*acc, 1); i++) {
+      let rels = cup_pool.map((c, i) => c[perm[i]]); //inds of relics
+      if (rels.length !== new Set(rels).size) {
+        rotate(0);
+        continue;
+      }
+      rels = rels.map(e => relics[e]) //whole not ids
+      let score = rels.reduce((acc, e) => acc + e.score, 0);
+      let combine = rels.reduce((acc, e) => { acc.push(...e.perks); return acc}, []) // check for dups
+      score -= (combine.length - new Set(combine).size) * 1.5; //todo: make bad_dupes list
+      
+      // if ((score > best[0]) || (score == best[0] && cup_str != top[0][2])) {
+      //   best = [score, [...rels], cup_str, char_str];
+      //   top.unshift([...best])
+      // } else if(rels.length*2 != new Set([...rels.map(e => e.id), ...top[0][1].map(e => e.id)]).size) {
+      //   best = [score, [...rels], cup_str, char_str];
+      //   top.unshift([...best])
+      // }
+
+      if ((score > best[0])) {
+        best = [score, [...rels], cup_str, char_str];
+        top.unshift([...best])
+      } 
+      rotate(0)
+    }
+  }
+
+  console.log(top.slice(0,6));
+  return top;
+}
+
 export async function init() {
-  while (!window.pyspawn) await delay(400)
+  while (!window.pyspawn) await delay(400);
   let res = await ipcFetch("load");
-  // console.log(res);
   perks = res.perks;
   let hold;
   let holds = {};
@@ -65,7 +123,7 @@ export async function init() {
   // perks_list = perks
   //   .map((perk, i, arr) => {
   //     let j = { text: perk, ind: i }
-  //     let slice = perk.slice(0,-3)
+  //     let slice = perk.slice(0,-3)99
   //     if(perk.at(-1)=='X') {
   //       j.vars = holds[slice]
   //       varsAt ??= i
@@ -78,9 +136,10 @@ export async function init() {
   //   })
   //   .filter((e,i) => !remove.has(i) && isNaN(+e.text.at(-1)))
   //   .sort((a, b) => {
-  //     const normalize = (s) => s.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-  //     return normalize(a.text).localeCompare(normalize(b.text));
+  //     const normalize = (s) => s.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();l
+  //     return normalize(a.text).localeCompare(normalize(b.text));9
   //   });
+window.perks = perks
   return res.relics || {};
 }
 
@@ -140,6 +199,7 @@ export async function ipcFetch(p, j = {}, nr) {
   let k = new Promise((y, n) => {
     tasks[j.uid] = { y, n };
   });
+  
   window.pyspawn.write(JSON.stringify(j) + "\n");
   return k;
 }
@@ -164,14 +224,14 @@ export const debounce = function (cb, delay = 400) {
 };
 
 export async function save() {
-  ipcFetch('save', {relics: states.relics}).then(console.log)
+  ipcFetch("save", { relics: states.relics }).then(console.log);
 }
 
 window.addEventListener("beforeunload", (e) => {
   console.log("removing local command", has_command);
   localStorage.removeItem("command");
-  window.command.stdout.removeAllListeners('data')
-  window.command.stderr.removeAllListeners('data')
+  window.command.stdout.removeAllListeners("data");
+  window.command.stderr.removeAllListeners("data");
   window.pyspawn.kill();
   window.pyspawn = null;
 });
