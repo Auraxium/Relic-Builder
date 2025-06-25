@@ -299,7 +299,7 @@ function Config() {
     </div>
   )
 }
-
+  
 function App() {
   let [relics, setRelics] = useState();
   let [page, setPage] = useState(<Home />);
@@ -312,30 +312,24 @@ function App() {
     setPage(comp)
   }}>{nav_icon[to]}{to}</div>
 
-  states.relics = relics
+  states.relics = relics;
   useEffect(() => {
-    try {
       console.log('use effect reran');
       states.setRelics = setRelics;
       states.setPage = setPage;
       states.setError = setError;
       setError('b4 ionit')
       init().then(res => {
-        setError('use effect runs ', res)
-      }).catch(err => {
-        setError('init erred', err)
-      });
+        console.log('res');
+        
+        setRelics(res)
+      }).catch(err => console.log(err));
       window.scan_card = scan_card
-    } catch (err) {
-      setRelics(err)
-      setError(err)
-    }
-
   }, []);
   //#1f1f1f #1f1b24
-  if (error) return error + ' ' +  JSON.stringify(window.logse);
+  // if (error) return error + ' ' +  JSON.stringify(window.logse);
   if (!relics) return 'no relics' + JSON.stringify(window.logse)
-  else return relics
+  // else return relics
   return (
     <div style={{ backgroundImage: `url(/bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
       <div ref={scan_card} className="fixed w-[100svw] h-[100svh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => { scan_card.current.style.display = 'none'; ipcFetch('stop_scan'); window.scanning = false }}>

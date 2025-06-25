@@ -17,11 +17,11 @@
         {
           "name": "py-spawn",
           "cmd": "py",
-          "args": ["C:/Users/Administrator/Desktop/main.py"]
+          "args": ["main.py"]
         },
         {
           "name": "exe-spawn",
-          "cmd": "C:/Users/Administrator/Desktop/main.exe",
+          "cmd": "$RESOURCE/main.exe",
           "args": ["prod"]
         }
       ]

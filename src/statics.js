@@ -212,6 +212,7 @@ export async function init() {
   while (!window.pyspawn) await delay(400) // runCommand();
   errIt('after wait spawn')
   let res = await ipcFetch("load");
+  errIt('after wait load')
   perks = res.perks;
   let hold;
   let holds = {};
@@ -262,10 +263,10 @@ async function runCommand() {
   errIt(window.pyspawn)
   if (!window.command) {
     errIt('rc 3.1')
-    // const scriptPath = await resolveResource("main.exe");
+    const scriptPath = await resolveResource("main.py");
     errIt('rc 3.11')
-    window.command = new Command("py-spawn", ["py", "C:/Users/Administrator/Desktop/main.py"]);
-    // window.command = new Command("exe-spawn", ["prod"]);
+    // window.command = new Command("py-spawn", ["py", scriptPath]);
+    window.command = new Command("exe-spawn", ["prod"]);
     errIt('rc 3.2 works')
     errIt(window.command)
 
@@ -274,8 +275,8 @@ async function runCommand() {
       // console.log(line)
       let data;
       try {
-        data = JSON.parse(line);
-      } catch (e) {}
+        data = JSON.parse(line.replace(/'/g, '"'));
+      } catch (e) {console.log(e)}
       if (!data) return console.log("[stout]", line);
       if (events[data.event]) events[data.event](data);
       if (tasks[data.uid]) {
@@ -301,17 +302,9 @@ async function runCommand() {
   errIt('rc 5')
   window.pyspawn = null;
   errIt('rc 6')
-  // window.pyspawn = await 
-  window.command.spawn().then(res => window.pyspawn = res).catch(err=>errIt(err));
-  errIt('rc 6.1')
-  while(!window.pyspawn) {
-    await delay(3000)
-    errIt('waitinf for spawn');
-    errIt(window.pyspawn)
-  } 
+  window.pyspawn = await window.command.spawn().catch(err => console.log)
   errIt('rc 7')
   errIt(window.pyspawn)
-
   console.log("new command", window.command, window.pyspawn);
   return window.pyspawn;
 }
@@ -320,7 +313,9 @@ if (!window.pyspawn?.write) runCommand();
 
 let c = 1;
 export async function ipcFetch(p, j = {}, nr) {
+  errIt('IN fetch 1')
   if (typeof (window.pyspawn?.write || {}) != "function") await runCommand();
+  errIt('IN fetch 2')
   j.port ??= p;
   if (nr) return window.pyspawn.write(JSON.stringify(j) + "\n");
   j.uid = c++;
