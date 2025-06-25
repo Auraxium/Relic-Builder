@@ -1,4 +1,5 @@
-import keyboard, sys, json, random, time, threading, webbrowser
+import keyboard, sys, json, random, time, threading, webbrowser, signal, sqlite3
+import atexit
 from concurrent.futures import ThreadPoolExecutor
 executor = ThreadPoolExecutor(max_workers=2)
 import mss
@@ -18,13 +19,15 @@ state ins tead of window
 
 """
 
-data = {}
+data = {
+    "relics": {}
+}
 try:
     with open("save1.json") as f:
         data = json.loads(f.read())
 except:
     with open("save1.json", "w") as f:
-        f.write("{}")
+        f.write(json.dumps(data))
 
 perks = []
 with open("perks.txt", "r") as f:
@@ -184,19 +187,38 @@ def scan_rdy():
     keyboard.add_hotkey('9', stop_scan)
     keyboard.add_hotkey('0', lambda: threading.Thread(target=scan, args=(None,), daemon=True).start())
     
-def save(e):
+def save(e, hard=False):
     global data
-    log('saving:')
     # log(e)
-    data = {**data, "relics": e['relics']}
-    with open("save1.json", "w") as f:
-        f.write(json.dumps(data))
+    if e: 
+        # log('saving:', e)
+        data = {**data, **e['data']}
+    if hard:
+        log('saving to dick')
+        with open("save1.json", "w") as f:
+            f.write(json.dumps(data))
+            
+def save_rel(relic):
+    log(relic)
+    if 'del' in relic:
+        log('deleted')
+        del data["relics"][relic['id']]
+    else:
+        data["relics"][relic['id']] = relic
+    
+@atexit.register
+def save_on_exit():
+    if len(data["relics"]) > 0:
+        with open("save1.json", "w") as f:
+            f.write(json.dumps(data))
 
 ports = {
     "test": lambda *e: f"#{format(int(random.random() * 16777215), '06X')}",
     "load": lambda e: {**data, "perks": perks},
     "save": lambda e: save(e),
+    "save_relic": lambda e: save_rel(e['relic']),
     "scan_rdy": lambda e: scan_rdy(),
+    "stop_scan": lambda e: stop_scan(),
     "support": lambda e: webbrowser.open("https://ko-fi.com/auraxium/"),
 }
 

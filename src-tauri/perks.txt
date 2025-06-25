@@ -59,6 +59,7 @@ Character Skill Cooldown Reduction +2
 Character Skill Cooldown Reduction +3
 Colossal armaments are coated in rock when performing charged attacks
 Consecutive Guards Harden Skin
+Continuous HP Recovery
 Critical Hit Adds Lightning Effect
 Critical Hit Boosts Stamina Recovery Speed
 Critical Hit Creates Sleep Mist
@@ -121,7 +122,6 @@ FP Restoration upon Reaper Attacks
 FP Restoration upon Spear Attacks
 FP Restoration upon Straight Sword Attacks
 FP Restoration upon Successive Attacks
-FP Restoration upon Successive Attacks(Old Pocket Watch)
 FP Restoration upon Thrusting Sword Attacks
 FP Restoration upon Twinblade Attacks
 FP Restoration upon Whip Attacks
