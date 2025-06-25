@@ -1,19 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, states, varsAt, generateBuild, chars, char_icons, scanning } from "./statics";
+import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, states, varsAt, generateBuild, chars, char_icons, base_relics } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil } from "@tabler/icons-react";
 import { VirtuosoGrid } from 'react-virtuoso'
 import "./App.css";
 
 const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
+export const throw_frontend_error = (j) => states.setError(j)
 
 const Relic = ({ relic, edit }) => {
 
   const List = ({ ind, perk = perks[relic.perks?.[ind]] || '' }) => <div className="text-[clamp(14px,_.85vw,_20px)], border-b-[1px] border-[#777] capitalize flex items-center text-nowrap, leading-[1.3]" style={{ fontSize: `clamp(16px, calc(1vw - ${(perk.length) * .05}px), 26px)`, }}>- {perk || ''}</div>
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className="border-[1px] w-full xl:w-[46.3%], h-[150px] border-[#777] bg-neutral-950 gap-2 p-4 flex" style={{ borderColor: color_muted[relic.colorl], backgroundColor: color_muted[relic.colorl] }} >
+    <div className="border-[1px] w-full xl:w-[46.3%], h-[150px] border-[#777] bg-neutral-950 gap-2 p-4 flex" style={{}} >
       <div className="img border-s-[3px] w-[5.2vw] min-w-[80px] aspect-square box-content " style={{ backgroundImage: `url(/${relic.color}${relic.perks.length}.png)`, borderColor: color_code[relic.color] }}></div>
       <div className="flex flex-col grow w-1 relative -top-[6px]">
         <div className=" text-[clamp(28px,_2vw,_30px)] font-light capitalize hightop flex ">
@@ -67,7 +68,8 @@ function Home({ relics = states.relics }) {
         <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>
-      <div className="grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
+      {window.scanning ? <div className="">Scanning in progress. hold "9" to cancel</div> : ''}
+      <div className="home-main grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
         <VirtuosoGrid
           totalCount={relics_list.length}
           itemContent={(index) => <Relic relic={relics_list[index]} edit={1} key={index} />}
@@ -287,34 +289,56 @@ let nav_icon = {
 function Config() {
 
   return (
-    <div className=""></div>
+    <div className="">
+      <div className={`${option_class} w-[180px] h-24 border-[#dc3545] text-[#dc3545] mt-[10%],`} onClick={e => {
+        states.setRelics(base_relics)
+        states.relics = base_relics
+        // ipcFetch('delete_all_data')
+        localStorage.setItem('rb_data', JSON.stringify({ relics: base_relics }))
+      }}>Delete All Data</div>
+    </div>
   )
 }
 
 function App() {
   let [relics, setRelics] = useState();
   let [page, setPage] = useState(<Home />);
+  let [error, setError] = useState();
   let scan_card = useRef()
+  states.setError = setError;
 
-  const Nav = ({ to, comp, click }) => <div className="w-full h-[60px] bg-[#434343] hover:bg-[#777] rounded-sm center gap-1 capitalize text-[22px]" onClick={() => {
+  const Nav = ({ to, comp, click, className }) => <div className={`w-full h-[60px] bg-[#434343] hover:bg-[#777] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
     click && click()
     setPage(comp)
   }}>{nav_icon[to]}{to}</div>
 
   states.relics = relics
   useEffect(() => {
-    console.log('use effect reran');
-    states.setRelics = setRelics;
-    states.setPage = setPage;
-    init().then(res => {
-      setRelics(res)
-    });
+    try {
+      console.log('use effect reran');
+      states.setRelics = setRelics;
+      states.setPage = setPage;
+      states.setError = setError;
+      setError('b4 ionit')
+      init().then(res => {
+        setError('use effect runs ', res)
+      }).catch(err => {
+        setError('init erred', err)
+      });
+      window.scan_card = scan_card
+    } catch (err) {
+      setRelics(err)
+      setError(err)
+    }
+
   }, []);
   //#1f1f1f #1f1b24
-  if (!relics) return <></>;
+  if (error) throw Error(error);
+  if (!relics) return 'no relics' + JSON.stringify(window.logse)
+  else return relics
   return (
     <div style={{ backgroundImage: `url(/bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
-      <div ref={scan_card} className="fixed w-[100svw] h-[100svh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => scan_card.current.style.display = 'none'}>
+      <div ref={scan_card} className="fixed w-[100svw] h-[100svh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => { scan_card.current.style.display = 'none'; ipcFetch('stop_scan'); window.scanning = false }}>
         <div className="rounded-xl bg-[#333] w-[80%] h-[80%], text-[20px] p-4" onClick={e => e.stopPropagation()}>
           <div className="w-full center text-[26px]">How to Scan Relics</div>
           <div className="">- Make sure NightReign is open on your default/main monitor</div>
@@ -324,10 +348,10 @@ function App() {
           <div className="">- Press "D" to move to relics section</div>
           <div className="">- Press 4, then 2 to clear any filters</div>
           <div className="">- Sort by "Order Found", Decending</div>
-          <div className="">- Go back with "Q"</div>
-          <div className="">- Make sure game is focused</div>
+          <div className="">- Press "Q" to go back</div>
           <div className="">- Make sure youre in relics section</div>
-          <div className="">- Highlight relic you wish to start scanning from (Top Left)</div>
+          <div className="">- Make sure game is focused and are able to move relics with left and right arrows</div>
+          <div className="">- Highlight relic you wish to start scanning from (or top left)</div>
           <div className="">- Scans should end automatically soon after last relic in list</div>
           <div className="">- Hold "9" to stop scan early</div>
           <div className="text-[26px]">- Press "0" to begin scanning</div>
@@ -345,9 +369,8 @@ function App() {
             <Nav to={'relics'} comp={<Home />} />
             <Nav to={'Builds'} comp={<Builds />} />
             <Nav to={'add'} comp={<Create />} />
-            <Nav to={'Scan'} comp={<Home />} click={() => {scan_card.current.style.display = 'flex'; }} />
-            <Nav className="mt-auto" to={'Config'} comp={<Config />} />
-            <Nav to={'test'} comp={<Home />} click={e => window.location = 'www.youtube.com'} />
+            <Nav to={'Scan'} comp={<Home />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
+            <Nav className="mt-" to={'Config'} comp={<Config />} />
           </div>
         </div>
         <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>

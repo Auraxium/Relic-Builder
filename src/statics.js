@@ -1,5 +1,6 @@
 import { Command } from "@tauri-apps/plugin-shell";
 import { isTauri } from "@tauri-apps/api/core";
+import { resolveResource } from "@tauri-apps/api/path";
 export let states = {};
 
 export let sizes = { delicate: 1, polished: 2, grand: 3 };
@@ -10,8 +11,10 @@ export let color_code = { g: "#6fb139", r: "#e33727", y: "#dead31", b: "#3a8dc4"
 export let color_muted = { b: "#250d59", g: "#0c4d11", r: "#610f0f", y: "#5d4e03", w: "#aaa" };
 // export let color_muted = { b: "#13072c", g: "#041a06", r: "#260606", y: "#262001", w: '#aaa' };
 // export let color_code = { g: "#53802d", r: "#A22A1F", y: "#c1972d", b: "#286187" };
+window.logse = []
 
-export let scanning;
+window.scanning = 0
+let home_list;
 
 export let perks = [];
 // window.perks = perksk
@@ -59,36 +62,36 @@ export let chars = {
 };
 export let char_icons = {};
 export let base_relics = {
-  old_pocketwatch: { name: "Old Pocketwatch", perks: [74, 123], color: "g", id: "b2_74_123" },
-  besmirched_frame: { name: "Besmirched Frame", perks: [349, 92], color: "b", id: "b2_349_92" },
-  slate_whetstone: { name: "slate_whetstone", perks: [363, 301], color: "r", id: "r2_363_301" },
-  silver_tear: { name: "silver_tear", perks: [361, 354, 2], color: "r", id: "r3_361_354_2" },
-  the_wylders_earring: { name: "the_wylders_earring", perks: [360, 359, 330], color: "r", id: "r3_360_359_330" },
-  stone_stake: { name: "stone_stake", perks: [137, 58], color: "r", id: "r2_137_58" },
-  third_volume: { name: "third_volume", perks: [134, 162], color: "r", id: "r2_134_162" },
-  witchs_brooch: { name: "witchs_brooch", perks: [140, 138, 357], color: "b", id: "b3_140_138_357" },
-  cracked_sealing_wax: { name: "cracked_sealing_wax", perks: [273, 67], color: "y", id: "y2_273_67" },
-  edge_of_order: { name: "edge_of_order", perks: [272, 334, 204], color: "y", id: "y3_272_334_204" },
-  golden_dew: { name: "golden_dew", perks: [81, 35], color: "y", id: "y2_81_35" },
-  crown_medal: { name: "crown_medal", perks: [78, 214], color: "g", id: "g2_78_214" },
-  blessed_iron_coin: { name: "blessed_iron_coin", perks: [79, 61, 357], color: "g", id: "g3_79_61_357" },
-  torn_braided_cord: { name: "torn_braided_cord", perks: [311, 344], color: "b", id: "b2_311_344" },
-  black_claw_necklace: { name: "black_claw_necklace", perks: [70, 69, 307], color: "y", id: "y3_70_69_307" },
-  small_makeup_brush: { name: "small_makeup_brush", perks: [322, 266], color: "b", id: "b2_322_266" },
-  old_portrait: { name: "old_portrait", perks: [324, 321, 69], color: "b", id: "b3_324_321_69" },
-  vestige_of_night: { name: "vestige_of_night", perks: [317, 285], color: "g", id: "g2_317_285" },
-  bone_like_stone: { name: "bone_like_stone", perks: [315, 319, 269], color: "g", id: "g3_315_319_269" },
-  blessed_flowers: { name: "blessed_flowers", perks: [89, 74], color: "g", id: "g2_89_74" },
-  golden_sprout: { name: "golden_sprout", perks: [88, 328, 147], color: "r", id: "r3_88_328_147" },
-  night_of_the_beast: { name: "night_of_the_beast", perks: [331, 333], color: "g", id: "g2_331_333" },
-  night_of_the_baron: { name: "night_of_the_baron", perks: [210, 5, 63], color: "b", id: "b3_210_5_63" },
-  night_of_the_wise: { name: "night_of_the_wise", perks: [263, 339, 308], color: "y", id: "y3_263_339_308" },
-  night_of_the_demon: { name: "night_of_the_demon", perks: [176, 127, 282], color: "r", id: "r3_176_127_282" },
-  night_of_the_champion: { name: "night_of_the_champion", perks: [265, 130, 170], color: "g", id: "g3_265_130_170" },
-  night_of_the_miasma: { name: "night_of_the_miasma", perks: [298, 37, 10], color: "y", id: "y3_298_37_10" },
-  night_of_the_fathom: { name: "night_of_the_fathom", perks: [264, 100, 274], color: "r", id: "r3_264_100_274" },
-  night_of_the_lord: { name: "night_of_the_lord", perks: [347, 35, 348], color: "b", id: "b3_347_35_348" },
-  dark_night_of_the_baron: { name: "dark_night_of_the_baron", perks: [210, 209, 67], color: "r", id: "r3_210_209_67" },
+  old_pocketwatch: { name: "Old Pocketwatch", perks: [74, 123], color: "g", id: "old_pocketwatch" },
+  besmirched_frame: { name: "Besmirched Frame", perks: [349, 92], color: "b", id: "besmirched_frame" },
+  slate_whetstone: { name: "slate whetstone", perks: [363, 301], color: "r", id: "slate_whetstone" },
+  silver_tear: { name: "silver tear", perks: [361, 354, 2], color: "r", id: "silver_tear" },
+  the_wylders_earring: { name: "the wylders earring", perks: [360, 359, 330], color: "r", id: "the_wylders_earring" },
+  stone_stake: { name: "stone stake", perks: [137, 58], color: "r", id: "stone_stake" },
+  third_volume: { name: "third volume", perks: [134, 162], color: "r", id: "third_volume" },
+  witchs_brooch: { name: "witchs brooch", perks: [140, 138, 357], color: "b", id: "witchs_brooch" },
+  cracked_sealing_wax: { name: "cracked sealing wax", perks: [273, 67], color: "y", id: "cracked_sealing_wax" },
+  edge_of_order: { name: "edge of order", perks: [272, 334, 204], color: "y", id: "edge_of_order" },
+  golden_dew: { name: "golden dew", perks: [81, 35], color: "y", id: " golden_dew" },
+  crown_medal: { name: "crown medal", perks: [78, 214], color: "g", id: "crown_medal" },
+  blessed_iron_coin: { name: "blessed iron coin", perks: [79, 61, 357], color: "g", id: "blessed_iron_coin" },
+  torn_braided_cord: { name: "torn braided cord", perks: [311, 344], color: "b", id: "torn_braided_cord" },
+  black_claw_necklace: { name: "black claw necklace", perks: [70, 69, 307], color: "y", id: "black_claw_necklace" },
+  small_makeup_brush: { name: "small makeup brush", perks: [322, 266], color: "b", id: "small_makeup_brush" },
+  old_portrait: { name: "old portrait", perks: [324, 321, 69], color: "b", id: "old_portrait" },
+  vestige_of_night: { name: "vestige of night", perks: [317, 285], color: "g", id: "vestige_of_night" },
+  bone_like_stone: { name: "bone like stone", perks: [315, 319, 269], color: "g", id: "bone_like_stone" },
+  blessed_flowers: { name: "blessed flowers", perks: [89, 74], color: "g", id: "blessed_flowers" },
+  golden_sprout: { name: "golden sprout", perks: [88, 328, 147], color: "r", id: "golden_sprout" },
+  night_of_the_beast: { name: "night of the beast", perks: [331, 333], color: "g", id: "night_of_the_beast" },
+  night_of_the_baron: { name: "night of the baron", perks: [210, 5, 63], color: "b", id: "night_of_the_baron" },
+  night_of_the_wise: { name: "night of the wise", perks: [263, 339, 308], color: "y", id: "night_of_the_wise" },
+  night_of_the_demon: { name: "night of the demon", perks: [176, 127, 282], color: "r", id: "night_of_the_demon" },
+  night_of_the_champion: { name: "night of the champion", perks: [265, 130, 170], color: "g", id: "night_of_the_champion" },
+  night_of_the_miasma: { name: "night of the miasma", perks: [298, 37, 10], color: "y", id: "night_of_the_miasma" },
+  night_of_the_fathom: { name: "night of the fathom", perks: [264, 100, 274], color: "r", id: "night_of_the_fathom" },
+  night_of_the_lord: { name: "night of the lord", perks: [347, 35, 348], color: "b", id: "night_of_the_lord" },
+  dark_night_of_the_baron: { name: "dark night of the baron", perks: [210, 209, 67], color: "r", id: "dark_night_of_the_baron" },
 };
 
 window.tasks ??= {};
@@ -98,8 +101,23 @@ let events = {
       console.log(e.relic);
       return { ...p, [e.relic.id]: e.relic };
     }),
-  scan_finished: (e) => save(),
+  scan_finished: (e) => {
+    save()
+    window.scanning = false
+    states.setPage('')
+  } ,
+  scan_state: e => {
+    home_list = document.querySelector('.home-main')
+    window.scan_card.current.style.display = 'none';
+  },
+  stop_scan: e => {
+    window.scanning = false;
+    states.setPage('')
+    window.scan_card.current.style.display = 'none';
+  }
 };
+
+function errIt(s) {if(window.logse) window.logse.push(s); if(states.setError) states.setError(s + '  ' + JSON.stringify(window.logse))}
 
 export function generateBuild(picks, char) {
   console.log(picks, char);
@@ -180,24 +198,26 @@ export function generateBuild(picks, char) {
         .map((e) => e.id)
         .sort((a, b) => a.localeCompare(b))
         .join("+");
-      // console.log(temp);
       if (seen.has(temp)) return false;
       seen.add(temp);
       return true;
     });
-  console.log(top.slice(0, 6));
+  // console.log(top.slice(0, 6));
 
   return top.slice(0, 15);
 }
 
 export async function init() {
-  while (!window.pyspawn) await delay(400);
+  errIt(1)
+  while (!window.pyspawn) await delay(400) // runCommand();
+  errIt('after wait spawn')
   let res = await ipcFetch("load");
   perks = res.perks;
   let hold;
   let holds = {};
   let hold_count = 0;
   varsAt = perks.length;
+  window.logse.push(3)
   perks.forEach((e, i) => {
     if (hold && hold == e.slice(0, -3)) {
       plus_map[i] = ++hold_count;
@@ -213,22 +233,41 @@ export async function init() {
       perks.push(hold + " +X");
     }
   });
-
+  window.logse.push(4)
   window.perks = perks;
-  if(!Object.keys((res.relics||{})).length) return base_relics
-  return res.relics;
+  let data = localStorage.getItem('rb_data');
+  window.logse.push(5)
+  if(!data || data.length < 15) {
+    data = { relics: base_relics}
+    localStorage.setItem('rb_data', JSON.stringify(data))
+  } else data = JSON.parse(data)
+  window.logse.push(6, data)
+  // window.k.d.b = 5
+  return data.relics;
 }
 
 async function runCommand() {
+  errIt('in run command')
   if (window.pyspawn?.write) return window.pyspawn;
+  errIt('rc 2')
   if (window.pyspawn === 0) {
+     errIt('rc 2.1')
     while (!window.pyspawn) await delay(400);
+     errIt('rc 2.2')
     return window.pyspawn;
   }
+  errIt('rc 2.3')
   window.pyspawn = 0;
+  errIt('rc 3 py in window: ')
+  errIt(window.pyspawn)
   if (!window.command) {
-    window.command = new Command("py-spawn", ["py", "main.py"]);
+    errIt('rc 3.1')
+    // const scriptPath = await resolveResource("main.py");
+    errIt('rc 3.11')
+    window.command = new Command("py-spawn", ["-u", "main.py"]);
     // command = new Command("exe-spawn", ["prod"]);
+    errIt('rc 3.2 works')
+    errIt(command)
 
     window.command.stdout.on("data", (line) => {
       if (line[0] != "{") return console.log("[stout]", line);
@@ -257,9 +296,15 @@ async function runCommand() {
     });
   }
 
+  errIt('rc 4')
   window.pyspawn?.kill && window.pyspawn.kill();
+  errIt('rc 5')
   window.pyspawn = null;
+  errIt('rc 6')
   window.pyspawn = await window.command.spawn();
+  errIt('rc 7')
+  errIt(window.pyspawn)
+
   console.log("new command", window.command, window.pyspawn);
   return window.pyspawn;
 }
@@ -300,7 +345,8 @@ export const debounce = function (cb, delay = 400) {
 };
 
 export async function save() {
-  ipcFetch("save", { data: { relics: states.relics } }).then(console.log);
+  // ipcFetch("save", { data: { relics: states.relics } }).then(console.log);
+  localStorage.setItem('rb_data', JSON.stringify({relics: states.relics}))
 }
 
 window.addEventListener("beforeunload", (e) => {
