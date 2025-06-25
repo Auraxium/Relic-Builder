@@ -17,30 +17,11 @@
         {
           "name": "py-spawn",
           "cmd": "py",
-          "args": [
-            "main.py"
-          ]
-        }
-      ]
-    },
-    {
-      "identifier": "shell:allow-execute",
-      "allow": [
-        {
-          "name": "exec-sh",
-          "cmd": "echo",
-          "args": [
-            "'Hello World'"
-          ]
-        }
-      ]
-    },
-    {
-      "identifier": "shell:allow-spawn",
-      "allow": [
+          "args": ["C:/Users/Administrator/Desktop/main.py"]
+        },
         {
           "name": "exe-spawn",
-          "cmd": "./main.exe",
+          "cmd": "C:/Users/Administrator/Desktop/main.exe",
           "args": ["prod"]
         }
       ]

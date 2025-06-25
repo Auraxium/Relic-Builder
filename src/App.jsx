@@ -333,7 +333,7 @@ function App() {
 
   }, []);
   //#1f1f1f #1f1b24
-  if (error) throw Error(error);
+  if (error) return error + ' ' +  JSON.stringify(window.logse);
   if (!relics) return 'no relics' + JSON.stringify(window.logse)
   else return relics
   return (

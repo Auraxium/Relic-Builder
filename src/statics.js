@@ -262,12 +262,12 @@ async function runCommand() {
   errIt(window.pyspawn)
   if (!window.command) {
     errIt('rc 3.1')
-    // const scriptPath = await resolveResource("main.py");
+    // const scriptPath = await resolveResource("main.exe");
     errIt('rc 3.11')
-    window.command = new Command("py-spawn", ["-u", "main.py"]);
-    // command = new Command("exe-spawn", ["prod"]);
+    window.command = new Command("py-spawn", ["py", "C:/Users/Administrator/Desktop/main.py"]);
+    // window.command = new Command("exe-spawn", ["prod"]);
     errIt('rc 3.2 works')
-    errIt(command)
+    errIt(window.command)
 
     window.command.stdout.on("data", (line) => {
       if (line[0] != "{") return console.log("[stout]", line);
@@ -301,7 +301,14 @@ async function runCommand() {
   errIt('rc 5')
   window.pyspawn = null;
   errIt('rc 6')
-  window.pyspawn = await window.command.spawn();
+  // window.pyspawn = await 
+  window.command.spawn().then(res => window.pyspawn = res).catch(err=>errIt(err));
+  errIt('rc 6.1')
+  while(!window.pyspawn) {
+    await delay(3000)
+    errIt('waitinf for spawn');
+    errIt(window.pyspawn)
+  } 
   errIt('rc 7')
   errIt(window.pyspawn)
 
