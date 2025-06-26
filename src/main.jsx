@@ -6,7 +6,6 @@ let root = ReactDOM.createRoot(document.getElementById("root"))
 let react_crash = localStorage.getItem("react_crash");
 if (react_crash) react_crash = JSON.parse(react_crash)
     
-
 class ErrorBoundary extends React.Component {
     constructor(props) {
 
@@ -38,7 +37,7 @@ class ErrorBoundary extends React.Component {
         };
         window.last_error = errorPayload
 
-        console.log('some resemvlenc of quantum', errorPayload);
+        console.log(errorPayload);
         localStorage.setItem('react_crash', JSON.stringify(errorPayload))
 
         if ((since > 1000 * 60 * 60 * 2) || ((errorPayload.message !== react_crash.message) && (since > 1000 * 10))) {
@@ -63,7 +62,6 @@ class ErrorBoundary extends React.Component {
                 <div className="center full">
                     Something went wrong: {this.state.error?.message}
                     <br/>
-                    {window.logse && JSON.stringify(window.logse)}
                     {window.last_error && JSON.stringify(window.last_error)}
                 </div>
             );

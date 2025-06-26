@@ -1,28 +1,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, states, varsAt, generateBuild, chars, char_icons, base_relics } from "./statics";
-import { IconSearch, IconX, IconTrash, IconHome, IconPencil } from "@tabler/icons-react";
+import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, states, varsAt, generateBuild, chars, char_icons, base_relics, perks_list, checkForAppUpdates } from "./statics";
+import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
 import { VirtuosoGrid } from 'react-virtuoso'
 import "./App.css";
 
 const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 export const throw_frontend_error = (j) => states.setError(j)
 
-const Relic = ({ relic, edit }) => {
+const Relic = ({ relic, edit, className }) => {
 
   const List = ({ ind, perk = perks[relic.perks?.[ind]] || '' }) => <div className="text-[clamp(14px,_.85vw,_20px)], border-b-[1px] border-[#777] capitalize flex items-center text-nowrap, leading-[1.3]" style={{ fontSize: `clamp(16px, calc(1vw - ${(perk.length) * .05}px), 26px)`, }}>- {perk || ''}</div>
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className="border-[1px] w-full xl:w-[46.3%], h-[150px] border-[#777] bg-neutral-950 gap-2 p-4 flex" style={{}} >
+    <div className={`border-[1px] w-full xl:w-[46.3%], h-[180px] min-h-[180px] border-[#777] bg-neutral-950 gap-2 p-4 flex ${className}`} style={{}} >
       <div className="img border-s-[3px] w-[5.2vw] min-w-[80px] aspect-square box-content " style={{ backgroundImage: `url(/${relic.color}${relic.perks.length}.png)`, borderColor: color_code[relic.color] }}></div>
       <div className="flex flex-col grow w-1 relative -top-[6px]">
         <div className=" text-[clamp(28px,_2vw,_30px)] font-light capitalize hightop flex ">
           {relic.name || `${size_text[relic.perks.length]} ${color_text[relic.color]} Scene`}
           {edit ?
             <div className="ms-auto flex gap-2">
-              <IconPencil />
-              <IconTrash onClick={() => { ipcFetch('save_relic', { relic: { del: 1, id: relic.id } }); delete states.relics[relic.id]; states.setRelics({ ...states.relics }) }} />
+              <IconPencil onClick={() => states.setPage(<Create edit={relic} />)} />
+              <IconTrash onClick={() => { delete states.relics[relic.id]; states.setRelics({ ...states.relics }) }} />
             </div>
             :
             ''
@@ -38,11 +38,27 @@ const Relic = ({ relic, edit }) => {
 
 function Home({ relics = states.relics }) {
   let [filter, setFilter] = useState({})
-  let relics_list = React.useMemo(() => Object.values(relics).reverse(), [relics])
-  if ('rbyg'.split('').some(c => filter[c])) relics_list = relics_list.filter(rel => filter[rel.color]);
-  if ('123'.split('').some(c => filter[+c])) relics_list = relics_list.filter(rel => filter[rel.perks.length])
-  if ('search' in filter) relics_list = relics_list.filter(rel => rel.perks.map(el => perks[el]).join(' ').includes(filter.search))
   let search_bar = useRef()
+  let perk_list = useRef()
+
+  let relics_list = React.useMemo(() => Object.values(relics).reverse(), [relics])
+  relics_list = React.useMemo(() => {
+    if ('rbyg'.split('').some(c => filter[c])) relics_list = relics_list.filter(rel => filter[rel.color]);
+    if ('123'.split('').some(c => filter[+c])) relics_list = relics_list.filter(rel => filter[rel.perks.length])
+    if ('search' in filter) relics_list = relics_list.filter(rel => rel.perks.map(el => perks[el]).join(' ').includes(filter.search))
+    if(filter.picks?.length) {
+      let ps = new Set(filter.picks)
+      relics_list = relics_list.filter(rel => rel.perks.some(e => ps.has(e)))
+    } 
+    return relics_list;
+  }, [filter])
+
+  // perk_list.picks = filter.picks || []
+
+  useEffect(() => {
+    perk_list.onChange = (ps) => setFilter({...filter, picks: ps})
+  }, [])
+  
   let bounceSearch = debounce((s) => setFilter({ ...filter, search: s }), 400);
 
   const Option = ({ color }) => (
@@ -52,13 +68,13 @@ function Home({ relics = states.relics }) {
   )
 
   return (
-    <div className="full flex flex-col py-4">
+    <div className="full relative flex flex-col py-4">
       <div className="flex border-b-[#777] items-center bg-[#111] p-2 gap-2 w-full ">
         <div className="flex items-center justify-end w-[250px] gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>
           <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
         </div>
-        <div className="w-[content] rounded-lg border-[2px] me-4 border-[#777] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px]  p-1 center capitalize" onClick={() => { search_bar.current.value = ''; setFilter({}) }}> Clear </div>
+        <div className={`${option_class} w-[content] me-4 `} onClick={() => { search_bar.current.value = ''; setFilter({}); perk_list.setPerks([]); perk_list.current.style.display = 'none' }}> Clear </div>
         <Option color={'r'} />
         <Option color={'b'} />
         <Option color={'g'} />
@@ -66,10 +82,13 @@ function Home({ relics = states.relics }) {
         <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px]  p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
         <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
+        <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>
-      {window.scanning ? <div className="">Scanning in progress. hold "9" to cancel</div> : ''}
-      <div className="home-main grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
+      <div className="home-main  grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
+        <div ref={perk_list} className="absolute p-2 w-full h-[60%] z-20 bg-neutral-900" style={{ display: 'none' }}>
+          <PerkList _ref={perk_list} searchBar={1} />
+        </div>
         <VirtuosoGrid
           totalCount={relics_list.length}
           itemContent={(index) => <Relic relic={relics_list[index]} edit={1} key={index} />}
@@ -103,9 +122,10 @@ const Build = ({ build, add }) => {
   )
 }
 
-const PerkList = ({ _ref }) => {
+const PerkList = ({ _ref, searchBar, className }) => {
   let [perk_set, setPerks] = useState([])
   let [search, setSearch] = useState('');
+  let bounceSearch = debounce((s) => setSearch(s), 400);
   let perks_list = React.useMemo(() => perks
     .map((perk, i) => ({ text: perk, ind: i }))
     .slice(0, varsAt)
@@ -116,15 +136,25 @@ const PerkList = ({ _ref }) => {
   if (search) search = perks_list.filter(perk => perk.text.toLowerCase().includes(search.toLowerCase()))
   perk_set = new Set(perk_set)
 
-  useEffect(() => {
+
+  useEffect(() => { 
     _ref.setPerks = setPerks
     _ref.picks = [...perk_set]
     _ref.setSearch = setSearch
   })
 
   return (
-    <div className="full gap-1 overflow-auto flex flex-wrap content-start">
-      {(search || perks_list).map((perk) => {
+    <div className={`full flex flex-col ${className}`} >
+      { searchBar ? 
+        <div className="flex items-center mb-2 justify-end w-[200px] gap-2 ">
+          <div className="w-[20px]"><IconSearch /> </div>
+          <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
+        </div>
+        :
+        ''
+      }
+      <div className="grow h-1 gap-1 overflow-auto flex flex-wrap content-start ">
+        {(search || perks_list).map((perk) => {
         let on = perk_set.has(perk.ind) && '#226C7D';
         return (
           <div key={perk.ind}
@@ -134,6 +164,7 @@ const PerkList = ({ _ref }) => {
               // console.log(perk.ind);
               on ? perk_set.delete(perk.ind) : perk_set.add(perk.ind)
               // if (perk_set.size > 3) return setForm({ ...form, perks: [...form.perks.slice(0, 2), perk.ind] })
+              _ref.onChange && _ref.onChange([...perk_set])
               setPerks([...perk_set])
             }}
           >
@@ -141,6 +172,8 @@ const PerkList = ({ _ref }) => {
           </div>
         );
       })}
+      </div>
+      
     </div>
   )
 }
@@ -247,7 +280,7 @@ function Create({ edit }) {
             if (!form.perks.length || !form.color) return;
             form.id ??= `${form.color}${form.perks.length}_${form.perks.join("_")}`
             console.log(form)
-            ipcFetch('save_relic', { relic: form })
+            // ipcFetch('save_relic', { relic: form })
             states.setRelics(p => ({ ...p, [form.id]: form }))
             states.setPage('')
           }}>Save</div>
@@ -286,6 +319,22 @@ let nav_icon = {
   relics: <IconHome size={28} stroke={1.5} />
 }
 
+function Scan() {
+  let relics_list = Object.values(states.relics).slice(-15)
+  
+
+  return (
+    <div className="full flex flex-col">
+      <div className="text-[24px]">Scanning in progress. Hold "9" to cancel</div>
+      <div className="grow overflow-x-hidden h-1">
+        <div className="h-full mt-4 w-full overflow-y-auto  flex flex-wrap-reverse center, content-end-safe gap-2">
+          {relics_list.map((rel, i) => <Relic className={'w-full xl:w-[49.3%]'} relic={rel} key={i} />)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Config() {
 
   return (
@@ -299,13 +348,11 @@ function Config() {
     </div>
   )
 }
-  
+
 function App() {
   let [relics, setRelics] = useState();
   let [page, setPage] = useState(<Home />);
-  let [error, setError] = useState();
   let scan_card = useRef()
-  states.setError = setError;
 
   const Nav = ({ to, comp, click, className }) => <div className={`w-full h-[60px] bg-[#434343] hover:bg-[#777] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
     click && click()
@@ -313,40 +360,36 @@ function App() {
   }}>{nav_icon[to]}{to}</div>
 
   states.relics = relics;
+
   useEffect(() => {
-      console.log('use effect reran');
-      states.setRelics = setRelics;
-      states.setPage = setPage;
-      states.setError = setError;
-      setError('b4 ionit')
-      init().then(res => {
-        console.log('res');
-        
-        setRelics(res)
-      }).catch(err => console.log(err));
-      window.scan_card = scan_card
+    console.log('use effect reran');
+    states.setRelics = setRelics;
+    states.setPage = setPage;
+    init().then(res => {
+      setRelics(res)
+    })
+    checkForAppUpdates()
+    window.scan_card = scan_card;
   }, []);
-  //#1f1f1f #1f1b24
-  // if (error) return error + ' ' +  JSON.stringify(window.logse);
-  if (!relics) return 'no relics' + JSON.stringify(window.logse)
-  // else return relics
+
+  if (!relics) return
   return (
     <div style={{ backgroundImage: `url(/bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
-      <div ref={scan_card} className="fixed w-[100svw] h-[100svh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => { scan_card.current.style.display = 'none'; ipcFetch('stop_scan'); window.scanning = false }}>
-        <div className="rounded-xl bg-[#333] w-[80%] h-[80%], text-[20px] p-4" onClick={e => e.stopPropagation()}>
-          <div className="w-full center text-[26px]">How to Scan Relics</div>
-          <div className="">- Make sure NightReign is open on your default/main monitor</div>
+      <div ref={scan_card} className="fixed -left-[0%] -top-[0%] w-[100vw] h-[100vh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => { scan_card.current.style.display = 'none'; ipcFetch('stop_scan'); window.scanning = false }}>
+        <div className="rounded-xl bg-[#444] w-[70%] h-[80%], text-[20px] p-4" onClick={e => e.stopPropagation()}>
+          <div className="w-full center text-[26px]">How To Scan Relics</div>
+          <div className="">- Make sure NightReign is open on your main/default monitor</div>
           <div className="">- Make sure game is fullscreen or borderless</div>
-          <div className="">- Make sure game is at minimum 1920x1080 resolution</div>
+          <div className="">- Make sure game is at minimum 1920x1080 resolution, and game is same resolution as monitor</div>
           <div className="">- In the roundtable, navigate to Relic Rites</div>
           <div className="">- Press "D" to move to relics section</div>
           <div className="">- Press 4, then 2 to clear any filters</div>
           <div className="">- Sort by "Order Found", Decending</div>
           <div className="">- Press "Q" to go back</div>
-          <div className="">- Make sure youre in relics section</div>
-          <div className="">- Make sure game is focused and are able to move relics with left and right arrows</div>
-          <div className="">- Highlight relic you wish to start scanning from (or top left)</div>
-          <div className="">- Scans should end automatically soon after last relic in list</div>
+          <div className="">- Make sure game is focused and are able to highlight relics with left and right arrow keys</div>
+          <div className="">- Highlight relic you wish to start scan from (or top left)</div>
+          <div className="">- Make sure cursor isnt blocking any text in the bottom right</div>
+          <div className="">- Scans should automatically end soon after it loops back to start</div>
           <div className="">- Hold "9" to stop scan early</div>
           <div className="text-[26px]">- Press "0" to begin scanning</div>
         </div>
@@ -363,8 +406,9 @@ function App() {
             <Nav to={'relics'} comp={<Home />} />
             <Nav to={'Builds'} comp={<Builds />} />
             <Nav to={'add'} comp={<Create />} />
-            <Nav to={'Scan'} comp={<Home />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
+            <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
             <Nav className="mt-" to={'Config'} comp={<Config />} />
+            <div className="">v1.0.1</div>
           </div>
         </div>
         <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>

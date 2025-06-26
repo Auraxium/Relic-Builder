@@ -1,6 +1,9 @@
 import { Command } from "@tauri-apps/plugin-shell";
 import { isTauri } from "@tauri-apps/api/core";
 import { resolveResource } from "@tauri-apps/api/path";
+import { check } from "@tauri-apps/plugin-updater"; // Correct import for Tauri 2.0
+import { ask, message } from "@tauri-apps/plugin-dialog"; // If you're using dialogs, also from plugin-dialog
+import { relaunch } from "@tauri-apps/plugin-process";
 export let states = {};
 
 export let sizes = { delicate: 1, polished: 2, grand: 3 };
@@ -11,7 +14,6 @@ export let color_code = { g: "#6fb139", r: "#e33727", y: "#dead31", b: "#3a8dc4"
 export let color_muted = { b: "#250d59", g: "#0c4d11", r: "#610f0f", y: "#5d4e03", w: "#aaa" };
 // export let color_muted = { b: "#13072c", g: "#041a06", r: "#260606", y: "#262001", w: '#aaa' };
 // export let color_code = { g: "#53802d", r: "#A22A1F", y: "#c1972d", b: "#286187" };
-window.logse = []
 
 window.scanning = 0
 let home_list;
@@ -208,17 +210,13 @@ export function generateBuild(picks, char) {
 }
 
 export async function init() {
-  errIt(1)
   while (!window.pyspawn) await delay(400) // runCommand();
-  errIt('after wait spawn')
   let res = await ipcFetch("load");
-  errIt('after wait load')
   perks = res.perks;
   let hold;
   let holds = {};
   let hold_count = 0;
   varsAt = perks.length;
-  window.logse.push(3)
   perks.forEach((e, i) => {
     if (hold && hold == e.slice(0, -3)) {
       plus_map[i] = ++hold_count;
@@ -234,49 +232,32 @@ export async function init() {
       perks.push(hold + " +X");
     }
   });
-  window.logse.push(4)
   window.perks = perks;
   let data = localStorage.getItem('rb_data');
-  window.logse.push(5)
   if(!data || data.length < 15) {
     data = { relics: base_relics}
     localStorage.setItem('rb_data', JSON.stringify(data))
   } else data = JSON.parse(data)
-  window.logse.push(6, data)
-  // window.k.d.b = 5
   return data.relics;
 }
 
 async function runCommand() {
-  errIt('in run command')
   if (window.pyspawn?.write) return window.pyspawn;
-  errIt('rc 2')
   if (window.pyspawn === 0) {
-     errIt('rc 2.1')
     while (!window.pyspawn) await delay(400);
-     errIt('rc 2.2')
     return window.pyspawn;
   }
-  errIt('rc 2.3')
   window.pyspawn = 0;
-  errIt('rc 3 py in window: ')
-  errIt(window.pyspawn)
   if (!window.command) {
-    errIt('rc 3.1')
-    const scriptPath = await resolveResource("main.py");
-    errIt('rc 3.11')
-    // window.command = new Command("py-spawn", ["py", scriptPath]);
+    // window.command = new Command("py-spawn", ["py", "main.py"]);
     window.command = new Command("exe-spawn", ["prod"]);
-    errIt('rc 3.2 works')
-    errIt(window.command)
 
     window.command.stdout.on("data", (line) => {
       if (line[0] != "{") return console.log("[stout]", line);
-      // console.log(line)
       let data;
       try {
-        data = JSON.parse(line.replace(/'/g, '"'));
-      } catch (e) {console.log(e)}
+        data = JSON.parse(line);
+      } catch (e) {}
       if (!data) return console.log("[stout]", line);
       if (events[data.event]) events[data.event](data);
       if (tasks[data.uid]) {
@@ -297,14 +278,9 @@ async function runCommand() {
     });
   }
 
-  errIt('rc 4')
   window.pyspawn?.kill && window.pyspawn.kill();
-  errIt('rc 5')
   window.pyspawn = null;
-  errIt('rc 6')
-  window.pyspawn = await window.command.spawn().catch(err => console.log)
-  errIt('rc 7')
-  errIt(window.pyspawn)
+  window.pyspawn = await window.command.spawn();
   console.log("new command", window.command, window.pyspawn);
   return window.pyspawn;
 }
@@ -313,9 +289,7 @@ if (!window.pyspawn?.write) runCommand();
 
 let c = 1;
 export async function ipcFetch(p, j = {}, nr) {
-  errIt('IN fetch 1')
   if (typeof (window.pyspawn?.write || {}) != "function") await runCommand();
-  errIt('IN fetch 2')
   j.port ??= p;
   if (nr) return window.pyspawn.write(JSON.stringify(j) + "\n");
   j.uid = c++;
@@ -346,19 +320,48 @@ export const debounce = function (cb, delay = 400) {
   };
 };
 
-export async function save() {
+function save() {
   // ipcFetch("save", { data: { relics: states.relics } }).then(console.log);
   localStorage.setItem('rb_data', JSON.stringify({relics: states.relics}))
 }
 
+export async function checkForAppUpdates() {
+  try {
+    const update = await check();
+
+    if (update?.available) {
+      const confirmUpdate = await ask(
+        `An update to version ${update.version} is available\! Check it out on the Github page?`,
+        {
+          title: "Update Available",
+          kind: "info",
+          okLabel: "Open Github",
+          cancelLabel: "Later",
+        }
+      );
+
+      if (confirmUpdate) {
+        // await update.downloadAndInstall();
+        // await message("Update installed successfully! The application will now restart.", { title: "Update Complete" });
+        // await relaunch(); // Restart the application
+        ipcFetch('github')
+      }
+    } else {
+      // Optional: Display a message if no update is available (e.g., on a manual check)
+      // await message("You are running the latest version.", { title: "No Update" });
+    }
+  } catch (error) {
+    console.error("Error checking for updates:", error);
+    await message(`Failed to check for updates: ${error}`, { title: "Update Error", kind: "error" });
+  }
+}
+
 window.addEventListener("beforeunload", (e) => {
-  console.log("removing local command", has_command);
   save();
-  localStorage.removeItem("command");
-  // window.command.stdout.removeAllListeners("data");
-  // window.command.stderr.removeAllListeners("data");
-  // window.pyspawn.kill();
-  // window.pyspawn = null;
+  window.command.stdout.removeAllListeners("data");
+  window.command.stderr.removeAllListeners("data");
+  window.pyspawn.kill();
+  window.pyspawn = null;
 });
 
 // perks_list = perks //+X perks

@@ -11,6 +11,8 @@
     "shell:default",
     "shell:allow-stdin-write",
     "shell:allow-execute",
+    "dialog:allow-ask",
+    "dialog:allow-message",
     {
       "identifier": "shell:allow-spawn",
       "allow": [
