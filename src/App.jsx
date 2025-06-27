@@ -123,7 +123,7 @@ const Build = ({ build, add }) => {
 }
 
 const PerkList = ({ _ref, searchBar, className }) => {
-  let [perk_set, setPerks] = useState([])
+  let [perk_set, setPerks] = useState(_ref.picks || [])
   let [search, setSearch] = useState('');
   let bounceSearch = debounce((s) => setSearch(s), 400);
   let perks_list = React.useMemo(() => perks
@@ -178,11 +178,13 @@ const PerkList = ({ _ref, searchBar, className }) => {
   )
 }
 
+let build_cache = []
 function Builds({ }) {
-  let [character, setCharacter] = useState('')
-  let [builds, setBuilds] = useState([])
-  let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1)
-  let pl = useRef()
+  let [character, setCharacter] = useState('');
+  let [builds, setBuilds] = useState([]);
+  let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
+  let pl = useRef();
+  pl.picks ??= build_cache
   let bounceSearch = debounce((s) => pl.setSearch(s), 400);
 
   return (
@@ -221,7 +223,7 @@ function Builds({ }) {
         <div className=""></div>
         <div className="flex ms-auto gap-2">
           <div className={`${option_class} `} onClick={() => { pl.setPerks([]); setBuilds([]) }}>Clear</div>
-          <div className={`${option_class} bg-teal-700 `} onClick={() => setBuilds(generateBuild(pl.picks, character))}>Generate Build</div>
+          <div className={`${option_class} bg-teal-700 `} onClick={() => {if(!builds?.length) setBuilds(generateBuild(pl.picks, character))}}>Generate Build</div>
         </div>
 
       </div>
@@ -408,7 +410,7 @@ function App() {
             <Nav to={'add'} comp={<Create />} />
             <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
             <Nav className="mt-" to={'Config'} comp={<Config />} />
-            <div className="">v1.0.1</div>
+            {/* <div className="">v1.0.1</div> */}
           </div>
         </div>
         <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>
