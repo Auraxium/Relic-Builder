@@ -119,8 +119,6 @@ let events = {
   }
 };
 
-function errIt(s) {if(window.logse) window.logse.push(s); if(states.setError) states.setError(s + '  ' + JSON.stringify(window.logse))}
-
 export function generateBuild(picks, char) {
   console.log(picks, char);
   let char_str = char;
@@ -331,25 +329,22 @@ export async function checkForAppUpdates() {
 
     if (update?.available) {
       const confirmUpdate = await ask(
-        `An update to version ${update.version} is available\! Check it out on the Github page?`,
+        `An update to version ${update.version} is available\! Do you want to download and install it now?`,
         {
           title: "Update Available",
           kind: "info",
-          okLabel: "Open Github",
+          okLabel: "Update Now",
           cancelLabel: "Later",
         }
       );
 
       if (confirmUpdate) {
-        // await update.downloadAndInstall();
-        // await message("Update installed successfully! The application will now restart.", { title: "Update Complete" });
-        // await relaunch(); // Restart the application
-        ipcFetch('github')
+        await update.downloadAndInstall();
+        await message("Update installed successfully! The application will now restart.", { title: "Update Complete" });
+        await relaunch(); // Restart the application
+        // ipcFetch('github')
       }
-    } else {
-      // Optional: Display a message if no update is available (e.g., on a manual check)
-      // await message("You are running the latest version.", { title: "No Update" });
-    }
+    } 
   } catch (error) {
     console.error("Error checking for updates:", error);
     await message(`Failed to check for updates: ${error}`, { title: "Update Error", kind: "error" });

@@ -85,9 +85,10 @@ function Home({ relics = states.relics }) {
         <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>
-      <div className="home-main  grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
-        <div ref={perk_list} className="absolute p-2 w-full h-[60%] z-20 bg-neutral-900" style={{ display: 'none' }}>
-          <PerkList _ref={perk_list} searchBar={1} />
+      <div className="home-main grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
+        <div ref={perk_list} className="absolute p-2 w-full h-[60%] z-20 bg-neutral-900 border-neutral-600 border-[1px]" style={{ display: 'none' }}>
+          <div className="bg-[rgb(0,0,0,0)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
+          <PerkList _ref={perk_list} className={'z-10'} searchBar={1} />
         </div>
         <VirtuosoGrid
           totalCount={relics_list.length}
@@ -125,6 +126,7 @@ const Build = ({ build, add }) => {
 const PerkList = ({ _ref, searchBar, className }) => {
   let [perk_set, setPerks] = useState(_ref.picks || [])
   let [search, setSearch] = useState('');
+  let inp = useRef()
   let bounceSearch = debounce((s) => setSearch(s), 400);
   let perks_list = React.useMemo(() => perks
     .map((perk, i) => ({ text: perk, ind: i }))
@@ -135,7 +137,6 @@ const PerkList = ({ _ref, searchBar, className }) => {
     }), [perks]);
   if (search) search = perks_list.filter(perk => perk.text.toLowerCase().includes(search.toLowerCase()))
   perk_set = new Set(perk_set)
-
 
   useEffect(() => { 
     _ref.setPerks = setPerks
@@ -148,7 +149,8 @@ const PerkList = ({ _ref, searchBar, className }) => {
       { searchBar ? 
         <div className="flex items-center mb-2 justify-end w-[200px] gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>
-          <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
+          <input ref={inp} type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
+          <IconX onClick={() => {inp.current.value = ''; _ref.setSearch(''); _ref.setPerks([]); _ref.onChange && _ref.onChange([])}} />
         </div>
         :
         ''
@@ -208,7 +210,7 @@ function Builds({ }) {
               <div className={`${option_class} `} onClick={() => pl.setPerks([...chars[character].recs])} >Use Recommended</div>
             </div>
             <div className="flex items-center mb-2 justify-end w-[200px] gap-2 ">
-              <div className="w-[20px]"><IconSearch /> </div>
+              <div className="w-[20px]"><IconSearch/></div>
               <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
             </div>
             <div className="grow h-1 overflow-y-auto overflow-x-hidden">
@@ -404,13 +406,13 @@ function App() {
       </div>
       <div className="main grow flex ">
         <div className="left h-full w-[12%] center">
-          <div className="w-[70%] h-[85%] bg-neutral-950 rounded xl p-2 space-y-1">
+          <div className="w-[70%] h-[85%] bg-neutral-950 rounded xl p-2 col gap-y-1">
             <Nav to={'relics'} comp={<Home />} />
             <Nav to={'Builds'} comp={<Builds />} />
             <Nav to={'add'} comp={<Create />} />
             <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
             <Nav className="mt-" to={'Config'} comp={<Config />} />
-            {/* <div className="">v1.0.1</div> */}
+            <div className="mt-auto opacity-15">v1.0.0</div>
           </div>
         </div>
         <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>

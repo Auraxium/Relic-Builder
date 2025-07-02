@@ -12,6 +12,11 @@
   font-style: normal; /* Or italic, oblique, etc. */
 }
 
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
 .nsb {
   scrollbar-width: none;
 }
