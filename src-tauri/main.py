@@ -1,4 +1,4 @@
-import keyboard, sys, json, random, time, threading, webbrowser, signal, sqlite3
+import keyboard, sys, json, random, time, threading, webbrowser
 import atexit
 from concurrent.futures import ThreadPoolExecutor
 

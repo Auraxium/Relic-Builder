@@ -22,20 +22,21 @@ export let perks = [];
 // window.perks = perksk
 export let perks_list = [];
 export let varsAt;
+export let char_augs = new Set()
 window.plus_map = {};
 
 export let chars = {
   wylder: {
     cups: ["@Urn$rrb", "@Goblet$ygg", "@Chalice$ryw", "Soot Covered Urn$bby"],
-    recs: [359, 360, 363, 304, 301, 302, 303, 56, 57, 58, 344, 342, 343, 299, 331, 330, 357, 355, 356, 354, 352, 353],
+    recs: [359, 360, 363, 304, 301, 302, 303, 56, 57, 58, 344, 342, 343, 299, 331, 330, 357,  356, 354, 352, 353],
   },
   guardian: {
     cups: ["@Urn$ryy", "@Goblet$bbg", "@Chalice$byw", "Soot Covered Urn$rgg"],
-    recs: [251, 252, 4, 75, 130, 132, 135, 138, 137, 232, 147, 140, 136, 139, 344, 342, 343, 301, 302, 303, 299, 265, 330, 100, 233, 191, 162, 84, 82, 83, 357, 355, 356, 56, 57, 58, 331, 306, 307, 305, 304],
+    recs: [251, 252, 4, 75, 130, 132, 135, 138, 137, 232, 147, 140, 136, 139, 344, 342, 343, 301, 302, 303, 299, 265, 330, 100, 233, 191, 162, 84, 82, 83, 357,  356, 56, 57, 58, 331, 306, 307, 305, 304],
   },
   ironeye: {
     cups: ["@Urn$ygg", "@Goblet$rby", "@Chalice$rgw", "Soot Covered Urn$byy"],
-    recs: [270, 273, 271, 74, 73, 72, 56, 57, 58, 352, 353, 354, 69, 149, 178, 204, 304, 301, 302, 303],
+    recs: [270, 273, 271, 74, 73, 72, 56, 57, 58, 352, 353, 354, 69, 149, 178, 204, 304, 301, 302, 303, 236],
   },
   duchess: {
     cups: ["@Urn$rbb", "@Goblet$yyg", "@Chalice$byw", "Soot Covered Urn$rrg"],
@@ -47,7 +48,7 @@ export let chars = {
   }, 
   revenant: {
     cups: ["@Urn$bby", "@Goblet$rrg", "@Chalice$bgw", "Soot Covered Urn$ryy"],
-    recs: [323, 324, 322, 355, 356, 357, 299, 331, 330, 92, 100, 297, 295, 296, 301, 302, 303, 304, 354, 353, 352, 69],
+    recs: [323, 324, 322,  356, 357, 299, 331, 330, 92, 100, 297, 295, 296, 301, 302, 303, 304, 354, 353, 352, 69],
   },
   recluse: {
     cups: ["@Urn$bbg", "@Goblet$rby", "@Chalice$ygw", "Soot Covered Urn$rry"],
@@ -55,11 +56,11 @@ export let chars = {
   },
   executor: {
     cups: ["@Urn$ryy", "@Goblet$rbg", "@Chalice$byw", "Soot Covered Urn$rrb"],
-    recs: [299, 330, 331, 72, 73, 74, 301, 304, 302, 303, 357, 355, 356, 75, 147, 4, 327, 86, 89, 88, 85, 165, 194, 238]
+    recs: [299, 330, 331, 72, 73, 74, 301, 304, 302, 303, 357,  356, 75, 147, 4, 327, 86, 89, 88, 85, 165, 194, 238]
   },
   universal: {
     cups: ["Sacred Erdtree Grail$yyy", "Spirit Shelter Grail$ggg", "Giant's Cradle Grail$bbb"],
-    recs: [329, 341, 356, 355, 357, 84, 82, 83, 100, 264, 265, 266, 354, 352, 353, 299, 330, 331, 58, 57, 351, 69]
+    recs: [329, 341, 356, 355, 357, 84, 82, 83, 100, 264, 265, 266, 354, 352, 353, 299, 330, 331, 58, 57, 351, 69, 236]
   },
 };
 export let char_icons = {};
@@ -120,18 +121,19 @@ let events = {
 };
 
 export function generateBuild(picks, char) {
-  console.log(picks, char);
+  // console.log(picks, char);
   let char_str = char;
   char = chars[char];
-  picks ??= char.recs;
+  if(!picks.length) picks = char.recs;
+  let augs = new Set(picks.filter(e => char_augs.has(e)));
   picks = new Set(picks);
   let reccs = new Set(char.recs);
   let uni_reccs = new Set(chars.universal.recs);
   let colors = { r: [], b: [], g: [], y: [] };
   let relics = Object.values(states.relics).filter((rel) => {
     //score and filter
-    let score = rel.perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) * ((plus_map[e] || 0) / 90 + 1), 0);
-    if (score <= 0) return false;
+    let score = rel.perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e)*.31) * ((plus_map[e] || 0) / 90 + 1), 0);
+    if (score < .2) return false;
     rel.score = score;
     return true;
   });
@@ -216,6 +218,7 @@ export async function init() {
   let hold_count = 0;
   varsAt = perks.length;
   perks.forEach((e, i) => {
+    if (e[0]=='[') char_augs.add(i);
     if (hold && hold == e.slice(0, -3)) {
       plus_map[i] = ++hold_count;
       return;
