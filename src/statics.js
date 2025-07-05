@@ -48,7 +48,7 @@ export let chars = {
   }, 
   revenant: {
     cups: ["@Urn$bby", "@Goblet$rrg", "@Chalice$bgw", "Soot Covered Urn$ryy"],
-    recs: [323, 324, 322, 74, 356, 357, 299, 331, 330, 92, 100, 283, 284, 285, 297,  301, 302, 303, 304, 354, 353, 352, 69],
+    recs: [323, 324, 322,  356, 357, 299, 331, 330, 92, 100, 297, 295, 296, 301, 302, 303, 304, 354, 353, 352, 69],
   },
   recluse: {
     cups: ["@Urn$bbg", "@Goblet$rby", "@Chalice$ygw", "Soot Covered Urn$rry"],
@@ -132,7 +132,7 @@ export function generateBuild(picks, char) {
   let colors = { r: [], b: [], g: [], y: [] };
   let relics = Object.values(states.relics).filter((rel) => {
     //score and filter
-    let score = rel.perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e)) + ((picks.has(e) && (plus_map[e]||0)/100) -.02), 0);
+    let score = rel.perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e)*.31) * ((plus_map[e] || 0) / 90 + 1), 0);
     if (score < .2) return false;
     rel.score = score;
     return true;

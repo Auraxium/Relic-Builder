@@ -172,7 +172,7 @@ const PerkList = ({ _ref, searchBar, className }) => {
               className="flex p-1 h-8 items-center w-[32.9%] bg-[#3c3c3c] capitalize hover:bg-neutral-600 leading-[1]"
               style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / perk.text.length}px, 20px)`, backgroundColor: on }}
               onPointerDown={(e) => {
-                console.log(perk.ind, perk.text);
+                // console.log(perk.ind, perk.text);
                 on ? perk_set.delete(perk.ind) : perk_set.add(perk.ind)
                 _ref.onChange && _ref.onChange([...perk_set])
                 setPerks([...perk_set])
@@ -201,7 +201,7 @@ function Builds({ }) {
     <div className="full flex flex-col gap-2 py-4">
       <div className="flex cont, gap-1 border-[#666]  ">
         {chars_list.map(char => (
-          <div className={`${option_class}`} style={{ borderColor: character == char.name ? 'teal' : '', color: character == char.name ? '#fff' : '' }} onClick={() => {pl.picks=[]; setBuilds([]); setCharacter(char.name) }}>
+          <div className={`${option_class}`} style={{ borderColor: character == char.name ? 'teal' : '', color: character == char.name ? '#fff' : '' }} onClick={() => { setBuilds([]); setCharacter(char.name) }}>
             {char_icons[char]}
             {char.name}
           </div>
