@@ -40,7 +40,7 @@ export let chars = {
   },
   duchess: {
     cups: ["@Urn$rbb", "@Goblet$yyg", "@Chalice$byw", "Soot Covered Urn$rrg"],
-    recs: [299, 330, 80, 81, 78, 79, 72, 73, 74, 267, 268, 269, 56, 57, 58, 214, 155, 184, 108, 209, 210, 63, 295, 296, 297, 301, 302, 303, 304,],
+    recs: [299, 330, 80, 81, 78, 79, 72, 73, 74, 267, 268, 283, 285, 284, 269, 56, 57, 58, 214, 155, 184, 108, 209, 210, 63, 295, 296, 297, 301, 302, 303, 304,],
   },
   raider: {
     cups: ["@Urn$rgg", "@Goblet$rby", "@Chalice$rrw", "Soot Covered Urn$bbg"],
@@ -48,7 +48,7 @@ export let chars = {
   }, 
   revenant: {
     cups: ["@Urn$bby", "@Goblet$rrg", "@Chalice$bgw", "Soot Covered Urn$ryy"],
-    recs: [323, 324, 322,  356, 357, 299, 331, 330, 92, 100, 297, 295, 296, 301, 302, 303, 304, 354, 353, 352, 69],
+    recs: [323, 324, 322,  356, 357, 299, 331, 330, 92, 100, 297, 295, 283, 285, 284, 296, 301, 302, 303, 304, 354, 353, 352, 69],
   },
   recluse: {
     cups: ["@Urn$bbg", "@Goblet$rby", "@Chalice$ygw", "Soot Covered Urn$rry"],
@@ -350,7 +350,7 @@ export async function checkForAppUpdates() {
     } 
   } catch (error) {
     console.error("Error checking for updates:", error);
-    await message(`Failed to check for updates: ${error}`, { title: "Update Error", kind: "error" });
+    // await message(`Failed to check for updates: ${error}`, { title: "Update Error", kind: "error" });
   }
 }
 

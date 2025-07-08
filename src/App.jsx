@@ -172,7 +172,7 @@ const PerkList = ({ _ref, searchBar, className }) => {
               className="flex p-1 h-8 items-center w-[32.9%] bg-[#3c3c3c] capitalize hover:bg-neutral-600 leading-[1]"
               style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / perk.text.length}px, 20px)`, backgroundColor: on }}
               onPointerDown={(e) => {
-                // console.log(perk.ind, perk.text);
+                console.log(perk.ind, perk.text);
                 on ? perk_set.delete(perk.ind) : perk_set.add(perk.ind)
                 _ref.onChange && _ref.onChange([...perk_set])
                 setPerks([...perk_set])
@@ -232,7 +232,7 @@ function Builds({ }) {
       <div className="mt-auto p-2 h-16 w-full items-center flex bg-neutral-900,">
         <div className=""></div>
         <div className="flex ms-auto gap-2">
-          <div className={`${option_class} `} onClick={() => { pl.setPerks([]); setBuilds([]) }}>Clear</div>
+          <div className={`${option_class} `} onClick={() => { pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back':'Clear'}</div>
           <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild(pl.picks, character)) }}>Generate Build</div>
         </div>
 
@@ -421,7 +421,7 @@ function App() {
             <Nav to={'add'} comp={<Create />} />
             <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
             <Nav className="mt-" to={'Config'} comp={<Config />} />
-            <div className="mt-auto opacity-15">v1.0.2</div>
+            <div className="mt-auto opacity-15">v1.0.3</div>
           </div>
         </div>
         <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>

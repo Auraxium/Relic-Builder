@@ -43,10 +43,8 @@ scanning = False
 dup_count = 0
 current_scan = {}
 
-
 def log(*s):
     print(*s, flush=True)
-
 
 def CompareStrings(s1, s2, thresh=0.3):
     if abs(len(s1) - len(s2)) > 5:
@@ -55,7 +53,6 @@ def CompareStrings(s1, s2, thresh=0.3):
     if score < thresh:
         return 0
     return score
-
 
 def match(key, arr, raw=False, thresh=0.2):
     best = [-1, -1]
@@ -68,14 +65,14 @@ def match(key, arr, raw=False, thresh=0.2):
             best = [score, e, i]
     return best if raw else best[1]
 
-
 def parse_image(img):
     global scanning
     global dup_count
     global current_scan
     img = img.convert("L")
-    img = img.point(lambda x: (0 if x < 80 else 255), "1")
-    text = pytesseract.image_to_string(img)
+    # img = img.point(lambda x: (0 if x < 80 else 255), "1")
+    name = pytesseract.image_to_string(img.crop((0, 0, img.width, img.height*.15)))
+    text = pytesseract.image_to_string(img.crop((img.width*.068, img.height*.15, img.width, img.height)))
     rel = [
         line.lower().strip()
         for line in text.split("\n")
@@ -83,26 +80,27 @@ def parse_image(img):
     ]
 
     if not rel:
-        return log("scan failed: no rel")
-
-    name = match(rel.pop(0), types)
+        return log("scan failed: no text")
+    
+    name = match(name, types, raw=True)
+    if name[0] < .7 :
+        return log('scan failed: no name')
+    name = name
     spl = name.split(" ")
     size = sizes.get(spl[0])
     color = colors.get(spl[1])
     rps = []
-    
-    # log('1')
 
     while rel and len(rps) < size:
         p = rel.pop(0)
         if not p:
-            log("scan failed")
+            log("scan failed: no perks left to fill size")
             return
 
         r1 = match(p, perks, raw=True)
         if size - len(rps) > len(rel):
             if r1[0] < 0.3:
-                log("scan failed")
+                log("scan failed: couldnt match perk")
                 return
             rps.append(r1[2])
             continue
@@ -111,15 +109,16 @@ def parse_image(img):
             r2 = match(p + " " + rel[0], perks, raw=True)
             if r2[0] > r1[0]:
                 if r2[0] < 0.3:
-                    log("scan failed")
+                    log("scan failed: couldnt match perk even after bonus")
                     return
                 rps.append(r2[2])
                 rel.pop(0)
                 continue
 
         rps.append(r1[2])
-    # log('2')
 
+    if len(rps) < size:
+      return log('scan failed: ran out of lines for size')
     id = f"{color}{len(rps)}_{'_'.join(str(x) for x in rps)}"
     if id in current_scan:
         dup_count += 1
@@ -131,7 +130,6 @@ def parse_image(img):
     relic = {"size": size, "color": color, "perks": rps, "id": id}
     current_scan[id] = relic
     log(json.dumps({"event": "scan", "relic": relic}))
-
 
 def scan(*e):
     global scanning
