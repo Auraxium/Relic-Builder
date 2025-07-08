@@ -85,7 +85,7 @@ def parse_image(img):
     name = match(name, types, raw=True)
     if name[0] < .7 :
         return log('scan failed: no name')
-    name = name
+    name = name[1]
     spl = name.split(" ")
     size = sizes.get(spl[0])
     color = colors.get(spl[1])

@@ -250,8 +250,8 @@ async function runCommand() {
   }
   window.pyspawn = 0;
   if (!window.command) {
-    // window.command = new Command("py-spawn", ["py", "main.py"]);
-    window.command = new Command("exe-spawn", ["prod"]);
+    window.command = new Command("py-spawn", ["py", "main.py"]);
+    // window.command = new Command("exe-spawn", ["prod"]);
 
     window.command.stdout.on("data", (line) => {
       if (line[0] != "{") return console.log("[stout]", line);
