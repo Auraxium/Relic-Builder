@@ -10,6 +10,7 @@ const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, borde
 export const throw_frontend_error = (j) => states.setError(j)
 
 const Relic = ({ relic, edit, className }) => {
+  relic ??= {perks: []}
 
   const List = ({ ind, perk = perks[relic.perks?.[ind]] || '' }) => <div className="text-[clamp(14px,_.85vw,_20px)], border-b-[1px] border-[#777] capitalize flex items-center text-nowrap, leading-[1.3]" style={{ fontSize: `clamp(16px, calc(1vw - ${(perk.length) * .05}px), 26px)`, }}>- {perk || ''}</div>
   //b 13072c g 062609 r 260606 y 302902
@@ -395,10 +396,6 @@ function App() {
           <div className="">- Make sure game is fullscreen or borderless</div>
           <div className="">- Make sure game is at minimum 1920x1080 resolution, and game is same resolution as monitor</div>
           <div className="">- In the roundtable, navigate to Relic Rites</div>
-          <div className="">- Press "D" to move to relics section</div>
-          <div className="">- Press 4, then 2 to clear any filters</div>
-          <div className="">- Sort by "Order Found", Decending</div>
-          <div className="">- Press "Q" to go back</div>
           <div className="">- Make sure game is focused and are able to highlight relics with left and right arrow keys</div>
           <div className="">- Highlight relic you wish to start scan from (or top left)</div>
           <div className="">- Make sure cursor isnt blocking any text in the bottom right</div>
@@ -421,7 +418,7 @@ function App() {
             <Nav to={'add'} comp={<Create />} />
             <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
             <Nav className="mt-" to={'Config'} comp={<Config />} />
-            <div className="mt-auto opacity-15">v1.0.3</div>
+            <div className="mt-auto opacity-15">v1.0.4</div>
           </div>
         </div>
         <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>

@@ -120,6 +120,22 @@ let events = {
   }
 };
 
+function getCombinations(arr) {
+  const result = [];
+  const n = arr.length;
+
+  for (let i = 0; i < n - 2; i++) {
+    for (let j = i + 1; j < n - 1; j++) {
+      for (let k = j + 1; k < n; k++) {
+        result.push([arr[i], arr[j], arr[k]]);
+      }
+    }
+  }
+
+  return result;
+}
+
+
 export function generateBuild(picks, char) {
   // console.log(picks, char);
   let char_str = char;
@@ -137,7 +153,48 @@ export function generateBuild(picks, char) {
     rel.score = score;
     return true;
   });
-  relics.forEach((rel, i) => colors[rel.color].push(i)); //split color
+  let inds = relics.map((e, i) => i);
+
+  // relics.forEach((rel, i) => colors[rel.color].push(i)); //split color
+
+  const combs = [];
+  const n = inds.length;
+  let cups = [...char.cups, ...chars.universal.cups];
+  let cups_map = cups.map((cup, i) => {
+    let cs = cup.split("$").at(-1).split("");
+    let j;
+    if(cs.at(-1)=='w') {
+      cs.pop();
+      j = {r:1,g:1,b:1,y:1,i};
+    } else j = {i};
+    for(let e of cs) j[e] = 1+(j[e]||0);
+    return j;
+  })
+
+  for (let i = 0; i < n - 2; i++) {
+    for (let j = i + 1; j < n - 1; j++) {
+      // let ijcs = relics[i].color + relics[j].color;
+      let ijcups = cups_map.map(cup => {
+        for (let l of relics[i].color + relics[j].color) if(!cup[l]--) return false; //if color count left is 0, return false
+        return cup;
+      }).filter(Boolean);
+      if(!ijcups.length) continue;
+      let perks = [...relics[i].perks, ...relics[j].perks]
+      let ijs = relics[i].score + relics[j].score;
+      for (let k = j + 1; k < n; k++) {
+        let rel =  relics[k];
+        let cup = ijcups.find(cup => cup[rel.color]) // cup that has last color we need
+        if(!cup) continue;
+        perks.push(...rel.perks);
+        let score = ijs+rel.score - ((9-(new Set(perks)).size)*1.5);
+        // let colors = ijcs+rel.color;
+        
+        combs.push([score, [relics[i], relics[j], relics[k]], cups[cup.i], char_str]);
+      }
+    }
+  }
+
+  return combs.sort((a, b) => b[0] - a[0]).slice(0,20)
 
   let top = [];
   let best = [-999, [], "", ""];
