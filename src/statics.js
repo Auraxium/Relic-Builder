@@ -4,7 +4,18 @@ import { resolveResource } from "@tauri-apps/api/path";
 import { check } from "@tauri-apps/plugin-updater"; // Correct import for Tauri 2.0
 import { ask, message } from "@tauri-apps/plugin-dialog"; // If you're using dialogs, also from plugin-dialog
 import { relaunch } from "@tauri-apps/plugin-process";
+import effects from './effects.json'
+
+// let nm = {}
+// Object.keys(effects).forEach(e => {
+//   nm[e] = effects[e].name
+// })
+// console.log(nm)
+
 export let states = {};
+export let account = JSON.parse(localStorage.getItem('account') || "{}");
+window.account = account;
+console.log(`account size is ${(Math.round(JSON.stringify(account).length / (1024 * 1024) * 100) / 100)}mb`, account);
 
 export let sizes = { delicate: 1, polished: 2, grand: 3 };
 export let colors = { tranquil: "g", burning: "r", luminous: "y", drizzly: "b" };
@@ -18,7 +29,7 @@ export let color_muted = { b: "#250d59", g: "#0c4d11", r: "#610f0f", y: "#5d4e03
 window.scanning = 0
 let home_list;
 
-export let perks = [];
+export let perks = Object.keys(effects);
 // window.perks = perksk
 export let perks_list = [];
 export let varsAt;
@@ -28,41 +39,45 @@ window.plus_map = {};
 export let chars = {
   wylder: {
     cups: ["@Urn$rrb", "@Goblet$ygg", "@Chalice$ryw", "Soot Covered Urn$bby"],
-    recs: [359, 360, 363, 304, 301, 302, 303, 56, 57, 58, 344, 342, 343, 299, 331, 330, 357,  356, 354, 352, 353],
+    recs: [],
   },
   guardian: {
     cups: ["@Urn$ryy", "@Goblet$bbg", "@Chalice$byw", "Soot Covered Urn$rgg"],
-    recs: [251, 252, 4, 75, 130, 132, 135, 138, 137, 232, 147, 140, 136, 139, 344, 342, 343, 301, 302, 303, 299, 265, 330, 100, 233, 191, 162, 84, 82, 83, 357,  356, 56, 57, 58, 331, 306, 307, 305, 304],
+    recs: [],
   },
   ironeye: {
     cups: ["@Urn$ygg", "@Goblet$rby", "@Chalice$rgw", "Soot Covered Urn$byy"],
-    recs: [270, 273, 271, 74, 73, 72, 56, 57, 58, 352, 353, 354, 69, 149, 178, 204, 304, 301, 302, 303, 236],
+    recs: [],
   },
   duchess: {
     cups: ["@Urn$rbb", "@Goblet$yyg", "@Chalice$byw", "Soot Covered Urn$rrg"],
-    recs: [299, 330, 80, 81, 78, 79, 72, 73, 74, 267, 268, 283, 285, 284, 269, 56, 57, 58, 214, 155, 184, 108, 209, 210, 63, 295, 296, 297, 301, 302, 303, 304,],
+    recs: [],
   },
   raider: {
     cups: ["@Urn$rgg", "@Goblet$rby", "@Chalice$rrw", "Soot Covered Urn$bbg"],
-    recs: [299, 311, 330, 331, 312, 251, 252, 344, 342, 343,56,57,58, 301, 302, 303, 304]
-  }, 
+    recs: []
+  },
   revenant: {
     cups: ["@Urn$bby", "@Goblet$rrg", "@Chalice$bgw", "Soot Covered Urn$ryy"],
-    recs: [323, 324, 322,  356, 357, 299, 331, 330, 92, 100, 297, 295, 283, 285, 284, 296, 301, 302, 303, 304, 354, 353, 352, 69],
+    recs: [],
   },
   recluse: {
     cups: ["@Urn$bbg", "@Goblet$rby", "@Chalice$ygw", "Soot Covered Urn$rry"],
-    recs: [269, 268, 267, 92, 91, 90, 318, 317, 319, 291, 283, 285, 284, 263, 297, 295, 296],
+    recs: [],
   },
   executor: {
-    cups: ["@Urn$ryy", "@Goblet$rbg", "@Chalice$byw", "Soot Covered Urn$rrb"],
-    recs: [299, 330, 331, 72, 73, 74, 301, 304, 302, 303, 357,  356, 75, 147, 4, 327, 86, 89, 88, 85, 165, 194, 238]
+    cups: ["@Urn$ryy", "@Goblet$rbg", "@Chalice$byw", "Soot Covered Urn$rrb", "@Forgotten Executor's Goblet$gbr", "Decrepit Executor's Goblet$rry"],
+    recs: [7034200, 7034400, 6647100, 7011700, 7034300, 7034500, 6500700, 6647000]
   },
   universal: {
-    cups: ["Sacred Erdtree Grail$yyy", "Spirit Shelter Grail$ggg", "Giant's Cradle Grail$bbb"],
-    recs: [329, 341, 356, 355, 357, 84, 82, 83, 100, 264, 265, 266, 354, 352, 353, 299, 330, 331, 58, 57, 351, 69, 236]
+    cups: ["Sacred Erdtree Grail$yyy", "Spirit Shelter Grail$ggg", "Giant's Cradle Grail$bbb", "Scadutree Grail$rrr"],
+    recs: []
   },
+  melee: {
+    recs: [7005600, 6005600, 6005601, 7100100, 7100190, 7100110, 7001401, 7001402, 7001400, 7001409, 7001403, 6001401, 6001400, 7000002, 7000001, 7000400, 7000401, 7000402, 7000900, 7000901, 7000902, 6040001, 6040000, 7040000]
+  }
 };
+
 export let char_icons = {};
 export let base_relics = {
   old_pocketwatch: { name: "Old Pocketwatch", perks: [74, 123], color: "g", id: "old_pocketwatch" },
@@ -108,7 +123,7 @@ let events = {
     save()
     window.scanning = false
     states.setPage('')
-  } ,
+  },
   scan_state: e => {
     home_list = document.querySelector('.home-main')
     window.scan_card.current.style.display = 'none';
@@ -122,22 +137,25 @@ let events = {
 
 export function generateBuild(picks, char) {
   // console.log(picks, char);
+  // states.relics = account.relics;
   let char_str = char;
   char = chars[char];
-  if(!picks.length) picks = char.recs;
+  if (!picks.length) picks = char.recs;
   let augs = new Set(picks.filter(e => char_augs.has(e)));
   picks = new Set(picks);
   let reccs = new Set(char.recs);
   let uni_reccs = new Set(chars.universal.recs);
   let colors = { r: [], b: [], g: [], y: [] };
+  console.log(picks, states.relics, augs)
   let relics = Object.values(states.relics).filter((rel) => {
     //score and filter
-    let score = rel.perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e)*.31) * ((plus_map[e] || 0) / 90 + 1), 0);
+    let score = rel.perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e) * .31) * ((plus_map[e] || 0) / 90 + 1), 0);
     if (score < .2) return false;
     rel.score = score;
     return true;
   });
   relics.forEach((rel, i) => colors[rel.color].push(i)); //split color
+  console.log(colors)
 
   let top = [];
   let best = [-999, [], "", ""];
@@ -204,39 +222,137 @@ export function generateBuild(picks, char) {
       seen.add(temp);
       return true;
     });
-  // console.log(top.slice(0, 6));
+  console.log(top.slice(0, 6));
 
   return top.slice(0, 20);
 }
 
+export function generateBuild2(picks, char) {
+  /*
+    optimizations if bb bans g then gg bans b ???
+    less colors.forEach;
+  */
+  // [1,2,3,4,5,6,7]
+  console.log(picks, char)
+  let char_str = char;
+  // char = chars[char];
+  if (!picks.length) picks = char.recs;
+  let augs = new Set(picks.filter(e => char_augs.has(e)));
+  picks = new Set(picks);
+  let reccs = new Set(char.recs);
+  let uni_reccs = new Set(chars.melee.recs);
+  let plus_map = {};
+
+  let uni_possibles = ['rr', 'rrr', 'bb', 'bbb', 'gg', 'ggg', 'yy', 'yyy'];
+  let colors = ['b', 'g', 'r', 'y'];
+
+  let cups = [...chars.universal.cups, ...chars[char].cups];
+  let cups_map = cups.map(e => e.split('$').at(-1).split("").sort().join(""));
+  let cups_final = {};
+
+  //get total suitable combinations of colors for all cups
+  let possibles = new Set(uni_possibles);
+  cups.map(e => e.split('$').at(-1).split('').sort()).forEach(e => {
+    let cup_fit = cups[cups_map.indexOf(e.join(""))];
+    let w = e.indexOf('w');
+    if (w != -1) {
+      e.splice(w, 1);
+      possibles.add([e[0], e[1]].join(""));
+      colors.forEach(c => {
+        possibles.add([e[0], c].sort().join(""));
+        possibles.add([e[1], c].sort().join(""))
+        let temp = [e[0], e[1], c].sort().join("");
+        possibles.add(temp);
+        cups_final[temp] = cup_fit;
+      });
+      return;
+    }
+    possibles.add(e[0] + e[1]);
+    possibles.add(e[0] + e[2]);
+    possibles.add(e[1] + e[2]);
+    e = e.join("");
+    possibles.add(e);
+    cups_final[e] = cup_fit;
+  });
+
+  let pos_bans = {};
+  [...possibles].filter(e => e.length == 2).forEach(e => {
+    colors.forEach(c => {
+      if (!possibles.has(((e + c).split('').sort().join("")))) {
+        pos_bans[e] ??= [];
+        pos_bans[e].push(c);
+      }
+    })
+  });
+
+  let arr = states.relics;
+  let best = -999;
+  let bests = [];
+  for (let i = 0; i < arr.length-2; i += 2) {
+    //score and check if suitable, generate a no thing list
+    let rels_c = arr[i].color + arr[i + 1].color; // rels.map(rel => rel.color)
+    if (!possibles.has(rels_c)) continue;
+    let bans = new Set(pos_bans[rels_c] || []);
+    let filt = [...arr];
+    filt.splice(i, 2);
+    filt = filt.filter(e => !bans.has(e.color));
+
+    for (let j = 0; j < filt.length; j++) {
+      // if (bans.has(filt[j].color)) continue;
+      let rels = [arr[i], arr[i + 1], filt[j]];
+      let perks = [...rels[0].perks, ...rels[1].perks, ...rels[2].perks];
+      let score = perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e) * .31) * ((plus_map[e] || 0) / 90 + 1), 0);
+      score -= (perks.length - new Set(perks).size) * 1.5;
+      // console.log(score)
+      if(score >= best) {
+        best = score;
+        bests.push([score, rels]);
+      } 
+    }
+  }
+
+  bests = bests.sort((a,b) => b[0] - a[0]).slice(0,20).map(e => [
+    e[0], 
+    e[1], 
+    // e[1].map(rel => rel.color).sort().join(""),
+    // cups_map,
+    cups_final[e[1].map(rel => rel.color).sort().join("")], 
+    char,
+    e[1].map(rel => rel.color).sort().join("")
+  ]);
+
+  console.log(possibles, pos_bans, bests);
+  return bests;
+}
+
 export async function init() {
   while (!window.pyspawn) await delay(400) // runCommand();
-  let res = await ipcFetch("load");
-  perks = res.perks;
-  let hold;
-  let holds = {};
-  let hold_count = 0;
-  varsAt = perks.length;
-  perks.forEach((e, i) => {
-    if (e[0]=='[') char_augs.add(i);
-    if (hold && hold == e.slice(0, -3)) {
-      plus_map[i] = ++hold_count;
-      return;
-    } else {
-      hold_count = 0;
-      hold = 0;
-    }
-    if (e.at(-2) == "+") {
-      hold = e.slice(0, -3).trim();
-      holds[hold] = i;
-      if (perks[i - 1] == "hold") plus_map[i] = ++hold_count;
-      perks.push(hold + " +X");
-    }
-  });
-  window.perks = perks;
+  // let res = await ipcFetch("load");
+  // perks = res.perks;
+  // let hold;
+  // let holds = {};
+  // let hold_count = 0;
+  // varsAt = perks.length;
+  // perks.forEach((e, i) => {
+  //   if (e[0]=='[') char_augs.add(i);
+  //   if (hold && hold == e.slice(0, -3)) {
+  //     plus_map[i] = ++hold_count;
+  //     return;
+  //   } else {
+  //     hold_count = 0;
+  //     hold = 0;
+  //   }
+  //   if (e.at(-2) == "+") {
+  //     hold = e.slice(0, -3).trim();
+  //     holds[hold] = i;
+  //     if (perks[i - 1] == "hold") plus_map[i] = ++hold_count;
+  //     perks.push(hold + " +X");
+  //   }
+  // });
+  // window.perks = perks;
   let data = localStorage.getItem('rb_data');
-  if(!data || data.length < 15) {
-    data = { relics: base_relics}
+  if (!data || data.length < 15) {
+    data = { relics: base_relics }
     localStorage.setItem('rb_data', JSON.stringify(data))
   } else data = JSON.parse(data)
   return data.relics;
@@ -258,7 +374,7 @@ async function runCommand() {
       let data;
       try {
         data = JSON.parse(line);
-      } catch (e) {}
+      } catch (e) { }
       if (!data) return console.log("[stout]", line);
       if (events[data.event]) events[data.event](data);
       if (tasks[data.uid]) {
@@ -323,7 +439,7 @@ export const debounce = function (cb, delay = 400) {
 
 function save() {
   // ipcFetch("save", { data: { relics: states.relics } }).then(console.log);
-  localStorage.setItem('rb_data', JSON.stringify({relics: states.relics}))
+  localStorage.setItem('rb_data', JSON.stringify({ relics: states.relics }))
 }
 
 export async function checkForAppUpdates() {
@@ -347,7 +463,7 @@ export async function checkForAppUpdates() {
         await relaunch(); // Restart the application
         // ipcFetch('github')
       }
-    } 
+    }
   } catch (error) {
     console.error("Error checking for updates:", error);
     // await message(`Failed to check for updates: ${error}`, { title: "Update Error", kind: "error" });
@@ -360,6 +476,7 @@ window.addEventListener("beforeunload", (e) => {
   window.command.stderr.removeAllListeners("data");
   window.pyspawn.kill();
   window.pyspawn = null;
+  window.localStorage.setItem('account', JSON.stringify(account));
 });
 
 // perks_list = perks //+X perks

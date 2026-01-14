@@ -49,7 +49,8 @@ class ErrorBoundary extends React.Component {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(errorPayload),
             }).then(() => { }).catch(() => null)//.finally(() => window.location.reload)
-        } else if (since > 1000 * 5) window.location.reload()
+        } 
+        // else if (since > 1000 * 5) window.location.reload()
 
         // You can also log error to an external service here
     }
@@ -70,7 +71,6 @@ class ErrorBoundary extends React.Component {
         return this.props.children;
     }
 }
-
 
 root.render(
     <ErrorBoundary>
