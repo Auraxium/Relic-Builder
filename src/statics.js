@@ -35,6 +35,50 @@ export let perks_list = [];
 export let varsAt;
 export let char_augs = new Set()
 window.plus_map = {};
+let plus_map = {
+  "7000000": 2,
+  "7000001": 1,
+  "7000002": 0,
+  "7000100": 2,
+  "7000101": 1,
+  "7000102": 0,
+  "7000200": 2,
+  "7000201": 1,
+  "7000202": 0,
+  "7000300": 2,
+  "7000301": 1,
+  "7000302": 0,
+  "7000400": 2,
+  "7000401": 1,
+  "7000402": 0,
+  "7000500": 2,
+  "7000501": 1,
+  "7000502": 0,
+  "7000600": 2,
+  "7000601": 1,
+  "7000602": 0,
+  "7000700": 2,
+  "7000701": 1,
+  "7000702": 0,
+  "7000800": 2,
+  "7000801": 1,
+  "7000802": 0,
+  "7000900": 2,
+  "7000901": 1,
+  "7000902": 0,
+  "7001000": 2,
+  "7001001": 1,
+  "7001002": 0,
+  "7001400": 3,
+  "7001401": 2,
+  "7001402": 1,
+  "7001403": 0,
+  "7001409": 2,
+  "7001500": 1,
+  "7001501": 0,
+  "7001502": 0,
+}
+// ((plus_map[e] || 0) / 90 + 1)
 
 export let chars = {
   wylder: {
@@ -67,14 +111,16 @@ export let chars = {
   },
   executor: {
     cups: ["@Urn$ryy", "@Goblet$rbg", "@Chalice$byw", "Soot Covered Urn$rrb", "@Forgotten Executor's Goblet$gbr", "Decrepit Executor's Goblet$rry"],
-    recs: [7034200, 7034400, 6647100, 7011700, 7034300, 7034500, 6500700, 6647000]
+    recs: [7034200, 7034400, 6647100, 7011700, 7034300, 7034500, 6500700, 6647000, 7043000],
+    augs: [7034400, 7011700, 7034500]
   },
   universal: {
     cups: ["Sacred Erdtree Grail$yyy", "Spirit Shelter Grail$ggg", "Giant's Cradle Grail$bbb", "Scadutree Grail$rrr"],
     recs: []
   },
   melee: {
-    recs: [7005600, 6005600, 6005601, 7100100, 7100190, 7100110, 7001401, 7001402, 7001400, 7001409, 7001403, 6001401, 6001400, 7000002, 7000001, 7000400, 7000401, 7000402, 7000900, 7000901, 7000902, 6040001, 6040000, 7040000]
+    recs: [7005600, 6005600, 6005601, 7100100, 7100190, 7100110, 7001401, 7001402, 7001400, 7001409, 7001403, 6001401, 6001400, 7000002, 7000001,
+      7000400, 7000401, 7000402, 7000900, 7000901, 7000902, 6040001, 6040000, 7040000, 7060000, 7080600, 7330600, 7350600, 7340600]
   }
 };
 
@@ -233,16 +279,15 @@ export function generateBuild2(picks, char) {
     less colors.forEach;
   */
   // [1,2,3,4,5,6,7]
-  console.log(picks, char)
+  console.log(picks, char);
   let char_str = char;
   // char = chars[char];
-  if (!picks.length) picks = char.recs;
-  let augs = new Set(picks.filter(e => char_augs.has(e)));
+  if (!picks.length) picks = chars[char].recs;
+  let augs = new Set(chars[char].augs || []);
   picks = new Set(picks);
-  let reccs = new Set(char.recs);
+  let any_rec = new Set([...picks, ...chars[char].recs, ...chars.melee.recs]);
+  let reccs = new Set(chars[char].recs);
   let uni_reccs = new Set(chars.melee.recs);
-  let plus_map = {};
-
   let uni_possibles = ['rr', 'rrr', 'bb', 'bbb', 'gg', 'ggg', 'yy', 'yyy'];
   let colors = ['b', 'g', 'r', 'y'];
 
@@ -285,44 +330,61 @@ export function generateBuild2(picks, char) {
     })
   });
 
-  let arr = states.relics;
   let best = -999;
   let bests = [];
-  for (let i = 0; i < arr.length-2; i += 2) {
+  for (let i = 0; i < arr.length - 1; i += 1) {
     //score and check if suitable, generate a no thing list
     let rels_c = arr[i].color + arr[i + 1].color; // rels.map(rel => rel.color)
     if (!possibles.has(rels_c)) continue;
     let bans = new Set(pos_bans[rels_c] || []);
     let filt = [...arr];
-    filt.splice(i, 2);
+    filt.splice(i, 3 - !Boolean(i));
     filt = filt.filter(e => !bans.has(e.color));
 
     for (let j = 0; j < filt.length; j++) {
       // if (bans.has(filt[j].color)) continue;
       let rels = [arr[i], arr[i + 1], filt[j]];
       let perks = [...rels[0].perks, ...rels[1].perks, ...rels[2].perks];
-      let score = perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e) * .31) * ((plus_map[e] || 0) / 90 + 1), 0);
-      score -= (perks.length - new Set(perks).size) * 1.5;
+      let score = perks.reduce((acc, e) => acc + (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
+        + (augs.has(e) * .25) - (any_rec.has(e) * (plus_map[e] / 1000 || 0)),
+        0);
+      score -= (perks.length - new Set(perks).size) * 2.2;
       // console.log(score)
-      if(score >= best) {
+      if (score >= best - 1) {
         best = score;
         bests.push([score, rels]);
-      } 
+      }
     }
   }
 
-  bests = bests.sort((a,b) => b[0] - a[0]).slice(0,20).map(e => [
-    e[0], 
-    e[1], 
-    // e[1].map(rel => rel.color).sort().join(""),
-    // cups_map,
-    cups_final[e[1].map(rel => rel.color).sort().join("")], 
-    char,
-    e[1].map(rel => rel.color).sort().join("")
-  ]);
+  bests = bests.sort((a, b) => b[0] - a[0]).slice(0, 20).map(e => {
+    let ps = [...e[1][0].perks, ...e[1][1].perks, ...e[1][2].perks];
+    ps.map(e => effects[e] + ' ' + (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.2 || uni_reccs.has(e) * 0.1)
+      + (augs.has(e) * .25) - (any_rec.has(e) * (plus_map[e] / 1000 || 0)));
 
-  console.log(possibles, pos_bans, bests);
+    return ([
+      e[0],
+      e[1],
+      cups_final[e[1].map(rel => rel.color).sort().join("")],
+      char,
+      [...e[1][0].perks, ...e[1][1].perks, ...e[1][2].perks].map(el => {
+
+        return effects[el] + ' ' + ((picks.has(el) + (augs.has(el) * .25) || reccs.has(el) * 0.2 || uni_reccs.has(el) * 0.1)
+          + (augs.has(el) * .25))
+      })
+    ])
+  });
+
+  console.log(picks, bests);
   return bests;
+}
+
+window.perms = (arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]) => {
+  let n = arr.length;
+
+  
+
+  console.log(combinations)
 }
 
 export async function init() {
@@ -439,7 +501,7 @@ export const debounce = function (cb, delay = 400) {
 
 function save() {
   // ipcFetch("save", { data: { relics: states.relics } }).then(console.log);
-  localStorage.setItem('rb_data', JSON.stringify({ relics: states.relics }))
+  // localStorage.setItem('rb_data', JSON.stringify({ relics: states.relics }))
 }
 
 export async function checkForAppUpdates() {

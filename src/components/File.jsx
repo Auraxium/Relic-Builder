@@ -1,7 +1,7 @@
 import React from 'react'
 import effects from '../effects.json'
 import rel_names from '../Relic_names.json'
-
+import {states} from '../statics'
 // let nm = {}
 // Object.keys(names).forEach(e => {
 //   if(names[e]) nm[e] = names[e]
@@ -236,25 +236,33 @@ function getProfileData() {
     items.push(item);
     offset += item.size;
   }
-  account.relics = items.filter(e => e.effect_1).map(e => {
+  account.relics = items.filter(e => e.effect_1).map((e, i) => {
     let rel = {};
     let real_id = e.item_id - 2147483648;
     let name = rel_names[real_id].toLowerCase();
     let spl = name.split(' ');
-    if(spl == 'deep') spl.splice(0,1);
+    if(spl[0] == 'deep') {
+      // console.log(name)
+      rel.deep = 1;  
+      spl.splice(0,1);
+    } 
+    // if(real_id <= 2019999 && real_id >= 2000000) console.log(name)
     let size = size_map[spl[0]];
     let color = color_map[spl[1]];
 
-    if(!size || !color) return null;
+    // if(!size || !color) return null;
 
     return ({
+      id: i,
       real_id,
+      name,
+      ...rel,
       perks: [e.effect_1, e.effect_2, e.effect_3],
       perk_1: e.effect_1,
       perk_2: e.effect_2,
       perk_3: e.effect_3,
       effs: [effects[e.effect_1], effects[e.effect_2], effects[e.effect_3]],
-      deep: real_id <= 2019999 && real_id >= 2000000, // Check if this is a deep relic (ID range 2000000-2019999) is_deep = 2000000 <= real_id <= 2019999
+      deep: real_id <= 2019999 && real_id >= 2000000,// Check if this is a deep relic (ID range 2000000-2019999) is_deep = 2000000 <= real_id <= 2019999,
       size,
       color,
       raw: e,
@@ -267,6 +275,8 @@ function getProfileData() {
   const name = decoder.decode(rawName).replace(/\0+$/, '');
   account.name = name;
   console.log('got ', items.length);
+  localStorage.setItem('account', JSON.stringify(account));
+  states.setRelics(account.relics);
 }
 
 function bytesEqual(a, b) {
