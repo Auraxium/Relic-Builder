@@ -14,6 +14,7 @@ import effects from './effects.json'
 
 export let states = {};
 export let account = JSON.parse(localStorage.getItem('account') || "{}");
+account.cache ??= {}
 window.account = account;
 console.log(`account size is ${(Math.round(JSON.stringify(account).length / (1024 * 1024) * 100) / 100)}mb`, account);
 
@@ -330,44 +331,87 @@ export function generateBuild2(picks, char) {
     })
   });
 
-  let best = -999;
-  let bests = [];
-  for (let i = 0; i < arr.length - 1; i += 1) {
-    //score and check if suitable, generate a no thing list
-    let rels_c = arr[i].color + arr[i + 1].color; // rels.map(rel => rel.color)
-    if (!possibles.has(rels_c)) continue;
-    let bans = new Set(pos_bans[rels_c] || []);
-    let filt = [...arr];
-    filt.splice(i, 3 - !Boolean(i));
-    filt = filt.filter(e => !bans.has(e.color));
+  let arr = states.relics.filter(e => !e.deep);
 
-    for (let j = 0; j < filt.length; j++) {
-      // if (bans.has(filt[j].color)) continue;
-      let rels = [arr[i], arr[i + 1], filt[j]];
-      let perks = [...rels[0].perks, ...rels[1].perks, ...rels[2].perks];
-      let score = perks.reduce((acc, e) => acc + (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
-        + (augs.has(e) * .25) - (any_rec.has(e) * (plus_map[e] / 1000 || 0)),
-        0);
-      score -= (perks.length - new Set(perks).size) * 2.2;
-      // console.log(score)
-      if (score >= best - 1) {
+  let n = arr.length;
+  let best = -Infinity;
+  let pairs = [];
+
+  for (let i = 0; i < n - 1; i++) {
+    let perks1 = arr[i].perks;
+    for (let j = i + 1; j < n; j++) {
+      let perks2 = arr[j].perks;
+      let seen = new Set();
+      let score = 0;
+      let dupes = 0;
+
+      for (let e of perks1) {
+        score += (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
+          + (augs.has(e) * .25) - ((3 - perks1.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
+        seen.add(e);
+      }
+
+      for (let e of perks2) {
+        if (seen.has(e)) {
+          score -= .7;
+          continue;
+        }
+        score += (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
+          + (augs.has(e) * .25) - ((3 - perks2.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
+        seen.add(e);
+      }
+
+      if (score >= best ) {
         best = score;
-        bests.push([score, rels]);
+        pairs.push([score, seen, i, j, arr[i], arr[j]]);
       }
     }
   }
 
-  bests = bests.sort((a, b) => b[0] - a[0]).slice(0, 20).map(e => {
-    let ps = [...e[1][0].perks, ...e[1][1].perks, ...e[1][2].perks];
-    ps.map(e => effects[e] + ' ' + (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.2 || uni_reccs.has(e) * 0.1)
-      + (augs.has(e) * .25) - (any_rec.has(e) * (plus_map[e] / 1000 || 0)));
+  let final_best = -Infinity;
+  let bests = [];
+  pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0, 20).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
+
+  for (let pair of pairs) {
+    let bans = new Set(pos_bans[pair[5]] || []);
+
+    for (let three of arr.filter((e, i) => !bans.has(e.color) && i != pairs[2] && i != pairs[3])) {
+      let score = pair[0];
+
+      for (let e of three.perks) {
+        if (pair[1].has(e)) {
+          score -= 1.2;
+          continue;
+        }
+        score += (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
+          + (augs.has(e) * .25) - ((3 - three.perks.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
+      }
+
+      if (score >= final_best) {
+        final_best = score;
+        bests.push([score, pair[2], pair[3], three]);
+      }
+    }
+  }
+
+  //------------
+
+  console.log(pairs, bests)
+  let filt = new Set();
+  bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {
+    let ids = [arr[b[1]], arr[b[2]], b[3]].map(e => e.id).sort().join(",");
+    if(filt.has(ids)) return false;
+    filt.add(ids);
+    return true;
+  }).slice(0, 20).map(e => {
+    let rels = [arr[e[1]], arr[e[2]], e[3]];
 
     return ([
       e[0],
-      e[1],
-      cups_final[e[1].map(rel => rel.color).sort().join("")],
+      rels,
+      cups_final[rels.map(rel => rel.color).sort().join("")],
       char,
-      [...e[1][0].perks, ...e[1][1].perks, ...e[1][2].perks].map(el => {
+      rels.map(el => el.perks).flat().map(el => {
 
         return effects[el] + ' ' + ((picks.has(el) + (augs.has(el) * .25) || reccs.has(el) * 0.2 || uni_reccs.has(el) * 0.1)
           + (augs.has(el) * .25))
@@ -375,14 +419,23 @@ export function generateBuild2(picks, char) {
     ])
   });
 
-  console.log(picks, bests);
+  // console.log(picks, bests);
   return bests;
 }
 
 window.perms = (arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]) => {
   let n = arr.length;
 
-  
+  let pairs = []
+  for (let i = 0; i < n - 1; i++) {
+    for (let j = i + 1; j < n; j++) {
+      let perks = [...arr[i].perks, ...arr[1].perks, ...rels[2].perks];
+      let score = perks.reduce((acc, e) => acc + (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
+        + (augs.has(e) * .25) - (any_rec.has(e) * (plus_map[e] / 1000 || 0)),
+        0);
+      score -= (perks.length - new Set(perks).size) * 2.2;
+    }
+  }
 
   console.log(combinations)
 }

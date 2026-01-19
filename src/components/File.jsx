@@ -256,16 +256,11 @@ function getProfileData() {
       id: i,
       real_id,
       name,
-      ...rel,
       perks: [e.effect_1, e.effect_2, e.effect_3],
-      perk_1: e.effect_1,
-      perk_2: e.effect_2,
-      perk_3: e.effect_3,
-      effs: [effects[e.effect_1], effects[e.effect_2], effects[e.effect_3]],
       deep: real_id <= 2019999 && real_id >= 2000000,// Check if this is a deep relic (ID range 2000000-2019999) is_deep = 2000000 <= real_id <= 2019999,
       size,
       color,
-      raw: e,
+      // raw: e,
     })
   }).filter(Boolean);
   let name_offset = offset + 0x94;

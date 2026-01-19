@@ -39,7 +39,7 @@ const Relic = ({ relic, edit, className }) => {
         </div>
         <div className="text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, grow flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
         <div className="ms-auto flex gap-2 w-[15%] justify-end ">
-          <IconPencil onClick={() => console.log(relic)} /> 
+          <IconPencil onClick={() => console.log(relic)} />
           {/* <IconTrash onClick={() => { delete states.relics[relic.id]; states.setRelics({ ...states.relics }) }} />  */}
         </div>
       </div>
@@ -123,7 +123,7 @@ function Home({ relics = window.account?.relics || [] }) {
   )
 }
 
-const PerkList = ({ _ref, searchBar, className }) => {
+const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
   let [perk_state, setPerks] = useState(_ref.picks || []);
   let [search, setSearch] = useState('');
   let inp = useRef();
@@ -137,7 +137,7 @@ const PerkList = ({ _ref, searchBar, className }) => {
       return normalize(a.text).localeCompare(normalize(b.text));
     }), [perks]);
   if (search) perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()));
-  let perk_set = new Set(perk_state);
+  let perk_set = new Set(perk_state || []);
 
   useEffect(() => {
     _ref.setPerks = setPerks;
@@ -151,7 +151,7 @@ const PerkList = ({ _ref, searchBar, className }) => {
     let on = perk_set.has(perk) && '#226C7D';
     return (
       <div key={perk}
-        className="flex p-1 h-8 items-center w-[32.9%] bg-[#363636] capitalize hover:bg-neutral-600 leading-[1]"
+        className="flex p-1 h-8 items-center shrink-0, w-[32.9%] min-w-fit, bg-[#363636] capitalize hover:bg-neutral-600 leading-[1]"
         style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
         onPointerDown={(e) => {
           on ? perk_set.delete(+perk) : perk_set.add(+perk);
@@ -173,9 +173,9 @@ const PerkList = ({ _ref, searchBar, className }) => {
           <div className="w-[20px]"><IconSearch /> </div>
           <input ref={inp} className="w-[200px] bg-[#444] p-1" type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} />
           <IconX onClick={() => { inp.current.value = ''; setSearch(''); }} />
-          <div className={`${option_class} w-[content] ms-2 `} onClick={() => { setPerks([]); _ref.onChange && _ref.onChange([])}}>Clear</div>
-          <div className={`${option_class} w-[content] ms-2 flex gap-1 pen `} 
-          onClick={e => { e.target.children[0].checked ? _ref.setFilter(p => ({ ...p, match_all: 0 })) : _ref.setFilter(p => ({ ...p, match_all: 1 })); e.target.children[0].click() }}>
+          <div className={`${option_class} w-[content] ms-2 `} onClick={() => { setPerks([]); _ref.onChange && _ref.onChange([]) }}>Clear</div>
+          <div className={`${option_class} w-[content] ms-2 flex gap-1 pen `}
+            onClick={e => { e.target.children[0].checked ? _ref.setFilter(p => ({ ...p, match_all: 0 })) : _ref.setFilter(p => ({ ...p, match_all: 1 })); e.target.children[0].click() }}>
             <input className="pointer-events-none" onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
             Match All
           </div>
@@ -185,16 +185,19 @@ const PerkList = ({ _ref, searchBar, className }) => {
         <></>
       }
 
+      {/* <div className="h-[45px] flex mb-4 border-b-[1px], [&>*]:min-w-fit gap-1 overflow-x-auto overflow-y-hidden nsb, flex-wrap, w-full content-start">
+        {[...perk_set].map(e => <PerkUI perk={e} debug={1} />)}
+        <hr />
+      </div> */}
+
       <div className="grow h-1 gap-1 overflow-auto flex flex-wrap content-start ">
         {perks_list.map((perk) => <PerkUI perk={perk.ind} />)}
       </div>
 
-      {perk_set.size &&
-        <div className="h-fit flex mt-4 border-b-[1px], gap-1 overflow-auto flex-wrap content-start">
-          {[...perk_set].map(e => <PerkUI perk={e} debug={1} />)}
-          <hr />
-        </div>
-      }
+      <div className="h-[45px] flex  mt-2 border-b-[1px], [&>*]:min-w-fit gap-1 overflow-x-auto overflow-y-hidden nsb, flex-wrap, w-full content-start">
+        {[...perk_set].map(e => <PerkUI perk={e} debug={1} />)}
+        <hr />
+      </div>
     </div >
   )
 }
@@ -202,25 +205,29 @@ const PerkList = ({ _ref, searchBar, className }) => {
 // let build_cache = []
 let build_cache = account.build_cache || [];
 function Builds({ }) {
-  let [character, setCharacter] = useState('');
+  let [character, setCharacter] = useState(account.cache.build_char || '');
   let [builds, setBuilds] = useState([]);
-  builds = builds.slice(0,20)
+  builds = builds.slice(0, 20);
   let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
   let count = useRef();
   let pl = useRef();
   // console.log(pl.picks, account.build_cache)
-  pl.picks ??= account.build_cache || [];
+  pl.picks ??= account.cache[character] || [];
+  pl.setPerks && pl.setPerks(account.cache[character] || [])
+
   let bounceSearch = debounce((s) => pl.setSearch(s), 400);
 
   useEffect(() => {
     pl.onChange = (arr) => {
       count.current.innerHTML = arr.length;
-    }
-
-    return () => {
-      account.build_cache = pl.picks;
+      pl.picks = arr;
+      account.cache[character] = arr;
     }
   }, [])
+
+  useEffect(() => {
+    // if(pl.setPerks) pl.setPerks(account.cache[character] || []);
+  }, [character])
 
   const Build = ({ build, add }) => {
     if (!build[2]) return <></>;
@@ -249,7 +256,12 @@ function Builds({ }) {
     <div className="full flex flex-col gap-2 py-4">
       <div className="flex cont, gap-1 border-[#666]  ">
         {chars_list.map(char => (
-          <div className={`${option_class}`} style={{ borderColor: character == char.name ? 'teal' : '', color: character == char.name ? '#fff' : '' }} onClick={() => { setBuilds([]); setCharacter(char.name) }}>
+          <div className={`${option_class}`} style={{ borderColor: character == char.name ? 'teal' : '', color: character == char.name ? '#fff' : '' }} onPointerDown={() => {
+            pl.setPerks(account.cache[character] || [])
+            account.cache.build_char = char.name;
+            setBuilds([]);
+            setCharacter(char.name)
+          }}>
             {char_icons[char]}
             {char.name}
           </div>
@@ -283,7 +295,7 @@ function Builds({ }) {
       <div className="mt-auto p-2 h-16 w-full items-center flex bg-neutral-900,">
         <div className=""></div>
         <div className="flex ms-auto gap-2">
-          <div className={`${option_class} `} onClick={() => { pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back' : 'Clear'}</div>
+          <div className={`${option_class} `} onClick={() => { pl.onChange([]); pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back' : 'Clear'}</div>
           <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2(pl.picks, character)) }}>Generate Build</div>
         </div>
       </div>
@@ -413,7 +425,7 @@ function Config() {
 function App() {
   let [relics, setRelics] = useState(account.relics);
   let [page, setPage] = useState(<Home />);
-  let scan_card = useRef()
+  let scan_card = useRef();
 
   const Nav = ({ to, comp, click, className }) => <div className={`w-full h-[60px] bg-[#434343] hover:bg-[#777] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
     click && click()
@@ -434,7 +446,7 @@ function App() {
     window.scan_card = scan_card;
   }, []);
 
-  if (!relics) return
+  if (!relics) return;
   return (
     <div style={{ backgroundImage: `url(/bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
       <div ref={scan_card} className="fixed -left-[0%] -top-[0%] w-[100vw] h-[100vh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => {
@@ -455,9 +467,9 @@ function App() {
           <div className="w-[70%] h-[85%] bg-neutral-950 rounded xl p-2 col gap-y-1">
             <Nav to={'relics'} comp={<Home />} />
             <Nav to={'Builds'} comp={<Builds />} />
-            <Nav to={'add'} comp={<Create />} />
+            {/* <Nav to={'add'} comp={<Create />} /> */}
             <Nav to={'file'} comp={<File />} />
-            <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} />
+            {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
             <Nav className="mt-" to={'Config'} comp={<Config />} />
             <div className="mt-auto opacity-15">v1.0.3</div>
           </div>
