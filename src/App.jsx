@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, generateBuild, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2 } from "./statics";
+import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2 } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
 import { VirtuosoGrid } from 'react-virtuoso'
 import effects from './effects.json'
@@ -222,8 +222,9 @@ function Builds({ }) {
       count.current.innerHTML = arr.length;
       pl.picks = arr;
       account.cache[character] = arr;
-    }
-  }, [])
+    };
+    pl.setPerks ??= () => {};
+  }, []);
 
   useEffect(() => {
     // if(pl.setPerks) pl.setPerks(account.cache[character] || []);
@@ -393,21 +394,6 @@ let nav_icon = {
   relics: <IconHome size={28} stroke={1.5} />
 }
 
-function Scan() {
-  let relics_list = Object.values(states.relics).slice(-15)
-
-  return (
-    <div className="full flex flex-col">
-      <div className="text-[24px]">Scanning in progress. Hold "9" to cancel</div>
-      <div className="grow overflow-x-hidden h-1">
-        <div className="h-full mt-4 w-full overflow-y-auto  flex flex-wrap-reverse center, content-end-safe gap-2">
-          {relics_list.map((rel, i) => <Relic className={'w-full xl:w-[49.3%]'} relic={rel} key={i} />)}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function Config() {
 
   return (
@@ -446,7 +432,7 @@ function App() {
     window.scan_card = scan_card;
   }, []);
 
-  if (!relics) return;
+  // if (!relics) return;
   return (
     <div style={{ backgroundImage: `url(/bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
       <div ref={scan_card} className="fixed -left-[0%] -top-[0%] w-[100vw] h-[100vh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => {

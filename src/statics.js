@@ -182,98 +182,6 @@ let events = {
   }
 };
 
-export function generateBuild(picks, char) {
-  // console.log(picks, char);
-  // states.relics = account.relics;
-  let char_str = char;
-  char = chars[char];
-  if (!picks.length) picks = char.recs;
-  let augs = new Set(picks.filter(e => char_augs.has(e)));
-  picks = new Set(picks);
-  let reccs = new Set(char.recs);
-  let uni_reccs = new Set(chars.universal.recs);
-  let colors = { r: [], b: [], g: [], y: [] };
-  console.log(picks, states.relics, augs)
-  let relics = Object.values(states.relics).filter((rel) => {
-    //score and filter
-    let score = rel.perks.reduce((acc, e) => acc + (picks.has(e) || reccs.has(e) * 0.25 || uni_reccs.has(e) * 0.1) + (augs.has(e) * .31) * ((plus_map[e] || 0) / 90 + 1), 0);
-    if (score < .2) return false;
-    rel.score = score;
-    return true;
-  });
-  relics.forEach((rel, i) => colors[rel.color].push(i)); //split color
-  console.log(colors)
-
-  let top = [];
-  let best = [-999, [], "", ""];
-  for (let cup_str of [...char.cups, ...chars.universal.cups]) {
-    let cup_pool = cup_str
-      .split("$")
-      .at(-1)
-      .split("")
-      .map((c) => {
-        if (colors[c]?.length) return colors[c];
-        if (!colors[c]) return relics.map((e, i) => i); //if white
-        colors[c].push(relics.length); //empty color
-        let any = Object.values(states.relics).find((rel) => rel.color == c);
-        relics.push({ ...any, score: 0 });
-        return colors[c];
-      }); //colors map, inds relica
-    let perm = Array(cup_pool.length).fill(0);
-    let size_map = cup_pool.map((c) => c.length);
-
-    const rotate = (s = 0) => {
-      if (s > perm.length - 1) {
-        return (perm = Array(size_map.length).fill(0));
-      }
-      if (++perm[s] >= size_map[s]) {
-        perm[s] = 0;
-        rotate(s + 1);
-      }
-    };
-
-    for (let i = 0; i < size_map.reduce((acc, e) => e * acc, 1); i++) {
-      let rels = cup_pool.map((c, i) => c[perm[i]]); //inds of relics
-      if (rels.length !== new Set(rels).size) {
-        rotate(0);
-        continue;
-      }
-      rels = rels.map((e) => relics[e]); //whole not ids
-      let score = rels.reduce((acc, e) => acc + e.score, 0);
-      let combine = rels.reduce((acc, e) => {
-        acc.push(...e.perks);
-        return acc;
-      }, []); // check for dups
-      score -= (combine.length - new Set(combine).size) * 1.5; //todo: make bad_dupes list
-
-      if (score >= best[0]) {
-        best = [score, [...rels], cup_str, char_str];
-        top.unshift([...best]);
-      } else if (cup_str != top[0][2] && best[0] - score < 3) {
-        top.push([score, [...rels], cup_str, char_str]);
-      }
-      rotate(0);
-    }
-  }
-
-  let seen = new Set();
-  top = top
-    .sort((a, b) => b[0] - a[0])
-    .filter((build, i) => {
-      if (best[0] - build[0] > 3) return false;
-      let temp = build[1]
-        .map((e) => e.id)
-        .sort((a, b) => a.localeCompare(b))
-        .join("+");
-      if (seen.has(temp)) return false;
-      seen.add(temp);
-      return true;
-    });
-  console.log(top.slice(0, 6));
-
-  return top.slice(0, 20);
-}
-
 export function generateBuild2(picks, char) {
   /*
     optimizations if bb bans g then gg bans b ???
@@ -423,24 +331,8 @@ export function generateBuild2(picks, char) {
   return bests;
 }
 
-window.perms = (arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]) => {
-  let n = arr.length;
-
-  let pairs = []
-  for (let i = 0; i < n - 1; i++) {
-    for (let j = i + 1; j < n; j++) {
-      let perks = [...arr[i].perks, ...arr[1].perks, ...rels[2].perks];
-      let score = perks.reduce((acc, e) => acc + (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
-        + (augs.has(e) * .25) - (any_rec.has(e) * (plus_map[e] / 1000 || 0)),
-        0);
-      score -= (perks.length - new Set(perks).size) * 2.2;
-    }
-  }
-
-  console.log(combinations)
-}
-
 export async function init() {
+
   while (!window.pyspawn) await delay(400) // runCommand();
   // let res = await ipcFetch("load");
   // perks = res.perks;
@@ -474,6 +366,7 @@ export async function init() {
 }
 
 async function runCommand() {
+  if(!isTauri()) return;
   if (window.pyspawn?.write) return window.pyspawn;
   if (window.pyspawn === 0) {
     while (!window.pyspawn) await delay(400);
@@ -521,6 +414,7 @@ if (!window.pyspawn?.write) runCommand();
 
 let c = 1;
 export async function ipcFetch(p, j = {}, nr) {
+  if(!isTauri()) return;
   if (typeof (window.pyspawn?.write || {}) != "function") await runCommand();
   j.port ??= p;
   if (nr) return window.pyspawn.write(JSON.stringify(j) + "\n");
@@ -558,6 +452,7 @@ function save() {
 }
 
 export async function checkForAppUpdates() {
+  if(!isTauri()) return;
   try {
     const update = await check();
 
@@ -586,12 +481,13 @@ export async function checkForAppUpdates() {
 }
 
 window.addEventListener("beforeunload", (e) => {
+  window.localStorage.setItem('account', JSON.stringify(account));
   save();
+  if(!isTauri()) return;
   window.command.stdout.removeAllListeners("data");
   window.command.stderr.removeAllListeners("data");
   window.pyspawn.kill();
   window.pyspawn = null;
-  window.localStorage.setItem('account', JSON.stringify(account));
 });
 
 // perks_list = perks //+X perks
