@@ -3,8 +3,9 @@ import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2 } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
-import { VirtuosoGrid } from 'react-virtuoso'
+import { VirtuosoGrid, Virtuoso,  } from 'react-virtuoso'
 import effects from './effects.json'
+import * as cur from './effects_edit'
 import "./App.css";
 import File from "./components/File"
 
@@ -65,8 +66,8 @@ function Home({ relics = window.account?.relics || [] }) {
     if ('search' in filter) relics_list = relics_list.filter(rel => rel.perks.map(el => effects[el]).join(' ').toLowerCase().includes(filter.search))
     if (filter.picks?.length) {
       // console.log(filter.picks, relics_list[0].perks)
-      relics_list = relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e)));
-      // relics_list = filter.match_all ? relics_list.filter(rel => filter.picks.filter(e => rel.perks.includes(e)).length >= clamp(1, filter.picks.length, 3)) : relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e)));
+      // relics_list = relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e)));
+      relics_list = filter.match_all ? relics_list.filter(rel => filter.picks.filter(e => rel.perks.includes(e)).length >= clamp(1, filter.picks.length, 3)) : relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e)));
     }
     return relics_list;
   }, [filter])
@@ -110,7 +111,6 @@ function Home({ relics = window.account?.relics || [] }) {
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>
       <div className="home-main relative grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
-
         <VirtuosoGrid
           totalCount={relics_list.length}
           itemContent={(index) => <Relic relic={relics_list[index]} edit={1} key={index} />}
@@ -126,17 +126,20 @@ function Home({ relics = window.account?.relics || [] }) {
 const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
   let [perk_state, setPerks] = useState(_ref.picks || []);
   let [search, setSearch] = useState('');
+  let [raw, setRaw] = useState(0);
   let inp = useRef();
   let bounceSearch = debounce((s) => setSearch(s), 400);
   // let perk_list = Obje
-  let perks_list = React.useMemo(() => perks
-    .map((perk, i) => ({ text: effects[perk].toLowerCase(), ind: +perk }))
-    .slice(0, varsAt)
+  let perks = raw ? effects : cur.effects;
+  let perks_list = React.useMemo(() => Object.entries(perks)
+    .map(perk => ({ text: perk[1].toLowerCase(), ind: +perk[0] }))
     .sort((a, b) => {
       const normalize = (s) => s.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
       return normalize(a.text).localeCompare(normalize(b.text));
-    }), [perks]);
-  if (search) perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()));
+    }), [raw]);
+  perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()));
+  if (search) perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()), [raw]);
+  else perks_list = perks_list.filter(e => !cur.hide_expand.has(e.ind))
   let perk_set = new Set(perk_state || []);
 
   useEffect(() => {
@@ -147,14 +150,15 @@ const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
 
   const PerkUI = ({ perk, debug }) => {
     // if(debug) console.log(perk)
-    let name = effects[perk];
-    let on = perk_set.has(perk) && '#226C7D';
+    let id = perk;
+    let name = perks[id];
+    let on = perk_set.has(id) && '#226C7D';
     return (
-      <div key={perk}
-        className="flex p-1 h-8 items-center shrink-0, w-[32.9%] min-w-fit, bg-[#363636] capitalize hover:bg-neutral-600 leading-[1]"
+      <div key={id}
+        className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, bg-[#363636] capitalize hover:bg-neutral-600 leading-[1]"
         style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
         onPointerDown={(e) => {
-          on ? perk_set.delete(+perk) : perk_set.add(+perk);
+          on ? perk_set.delete(id) : perk_set.add(id);
           _ref.onChange && _ref.onChange([...perk_set]);
           console.log(perk_set);
           // console.log(perk.ind, perk.text);
@@ -185,13 +189,15 @@ const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
         <></>
       }
 
-      {/* <div className="h-[45px] flex mb-4 border-b-[1px], [&>*]:min-w-fit gap-1 overflow-x-auto overflow-y-hidden nsb, flex-wrap, w-full content-start">
-        {[...perk_set].map(e => <PerkUI perk={e} debug={1} />)}
-        <hr />
-      </div> */}
-
-      <div className="grow h-1 gap-1 overflow-auto flex flex-wrap content-start ">
-        {perks_list.map((perk) => <PerkUI perk={perk.ind} />)}
+      <div className="grow h-1 gap-1 overflow-auto flex flex-wrap  content-start virt ">
+        <VirtuosoGrid
+          totalCount={perks_list.length}
+          itemContent={(index) => <PerkUI perk={perks_list[index].ind}  key={index} />}
+          listClassName="grid grid-cols-2 xl:grid-cols-3 gap-1"
+          itemClassName="w-[32.9%], min-w-fit"
+          style={{width: '100%', height: '100%', display: 'flex'  }}
+        />
+        {/* {perks_list.map((perk) => <PerkUI perk={perk.ind} />)} */}
       </div>
 
       <div className="h-[45px] flex  mt-2 border-b-[1px], [&>*]:min-w-fit gap-1 overflow-x-auto overflow-y-hidden nsb, flex-wrap, w-full content-start">
