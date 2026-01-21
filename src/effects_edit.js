@@ -54,7 +54,7 @@ let fp_weapon = [7350000, 7350100, 7350200, 7350300, 7350400, 7350500, 7350600, 
 let start_skill = [7122800, 7122900, 7123000, 7123100, 7123200, 7123300, 7123400, 7123500, 7123600, 7123700, 7123800, 7123900, 7124000, 7124100, 7124300, 7124400, 7124500, 7124600, 7124700,
   7360600, 7360900, 7361200, 7361300, 7362100, //sorceries
   7370300, 7370400, 7370600, 7370900, 7371500, //incants
-]
+];
 let weapon_3 = [7080000, 7080100, 7080200, 7080300, 7080400, 7080500, 7080600, 7080700, 7080800, 7080900, 7081000, 7081100, 7081200, 7081300, 7081400, 7081500, 7081700, 7081800, 7081900, 7082000, 7082100, 7082200, 7082300, 7082400]
 let start_item = [
   6621000, 6621100, 6621200, 6621300, 6621400, 6621500, 6621600, 6621700, 6621800, 6621900, 6622000, 6622100, 6622200, 6622300, 6622400, 6622500, 6622600, 6622700, 6622800, 6622900, 6623000, 6623100, 6623200, 6624000, 6624100, 6624200, 6624300, 6624400, 6624500,
@@ -78,12 +78,10 @@ export let effects = {
   311000: "Improved Item Discovery",
   311100: "More Runes From Defeated Enemies",
   311500: "Improved Stamina Recovery",
-
   312100: "Improved Poise",
   312300: "Improved Skill Attack Power",
   312500: "Improved Dexterity",
   312501: "Successive Attacks Boost Attack Power",
-
   320400: "Improved Attack Power at Low HP",
   320500: "Improved Attack Power at Full HP",
   320600: "Improved Thrusting Counterattack",
@@ -666,27 +664,29 @@ window.fixe = (eee) => {
   let keys = Object.keys(effects)
   for (let i in keys) {
     // if(i==0) i = eee || 100;
-    let id = keys[i];
+    if(i>=keys.length) break;
+    let id = +keys[+i];
     let count = 0;
     let spl1 = effects[id].trim().toLowerCase().split(" ");
     if(spl1.at(-1)[0] != '+') continue;
-    // console.log(keys[i+1], effects[keys[i+1]])
-    let spl2 = effects[keys[i+1]||6002901]?.trim()?.toLowerCase()?.split(' ') || null;
+    let spl2 = effects[+keys[+i+1]]?.trim()?.toLowerCase()?.split(' ') || null;
     if(!spl2) {
-      console.log(i, keys[i], effects[keys[i]])
-      break;
+      continue;
     } 
+    // console.log(spl2.slice(0, spl2.length-1).join(" "), spl1.slice(0, spl1.length-1).join(" "))
     while(spl2.slice(0, spl2.length-1).join(" ") === spl1.slice(0, spl1.length-1).join(" ")) {
+      // console.log(spl2.slice(0, spl2.length-1).join(" "), spl1.slice(0, spl1.length-1).join(" "))
       count++;
       spl1 = [...spl2];
-      spl2 = effects[keys[i+count+1]||6002901]?.trim()?.toLowerCase()?.split(' ') || null;
+      spl2 = effects[+keys[i+count+1]]?.trim()?.toLowerCase()?.split(' ') || [];
     } 
     
     for (let j = 0; j < count; j++) {
-      t[keys[j+1]] = id;
+      console.log(+i, +j, i+j, keys[j+i])
+      t[+keys[j+i]] = id;
     }
 
-    i+= count;
+    // i+= count;
   }
   console.log(t)
 }
