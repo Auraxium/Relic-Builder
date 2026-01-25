@@ -25,7 +25,7 @@ export let dupe_map = {
   7000901: 7000902,
   7001000: 7001002,//poise
   7001001: 7001002,
-  7001400: 7001403, // physical
+  7001400: 7001403, // physical atk
   7001401: 7001403,//1
   7001402: 7001403,//2
   7001409: 7001403,//2
@@ -34,16 +34,124 @@ export let dupe_map = {
   6611000: 6611000, // phys negation
   6611001: 6611000,
   6611002: 6611000,
+  7006200: 6611000,
   340000: 6611000,
   340100: 6002600,//magic negation
+  7002600: 6002600,//
   6002601: 6002600,
   6002701: 6002700,//fire negation
+  7002700: 6002700,//
   340200: 6002700,
-  6002801: 6002800,//lightnign ne
+  6002801: 6002800,//lightnign negation
+  7002800: 6002800,//
   340300: 6002800,
-  340400: 6002900,//holy n
+  340400: 6002900,//holy negation
+  7002900: 6002900,//
   6002901: 6002900,
-
+  6001501: 6001500,//magic attack
+  7001500: 6001500,//
+  7001501: 6001500,//
+  7001502: 6001500,//
+  320000: 6001500,//
+  6001601: 6001600,//fire atk
+  7001600: 6001600,//
+  7001601: 6001600,//
+  7001602: 6001600,//
+  320200: 6001600,// 
+  6001701: 6001700,//lightning atk
+  7001700: 6001700,//
+  7001701: 6001700,//
+  7001702: 6001700,//
+  320100: 6001700,//
+  6001801: 6001800,//holy atk
+  7001800: 6001800,//
+  7001801: 6001800,//
+  7001802: 6001800,//
+  320300: 6001800,//
+  6003001: 6003000,//poison res
+  7003000: 6003000,//
+  311700: 6003000,//
+  6003101: 6003100,//blood res
+  7003100: 6003100,//
+  311600: 6003100,
+  6003201: 6003200,//sleep res
+  7003200: 6003200,//
+  311800: 6003200,//
+  6003301: 6003300,//death res
+  7003300: 6003300,//
+  311900: 6003300,//
+  6003401: 6003400,//rot res
+  7003400: 6003400,//
+  311701: 6003400,//
+  6003501: 6003500,//frost res
+  7003500: 6003500,//
+  311601: 6003500,//
+  6003601: 6003600,//madness res
+  7003600: 6003600,//
+  311801: 6003600,//
+  6005601: 6005600,//partial hp
+  7005600: 6005600,//
+  6006001: 6006000,//stance two handed
+  7006000: 6006000,//
+  7006001: 6006000,//
+  6006101: 6006100,//stance two armaments
+  7006100: 6006100,//
+  7006101: 6006100,//
+  6012301: 6012300,//negation low hp
+  6030201: 6030200,//medical boluses
+  6030601: 6030600,//art on guard
+  7030600: 6030600,//
+  6030801: 6030800,//art on crit
+  7030800: 6030800,//
+  6030901: 6030900,//physical on grease
+  7030900: 6030900,//
+  6031901: 6031900,//crit runes
+  7031900: 6031900,//
+  6035101: 6035100,//crit stam recover
+  6040001: 6040000,//inital standard atk
+  7040000: 6040000,//
+  6040101: 6040100,//guard counter
+  7040100: 6040100,//
+  6040301: 6040300,//throwing pot
+  7040300: 6040300,//
+  6040401: 6040400,//throw knife
+  7040400: 6040400,//
+  6040501: 6040500,//glint damage
+  7040500: 6040500,//
+  6043001: 6043000,//roar & breath
+  7043000: 6043000,//
+  6043101: 6043100,//prefuming
+  7043100: 6043100,//
+  6090001: 6090000,//art on kill
+  6160001: 6160000,//hp trhisting counter
+  6260001: 6260000,//poison affliced
+  7260000: 6260000,//
+  6260301: 6260300,//rot afflicted atk
+  7260300: 6260300,//
+  6260401: 6260400,//frost afflicted
+  7260400: 6260400,//
+  6600001: 6600000,//aleep vicinity
+  6600002: 6600000,//
+  6600101: 6600100,//mad vicinity
+  6600102: 6600100,//
+  6610701: 6610700,//reduce FP
+  6610702: 6610700,//
+  6610801: 6610800,//affinity atk
+  6610802: 6610800,//
+  6611101: 6611100,//affinity negatio
+  6611102: 6611100,//
+  7006300: 6611100,//
+  6611201: 6611200,//impr sorceries
+  6611202: 6611200,//
+  6611301: 6611300,//imprv incants
+  6611302: 6611300,//
+  7100110: 7100100, //stam on hit
+  7100190: 7100100, //
+  7040201: 7040200,//crits
+  7040290: 7040200,
+  7126002: 7126000,//starlight
+  7126001: 7126000,
+  7260800: 7260710,//poi and rot vicinity
 }
 
 let resistances = [311600, 311601, 311700, 311701, 311800, 311801, 311900, 312000, 312001, 312002]
@@ -80,7 +188,7 @@ export let effects = {
   311500: "Improved Stamina Recovery",
   312100: "Improved Poise",
   312300: "Improved Skill Attack Power",
-  312500: "Improved Dexterity",
+  // 312500: "Improved Dexterity",
   312501: "Successive Attacks Boost Attack Power",
   320400: "Improved Attack Power at Low HP",
   320500: "Improved Attack Power at Full HP",
@@ -102,7 +210,7 @@ export let effects = {
   330800: "Reduced Spell FP Cost",
   330900: "Improved Charged Spells & Skills",
   340500: "Improved Non-Physical Damage Negation",
-  340700: "Improved Dodging",
+  // 340700: "Improved Dodging",
   340800: "Improved Damage Negation at Low HP",
   340900: "Improved Damage Negation at Full HP",
   341000: "Improved Guarding Ability",
@@ -116,128 +224,60 @@ export let effects = {
   361100: "Defeating Enemies Restores FP",
   370000: "Improved Item Discovery",
   370001: "More Runes From Defeated Enemies",
-  320000: "Improved Magic Attack Power Up +",
-  320100: "Improved Lightning Attack Power Up +",
-  320200: "Improved Fire Attack Power Up +",
-  320300: "Improved Holy Attack Power Up +",
-  "6001500": "Magic Attack Power Up +3%",
-  "6001501": "Magic Attack Power Up +4%",
-  "6001600": "Fire Attack Power Up +3%",
-  "6001601": "Fire Attack Power Up +4%",
-  "6001700": "Lightning Attack Power Up +3%",
-  "6001701": "Lightning Attack Power Up +4%",
-  "6001800": "Holy Attack Power Up +3%",
-  "6001801": "Holy Attack Power Up +4%",
-  "6002600": "Improved Magic Damage Negation +",
-  "6002700": "Improved Fire Damage Negation +",
-  "6002800": "Improved Lightning Damage Negation +",
-  "6002900": "Improved Holy Damage Negation +",
-  311600: "Improved Blood Loss Resistance",
-  311601: "Improved Frost Resistance",
-  311700: "Improved Poison Resistance",
-  311701: "Improved Rot Resistance",
-  311800: "Improved Sleep Resistance",
-  311801: "Improved Madness Resistance",
-  311900: "Improved Death Blight Resistance",
+  6001500: "Magic Attack Power Up +",
+  6001600: "Fire Attack Power Up +",
+  6001700: "Lightning Attack Power Up +",
+  6001800: "Holy Attack Power Up +",
+  6002600: "Improved Magic Damage Negation +",
+  6002700: "Improved Fire Damage Negation +",
+  6002800: "Improved Lightning Damage Negation +",
+  6002900: "Improved Holy Damage Negation +",
   312000: "Improved Poison & Rot Resistance",
   312001: "Improved Blood Loss & Frost Resistance",
   312002: "Improved Sleep & Madness Resistance",
-  6003000: "Improved Poison Resistance +1%",
-  6003001: "Improved Poison Resistance +2%",
-  6003100: "Improved Blood Loss Resistance +1%",
-  6003101: "Improved Blood Loss Resistance +2%",
-  6003200: "Improved Sleep Resistance +1%",
-  6003201: "Improved Sleep Resistance +2%",
-  6003300: "Improved Death Blight Resistance +1%",
-  6003301: "Improved Death Blight Resistance +2%",
-  6003400: "Improved Rot Resistance +1%",
-  6003401: "Improved Rot Resistance +2%",
-  6003500: "Improved Frost Resistance +1%",
-  6003501: "Improved Frost Resistance +2%",
-  6003600: "Improved Madness Resistance +1%",
-  6003601: "Improved Madness Resistance +2%",
-  6005600: "Partial HP Restoration upon Post-Damage Attacks +1%",
-  6005601: "Partial HP Restoration upon Post-Damage Attacks +2%",
-  6006000: "Improved Stance-Breaking when Two-Handing +1",
-  6006001: "Improved Stance-Breaking when Two-Handing +2",
-  6006100: "Improved Stance-Breaking when Wielding Two Armaments +1",
-  6006101: "Improved Stance-Breaking when Wielding Two Armaments +2",
+  6003000: "Improved Poison Resistance +",
+  6003100: "Improved Blood Loss Resistance +",
+  6003200: "Improved Sleep Resistance +",
+  6003300: "Improved Death Blight Resistance +",
+  6003400: "Improved Rot Resistance +",
+  6003500: "Improved Frost Resistance +",
+  6003600: "Improved Madness Resistance +",
+  6005600: "Partial HP Restoration upon Post-Damage Attacks +",
+  6006000: "Improved Stance-Breaking when Two-Handing +",
+  6006100: "Improved Stance-Breaking when Wielding Two Armaments +",
   6012300: "Improved Damage Negation at Low HP +1",
-  6012301: "Improved Damage Negation at Low HP +2",
-  6030200: "HP restored when using medicinal boluses\t etc. +1%",
-  6030201: "HP restored when using medicinal boluses\t etc. +2%",
-  6030600: "Art gauge charged from successful guarding +1%",
-  6030601: "Art gauge charged from successful guarding +2%",
-  6030800: "Art gauge fills moderately upon critical hit +1%",
-  6030801: "Art gauge fills moderately upon critical hit +2%",
-  6030900: "Physical attack power increases after using grease items +1",
-  6030901: "Physical attack power increases after using grease items +2",
-  6031900: "Critical Hits Earn Runes +1",
-  6031901: "Critical Hits Earn Runes +2",
-  6035100: "Critical Hit Boosts Stamina Recovery Speed +1",
-  6035101: "Critical Hit Boosts Stamina Recovery Speed +2",
-  6040000: "Improved Initial Standard Attack +1",
-  6040001: "Improved Initial Standard Attack +2",
-  6040100: "Improved Guard Counters +1%",
-  6040101: "Improved Guard Counters +2%",
-  6040300: "Improved Throwing Pot Damage +1",
-  6040301: "Improved Throwing Pot Damage +2",
-  6040400: "Improved Throwing Knife Damage +1",
-  6040401: "Improved Throwing Knife Damage +2",
-  6040500: "Improved Glintstone and Gravity Stone Damage +1",
-  6040501: "Improved Glintstone and Gravity Stone Damage +2",
-  6043000: "Improved Roar & Breath Attacks +1",
-  6043001: "Improved Roar & Breath Attacks +2",
-  6043100: "Improved Perfuming Arts +1",
-  6043101: "Improved Perfuming Arts +2",
+  6030200: "HP restored when using medicinal boluses\t etc. +",
+  6030600: "Art gauge charged from successful guarding +",
+  6030800: "Art gauge fills moderately upon critical hit +",
+  6030900: "Physical attack power increases after using grease items +",
+  6031900: "Critical Hits Earn Runes +",
+  6035100: "Critical Hit Boosts Stamina Recovery Speed +",
+  6040000: "Improved Initial Standard Attack +",
+  6040100: "Improved Guard Counters +",
+  6040300: "Improved Throwing Pot Damage +",
+  6040400: "Improved Throwing Knife Damage +",
+  6040500: "Improved Glintstone and Gravity Stone Damage +",
+  6043000: "Improved Roar & Breath Attacks +",
+  6043100: "Improved Perfuming Arts +",
   6060300: "Max HP increased for each great enemy defeated at a Great Church.",
   6060400: "Runes and Item Discovery increased for each great enemy defeated at a Fort",
   6060600: "Max stamina increased for each great enemy defeated at a Great Encampment",
-  6090000: "Defeating enemies fills more of the Art gauge +1%",
-  6090001: "Defeating enemies fills more of the Art gauge +2%",
-  6160000: "HP Restoration upon Thrusting Counterattack +1%",
-  6160001: "HP Restoration upon Thrusting Counterattack +2%",
-  6260000: "Attack power up when facing poison-afflicted enemy +1%",
-  6260001: "Attack power up when facing poison-afflicted enemy +2%",
-  6260300: "Attack power up when facing scarlet rot-afflicted enemy +1",
-  6260301: "Attack power up when facing scarlet rot-afflicted enemy +2",
-  6260400: "Attack power up when facing frostbite-afflicted enemy +1",
-  6260401: "Attack power up when facing frostbite-afflicted enemy +2",
-  6500000: "[Wylder] Character Skill inflicts Blood Loss",
-  6500100: "[Guardian] Character Skill Boosts Damage Negation of Nearby Allies",
-  6500200: "[Ironeye] Character Skill Inflicts Heavy Poison Damage on Poisoned Enemies",
-  6500300: "[Duchess] Use Character Skill for Brief Invulnerability",
-  6500400: "[Raider] Hit With Character Skill to Reduce Enemy Attack Power",
-  6500500: "[Revenant] Increased Max FP upon Ability Activation",
-  6500600: "[Recluse] Collect Affinity Residues to Negate Affinity",
-  6500700: "[Executor] Slowly Restore HP upon Ability Activation",
-  6500800: "[Scholar] Reduced FP consumption when using Character Skill on self",
-  6500900: "[Undertaker] Executing Art readies Character Skill",
-  6600000: "Sleep in Vicinity Improves Attack Power%",
-  6600001: "Sleep in Vicinity Improves Attack Power +1%",
-  6600002: "Sleep in Vicinity Improves Attack Power +2%",
-  6600100: "Madness in Vicinity Improves Attack Power%",
-  6600101: "Madness in Vicinity Improves Attack Power +1%",
-  6600102: "Madness in Vicinity Improves Attack Power +2%",
+  6090000: "Defeating enemies fills more of the Art gauge +",
+  6160000: "HP Restoration upon Thrusting Counterattack +",
+  6260000: "Attack power up when facing poison-afflicted enemy +",
+  6260300: "Attack power up when facing scarlet rot-afflicted enemy +",
+  6260400: "Attack power up when facing frostbite-afflicted enemy +",
+  6600000: "Sleep in Vicinity Improves Attack Power +",
+  6600100: "Madness in Vicinity Improves Attack Power +",
   6610400: "Increased Maximum HP%",
   6610500: "Increased Maximum FP%",
   6610600: "Increased Maximum Stamina",
-  6610700: "Reduced FP Consumption",
-  6610701: "Reduced FP Consumption +1",
-  6610702: "Reduced FP Consumption +2",
-  6610800: "Improved Affinity Attack Power",
-  6610801: "Improved Affinity Attack Power +1%",
-  6610802: "Improved Affinity Attack Power +2%",
+  6610700: "Reduced FP Consumption +",
+  6610800: "Improved Affinity Attack Power +",
   6611000: "Improved Physical Damage Negation +",
-  6611100: "Improved Affinity Damage Negation",
-  6611101: "Improved Affinity Damage Negation +1%",
-  6611102: "Improved Affinity Damage Negation +2%",
-  6611200: "Improved Sorceries",
-  6611201: "Improved Sorceries +1%",
-  6611202: "Improved Sorceries +2%",
-  6611300: "Improved Incantations",
-  6611301: "Improved Incantations +1%",
-  6611302: "Improved Incantations +2%",
+  6611100: "Improved Affinity Damage Negation +",
+  6611200: "Improved Sorceries +",
+  6611300: "Improved Incantations +",
   6611400: "Improved Flask HP Restoration",
   6621000: "Crimsonspill Crystal Tear in possession at start of expedition",
   6621100: "Crimson Crystal Tear in possession at start of expedition",
@@ -301,26 +341,6 @@ export let effects = {
   "6633000": "Dormant Power Helps Discover Staves",
   "6633100": "Dormant Power Helps Discover Sacred Seals",
   "6633200": "Dormant Power Helps Discover Torches",
-  6640000: "[Wylder] Improved Mind\t Reduced Vigor",
-  6640100: "[Wylder] Improved Intelligence and Faith\t Reduced Strength and Dexterity",
-  6641000: "[Guardian] Improved Strength and Dexterity\t Reduced Vigor",
-  6641100: "[Guardian] Improved Mind and Faith\t Reduced Vigor",
-  6642000: "[Ironeye] Improved Arcane\t Reduced Dexterity",
-  6642100: "[Ironeye] Improved Vigor and Strength\t Reduced Dexterity",
-  6643000: "[Duchess] Improved Vigor and Strength\t Reduced Mind",
-  6643100: "[Duchess] Improved Mind and Faith\t Reduced Intelligence",
-  6644000: "[Raider] Improved Mind and Intelligence\t Reduced Vigor and Endurance",
-  6644100: "[Raider] Improved Arcane\t Reduced Vigor",
-  6645000: "[Revenant] Improved Vigor and Endurance\t Reduced Mind",
-  6645100: "[Revenant] Improved Strength\t Reduced Faith",
-  6646000: "[Recluse] Improved Vigor\t Endurance\t and Dexterity\t Reduced Intelligence and Faith",
-  6646100: "[Recluse] Improved Intelligence and Faith\t Reduced Mind",
-  6647000: "[Executor] Improved Vigor and Endurance\t Reduced Arcane",
-  6647100: "[Executor] Improved Dexterity and Arcane\t Reduced Vigor",
-  6647200: "[Scholar] Improved Mind, Reduced Vigor",
-  6647300: "[Scholar] Improved Endurance and Dexterity, Reduced Intelligence and Arcane",
-  6647400: "[Undertaker] Improved Dexterity, Reduced Vigor and Faith",
-  6647500: "[Undertaker] Improved Mind and Faith, Reduced Strength",
   7000002: "Vigor +",
   7000090: "Increased Maximum HP",
   7000102: "Mind +",
@@ -337,98 +357,24 @@ export let effects = {
   7001002: "Poise +",
   7001100: "Continuous HP Recovery",
   7001403: "Physical Attack Up +",
-  7001500: "Magic Attack Power Up",
-  7001501: "Magic Attack Power Up +1",
-  7001502: "Magic Attack Power Up +2",
-  7001600: "Fire Attack Power Up",
-  7001601: "Fire Attack Power Up +1",
-  7001602: "Fire Attack Power Up +2",
-  7001700: "Lightning Attack Power Up",
-  7001701: "Lightning Attack Power Up +1",
-  7001702: "Lightning Attack Power Up +2",
-  7001800: "Holy Attack Power Up",
-  7001801: "Holy Attack Power Up +1",
-  7001802: "Holy Attack Power Up +2",
-  7002600: "Magic Damage Negation Up",
-  7002700: "Fire Damage Negation Up",
-  7002800: "Lightning Damage Negation Up",
-  7002900: "Holy Damage Negation Up",
-  7003000: "Improved Poison Resistance",
-  7003100: "Improved Blood Loss Resistance",
-  7003200: "Improved Sleep Resistance",
-  7003300: "Improved Death Blight Resistance",
-  7003400: "Improved Rot Resistance",
-  7003500: "Improved Frost Resistance",
-  7003600: "Improved Madness Resistance",
-  7005600: "Partial HP Restoration upon Post-Damage Attacks",
-  7006000: "Improved Stance-Breaking when Two-Handing",
-  7006001: "Improved Stance-Breaking when Two-Handing",
-  7006100: "Improved Stance-Breaking when Wielding Two Armaments",
-  7006101: "Improved Stance-Breaking when Wielding Two Armaments",
-  7006200: "Improved Physical Damage Negation",
-  7006300: "Improved Affinity Damage Negation",
   7006400: "Extended Spell Duration",
   7006500: "Continuous FP Recovery",
   7006600: "Improved Melee Attack Power",
   7006700: "Improved Skill Attack Power",
-  7010000: "[Guardian] Improved Character Skill range",
   7010200: "Flask Also Heals Allies",
-  7010500: "[Wylder] Art activation spreads fire in area",
-  7010700: "[Duchess] Dagger chain attack reprises event upon nearby enemies",
-  7010800: "[Raider] Character Skill damage up, damage negation impaired during use",
-  7010900: "[Revenant] Expend own HP to fully heal nearby allies when activating Art",
-  7011000: "[Guardian] Increased duration for Character Skill",
-  7011100: "[Guardian] Damage negation for allies improved when using Ultimate Art",
-  7011200: "[Revenant] Trigger ghostflame explosion during Ultimate Art activation",
-  7011400: "[Guardian] Restores allies' HP when Character Skill is used",
-  7011500: "[Wylder] Character Skill inflicts Blood Loss",
-  7011600: "[Guardian] Creates whirlwind when charging halberd attacks",
-  7011700: "[Executor] Roaring restores HP while Art is active",
-  7011900: "[Guardian] Character Skill inflicts Holy damage",
-  7012000: "[Guardian] Slowly restores nearby allies' HP while Art is active",
   7012200: "Slowly restore HP for self and nearby allies when HP is low",
   7012300: "Improved Damage Negation at Low HP",
   7012400: "Strong Attack Creates Wide Wave of Heat",
   7012500: "Jumping Conjures Magic Projectiles",
-  7012600: "Attack Boost from Nearby Allies",
+  // 7012600: "Attack Boost from Nearby Allies",
   7012700: "Guard Counters Cast Light Pillar",
-  7020000: "[Wylder] Follow-up attacks possible when using Character Skill (greatsword only)",
   7030000: "Improved Poise Near Totem Stela",
   7030200: "HP restored when using cured meats, medicinal boluses, etc.",
-  7030500: "[Wylder] Impaired damage negation, improved attack power & stamina after Art activation",
-  7030600: "Art gauge charged from successful guarding",
   7030700: "Draw enemy attention while guarding",
-  7030800: "Art gauge fills moderately upon critical hit",
-  7030900: "Attack power increases after using grease items",
-  7031200: "[Revenant] Strengthens family and allies when Ultimate Art is activated",
-  7031300: "[Raider] Damage taken while using Character Skill improves attack power and stamina",
-  7031400: "[Wylder] Reduced cooldown time for Character Skill",
   7031600: "Performing consecutive successful guards improves guard ability and deflects big attacks",
   7031700: "Shockwave Produced From Successful Guarding",
-  7031800: "[Duchess] Become difficult to spot and silence footsteps after landing critical from behind",
-  7031900: "Critical Hits Earn Runes",
   7032200: "Taking attacks improves attack power",
-  7032300: "[Wylder] Improved attack power when Character Skill is activated",
-  7032400: "[Wylder] Art gauge greatly filled when ability is activated",
-  7032700: "[Duchess] Defeating enemies while Art is active ups attack power",
-  7032800: "[Recluse] Collecting affinity residue activates Terra Magica",
-  7032900: "[Recluse] Suffer blood loss and increase attack power upon Art activation",
-  7033000: "[Wylder] Improved attack power when ability is activated",
-  7033200: "[Wylder] +1 additional Character Skill use",
-  7033300: "[Guardian] Become the target of enemy aggression when ability is activated",
-  7033400: "[Guardian] Reflect a portion of damage received when ability is activated",
-  7033600: "[Duchess] Duration of Ultimate Art extended",
-  7033700: "Colossal armaments are coated in rock when performing charged attacks",
-  7033800: "[Raider] Permanently increase attack power when performing Character Skill's final attack",
-  7033900: "[Recluse] Extends duration of blood sigils",
-  7034000: "[Recluse] Collecting 4 Affinity Residues Improves Affinity Attack Power",
-  7034100: "[Recluse] Activating Ultimate Art raises Max HP",
-  7034200: "[Executor] Attack power up while Ultimate Art is active",
-  7034300: "[Executor] Improves effect of ability but lowers resistance to status ailments",
-  7034400: "[Executor] Character Skill Boosts Attack but Attacking Drains HP",
-  7034500: "[Executor] While Character Skill is active, unlocking use of cursed sword restores HP",
-  7034600: "[Ironeye] Art Charge Activation Adds Poison Effect",
-  7034700: "[Ironeye] Boosts thrusting counterattacks after executing Art",
+  // 7033700: "Colossal armaments are coated in rock when performing charged attacks",
   7034800: "Fire Critical Hit Grants Max Stamina Boost",
   7034900: "Critical Hit HP Restoration",
   7035000: "Critical Hit Adds Lightning Effect",
@@ -445,27 +391,10 @@ export let effects = {
   7035900: "Switching Weapons Boosts Attack Power",
   7036000: "FP Restoration upon Successive Attacks",
   7036100: "HP Recovery From Successful Guarding",
-  7036200: "[Scholar] Prevent slowing of Character Skill Progress",
-  7036300: "[Scholar] Allies Targeted by Character Skill gain boosted attack",
-  7036400: "[Scholar] Continuous damage inflicted on targets threaded by Ultimate Art",
-  7036500: "[Scholar] Earn runes for each additional specimen acquired with Character Skill",
-  7036800: "[Undertaker] Activating Ultimate Art increases attack power",
-  7036900: "[Undertaker] Attack power increased by landing the final blow of a chain attack",
-  7037000: "[Undertaker] Physical attacks boosted while assist effect from incantation is active for self",
-  7037300: "[Undertaker] Contact with allies restores their HP while Ultimate Art is activated",
   7037600: "Successive Attacks Boost Attack Power",
   7037700: "Status Ailment Gauges Slowly Increase Attack Power",
   7037800: "Occasionally Nullify Attacks When Damage Negations is Lowered",
-  7040000: "Improved Initial Standard Attack",
-  7040100: "Improved Guard Counters",
-  7040200: "Improved Critical Hits",
-  7040201: "Improved Critical Hits +1 (Night of the Baron)",
-  7040290: "Improved Critical Hits +1",
-  7040300: "Improved Throwing Pot Damage",
-  7040400: "Improved Throwing Knife Damage",
-  7040500: "Improved Throwing Stone Damage",
-  7043000: "Improved Roar & Breath Attacks",
-  7043100: "Improved Perfuming Attacks",
+  7040200: "Improved Critical Hits +",
   7043200: "Improved Stonedigger Sorcery",
   7043300: "Improved Carian Sword Sorcery",
   7043400: "Improved Glintblade Sorcery",
@@ -520,9 +449,7 @@ export let effects = {
   7090100: "Defeating enemies restores HP for allies but not for self",
   7090300: "Defeating enemies near Totem Stela restores HP",
   7100000: "Critical hits deal huge damage on poisoned enemies",
-  7100100: "Stamina recovers with each successful attack",
-  7100110: "Stamina recovers with each successful attack +1 (Night of the Beast)",
-  7100190: "Stamina recovers with each successful attack +1",
+  7100100: "Stamina recovers with each successful attack +",
   7110000: "Increased rune acquisition for self and allies",
   7120000: "Starting armament deals magic damage",
   7120100: "Starting armament deals fire damage",
@@ -571,32 +498,104 @@ export let effects = {
   7124600: "Changes compatible armament's skill to Determination at start of expedition",
   7124700: "Changes compatible armament's skill to Rain of Arrows at start of expedition",
   7126000: "Starlight Shards in possession at start of expedition",
-  7126001: "Starlight Shards in possession at start of expedition",
-  7126002: "Starlight Shards in possession at start of expedition",
   7150000: "Guard counter is given a boost based on current HP",
   7160000: "HP Restoration upon Thrusting Counterattack",
   7170100: "Attacks Inflict Rot when Damage is Taken",
   7200000: "HP Restoration with Head Shots",
   7200100: "Improved Stance-Breaking with Head Shots",
-  7220000: "[Revenant] Power up while fighting alongside family",
   7230000: "Rune discount for shop purchases while on expedition",
   7230001: "Huge rune discount for shop purchases while on expedition",
   7240000: "Improved Poise & Damage Negation When Knocked Back by Damage",
-  7260000: "Attack power up when facing poison-afflicted enemy",
-  7260200: "Attack power up when facing sleep-afflicted enemy",
-  7260300: "Attack power up when facing scarlet rot-afflicted enemy",
-  7260400: "Attack power up when facing frostbite-afflicted enemy",
-  7260600: "Attacks Create Magic Bursts Versus Sleeping Enemies",
+  7260200: "Attack power up when facing sleep-afflicted enemy +",
+  // 7260600: "Attacks Create Magic Bursts Versus Sleeping Enemies",
   7260700: "Nearby Frostbite Conceals Self",
   7260710: "Poison & Rot in Vicinity Increases Attack Power",
-  7260800: "Poison & Rot in Vicinity Increases Attack Power (Night of the Wise)",
   7260900: "Rot in Vicinity Causes ContinuousHP Recovery",
+  6500000: "[Wylder] Character Skill inflicts Blood Loss",
+  6500100: "[Guardian] Character Skill Boosts Damage Negation of Nearby Allies",
+  6500200: "[Ironeye] Character Skill Inflicts Heavy Poison Damage on Poisoned Enemies",
+  6500300: "[Duchess] Use Character Skill for Brief Invulnerability",
+  6500400: "[Raider] Hit With Character Skill to Reduce Enemy Attack Power",
+  6500500: "[Revenant] Increased Max FP upon Ability Activation",
+  6500600: "[Recluse] Collect Affinity Residues to Negate Affinity",
+  6500700: "[Executor] Slowly Restore HP upon Ability Activation",
+  6500800: "[Scholar] Reduced FP consumption when using Character Skill on self",
+  6500900: "[Undertaker] Executing Art readies Character Skill",
+  7031200: "[Revenant] Strengthens family and allies when Ultimate Art is activated",
+  7030500: "[Wylder] Impaired damage negation, improved attack power & stamina after Art activation",
+  7031300: "[Raider] Damage taken while using Character Skill improves attack power and stamina",
+  7031400: "[Wylder] Reduced cooldown time for Character Skill",
+  7031800: "[Duchess] Become difficult to spot and silence footsteps after landing critical from behind",
+  7010000: "[Guardian] Improved Character Skill range",
+  7020000: "[Wylder] Follow-up attacks possible when using Character Skill (greatsword only)",
+  6640000: "[Wylder] Improved Mind\t Reduced Vigor",
+  6640100: "[Wylder] Improved Intelligence and Faith\t Reduced Strength and Dexterity",
+  6641000: "[Guardian] Improved Strength and Dexterity\t Reduced Vigor",
+  6641100: "[Guardian] Improved Mind and Faith\t Reduced Vigor",
+  6642000: "[Ironeye] Improved Arcane\t Reduced Dexterity",
+  6642100: "[Ironeye] Improved Vigor and Strength\t Reduced Dexterity",
+  6643000: "[Duchess] Improved Vigor and Strength\t Reduced Mind",
+  6643100: "[Duchess] Improved Mind and Faith\t Reduced Intelligence",
+  6644000: "[Raider] Improved Mind and Intelligence\t Reduced Vigor and Endurance",
+  6644100: "[Raider] Improved Arcane\t Reduced Vigor",
+  6645000: "[Revenant] Improved Vigor and Endurance\t Reduced Mind",
+  6645100: "[Revenant] Improved Strength\t Reduced Faith",
+  6646000: "[Recluse] Improved Vigor\t Endurance\t and Dexterity\t Reduced Intelligence and Faith",
+  6646100: "[Recluse] Improved Intelligence and Faith\t Reduced Mind",
+  6647000: "[Executor] Improved Vigor and Endurance\t Reduced Arcane",
+  6647100: "[Executor] Improved Dexterity and Arcane\t Reduced Vigor",
+  6647200: "[Scholar] Improved Mind, Reduced Vigor",
+  6647300: "[Scholar] Improved Endurance and Dexterity, Reduced Intelligence and Arcane",
+  6647400: "[Undertaker] Improved Dexterity, Reduced Vigor and Faith",
+  6647500: "[Undertaker] Improved Mind and Faith, Reduced Strength",
+  7010500: "[Wylder] Art activation spreads fire in area",
+  7010700: "[Duchess] Dagger chain attack reprises event upon nearby enemies",
+  7010800: "[Raider] Character Skill damage up, damage negation impaired during use",
+  7010900: "[Revenant] Expend own HP to fully heal nearby allies when activating Art",
+  7011000: "[Guardian] Increased duration for Character Skill",
+  7011100: "[Guardian] Damage negation for allies improved when using Ultimate Art",
+  7011200: "[Revenant] Trigger ghostflame explosion during Ultimate Art activation",
+  7011400: "[Guardian] Restores allies' HP when Character Skill is used",
+  7011500: "[Wylder] Character Skill inflicts Blood Loss",
+  7011600: "[Guardian] Creates whirlwind when charging halberd attacks",
+  7011700: "[Executor] Roaring restores HP while Art is active",
+  7011900: "[Guardian] Character Skill inflicts Holy damage",
+  7012000: "[Guardian] Slowly restores nearby allies' HP while Art is active",
+  7032300: "[Wylder] Improved attack power when Character Skill is activated",
+  7032400: "[Wylder] Art gauge greatly filled when ability is activated",
+  7032700: "[Duchess] Defeating enemies while Art is active ups attack power",
+  7032800: "[Recluse] Collecting affinity residue activates Terra Magica",
+  7032900: "[Recluse] Suffer blood loss and increase attack power upon Art activation",
+  7033000: "[Wylder] Improved attack power when ability is activated",
+  7033200: "[Wylder] +1 additional Character Skill use",
+  7033300: "[Guardian] Become the target of enemy aggression when ability is activated",
+  7033400: "[Guardian] Reflect a portion of damage received when ability is activated",
+  7033600: "[Duchess] Duration of Ultimate Art extended",
+  7033800: "[Raider] Permanently increase attack power when performing Character Skill's final attack",
+  7033900: "[Recluse] Extends duration of blood sigils",
+  7034000: "[Recluse] Collecting 4 Affinity Residues Improves Affinity Attack Power",
+  7034100: "[Recluse] Activating Ultimate Art raises Max HP",
+  7034200: "[Executor] Attack power up while Ultimate Art is active",
+  7034300: "[Executor] Improves effect of ability but lowers resistance to status ailments",
+  7034400: "[Executor] Character Skill Boosts Attack but Attacking Drains HP",
+  7034500: "[Executor] While Character Skill is active, unlocking use of cursed sword restores HP",
+  7034600: "[Ironeye] Art Charge Activation Adds Poison Effect",
+  7034700: "[Ironeye] Boosts thrusting counterattacks after executing Art",
   7270100: "[Ironeye] +1 additional Character Skill use",
   7280000: "[Ironeye] Extends duration of weak point",
   7290000: "[Duchess] Improved Character Skill Attack Power",
   7300000: "[Duchess] Character Skill inflicts sleep upon enemies",
   7310000: "[Raider] Duration of Ultimate Art extended",
   7320000: "[Revenant] Ability activation chance increased",
+  7220000: "[Revenant] Power up while fighting alongside family",
+  7036200: "[Scholar] Prevent slowing of Character Skill Progress",
+  7036300: "[Scholar] Allies Targeted by Character Skill gain boosted attack",
+  7036400: "[Scholar] Continuous damage inflicted on targets threaded by Ultimate Art",
+  7036500: "[Scholar] Earn runes for each additional specimen acquired with Character Skill",
+  7036800: "[Undertaker] Activating Ultimate Art increases attack power",
+  7036900: "[Undertaker] Attack power increased by landing the final blow of a chain attack",
+  7037000: "[Undertaker] Physical attacks boosted while assist effect from incantation is active for self",
+  7037300: "[Undertaker] Contact with allies restores their HP while Ultimate Art is activated",
   "7340000": "HP Restoration upon Dagger Attacks",
   "7340100": "HP Restoration upon Straight Sword Attacks",
   "7340200": "HP Restoration upon Greatsword Attacks",
@@ -660,33 +659,35 @@ export let effects = {
 }
 
 window.fixe = (eee) => {
-  let t = {}
-  let keys = Object.keys(effects)
-  for (let i in keys) {
+  let t = {};
+  let keys = Object.keys(effects);
+  for (let i = 0; i < keys.length; i++) {
     // if(i==0) i = eee || 100;
-    if(i>=keys.length) break;
+    if (i >= keys.length) break;
     let id = +keys[+i];
     let count = 0;
     let spl1 = effects[id].trim().toLowerCase().split(" ");
-    if(spl1.at(-1)[0] != '+') continue;
-    let spl2 = effects[+keys[+i+1]]?.trim()?.toLowerCase()?.split(' ') || null;
-    if(!spl2) {
+    if (spl1.at(-1)[0] == '+') spl1 = spl1.slice(0, spl1.length - 1);//continue;
+    let spl2 = effects[+keys[+i + 1]]?.trim()?.toLowerCase()?.split(' ') || null;
+    if (!spl2) {
       continue;
-    } 
+    }
     // console.log(spl2.slice(0, spl2.length-1).join(" "), spl1.slice(0, spl1.length-1).join(" "))
-    while(spl2.slice(0, spl2.length-1).join(" ") === spl1.slice(0, spl1.length-1).join(" ")) {
-      // console.log(spl2.slice(0, spl2.length-1).join(" "), spl1.slice(0, spl1.length-1).join(" "))
+    while (spl2.slice(0, spl2.length - 1).join(" ") === spl1.join(" ")) {
+      // console.log(spl2.slice(0, spl2.length-1).join(" "), spl1.slice(0, spl1.length-1).join(" "));
       count++;
-      spl1 = [...spl2];
-      spl2 = effects[+keys[i+count+1]]?.trim()?.toLowerCase()?.split(' ') || [];
-    } 
-    
-    for (let j = 0; j < count; j++) {
-      console.log(+i, +j, i+j, keys[j+i])
-      t[+keys[j+i]] = id;
+      // spl1 = [...spl2];
+      spl2 = effects[+keys[i + count + 1]]?.trim()?.toLowerCase()?.split(' ') || [];
     }
 
-    // i+= count;
+    for (let j = 0; j < count; j++) {
+      let a = +i;
+      let b = +j;
+      console.log(+i, +j, (+i) + (+j), keys[j + i], +keys[j + i])
+      t[+keys[a + b + 1]] = id;
+    }
+
+    i += count;
   }
-  console.log(t)
+  console.log(t);
 }

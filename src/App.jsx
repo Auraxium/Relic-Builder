@@ -3,7 +3,7 @@ import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2 } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
-import { VirtuosoGrid, Virtuoso,  } from 'react-virtuoso'
+import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
 import effects from './effects.json'
 import * as cur from './effects_edit'
 import "./App.css";
@@ -67,7 +67,7 @@ function Home({ relics = window.account?.relics || [] }) {
     if (filter.picks?.length) {
       // console.log(filter.picks, relics_list[0].perks)
       // relics_list = relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e)));
-      relics_list = filter.match_all ? relics_list.filter(rel => filter.picks.filter(e => rel.perks.includes(e)).length >= clamp(1, filter.picks.length, 3)) : relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e)));
+      relics_list = filter.match_all ? relics_list.filter(rel => filter.picks.filter(e => rel.perks.includes(e)).length >= clamp(1, filter.picks.length, 3)) : relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e) || filter.picks.includes(cur.dupe_map[e])));
     }
     return relics_list;
   }, [filter])
@@ -123,10 +123,13 @@ function Home({ relics = window.account?.relics || [] }) {
   )
 }
 
+// let _raw = false;
 const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
   let [perk_state, setPerks] = useState(_ref.picks || []);
   let [search, setSearch] = useState('');
-  let [raw, setRaw] = useState(0);
+  let [raw, setRaw] = useState(window.raw);
+  _ref.raw = raw;
+  window.raw = raw;
   let inp = useRef();
   let bounceSearch = debounce((s) => setSearch(s), 400);
   // let perk_list = Obje
@@ -146,6 +149,7 @@ const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
     _ref.setPerks = setPerks;
     _ref.picks = perk_state;
     _ref.setSearch = setSearch;
+    _ref.setRaw = setRaw;
   });
 
   const PerkUI = ({ perk, debug }) => {
@@ -184,6 +188,11 @@ const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
             Match All
           </div>
           {perk_set.size}
+          <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `}
+            onClick={e => { setRaw(!e.target.children[0].checked); e.target.children[0].click() }}>
+            <input className="pointer-events-none" defaultChecked={raw} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
+            Raw
+          </div>
         </div>
         :
         <></>
@@ -192,10 +201,10 @@ const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
       <div className="grow h-1 gap-1 overflow-auto flex flex-wrap  content-start virt ">
         <VirtuosoGrid
           totalCount={perks_list.length}
-          itemContent={(index) => <PerkUI perk={perks_list[index].ind}  key={index} />}
+          itemContent={(index) => <PerkUI perk={perks_list[index].ind} key={index} />}
           listClassName="grid grid-cols-2 xl:grid-cols-3 gap-1"
           itemClassName="w-[32.9%], min-w-fit"
-          style={{width: '100%', height: '100%', display: 'flex'  }}
+          style={{ width: '100%', height: '100%', display: 'flex' }}
         />
         {/* {perks_list.map((perk) => <PerkUI perk={perk.ind} />)} */}
       </div>
@@ -229,7 +238,7 @@ function Builds({ }) {
       pl.picks = arr;
       account.cache[character] = arr;
     };
-    pl.setPerks ??= () => {};
+    pl.setPerks ??= () => { };
   }, []);
 
   useEffect(() => {
@@ -284,11 +293,16 @@ function Builds({ }) {
               <span className="text-[22px]">Choose perks for <span className="capitalize">{character}'s</span> build:</span>
               <div className={`${option_class} `} onClick={() => pl.setPerks([...chars[character].recs])} >Recommended</div>
             </div>
-            <div className="flex items-center mb-2 justify-end w-[200px] gap-2 ">
+            <div className="flex items-center mb-2 justify-end w-full gap-2 ">
               <div className="w-[20px]"><IconSearch /></div>
-              <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
+              <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="w-[150px] bg-[#444] p-1" />
               <div ref={count} className="">
                 {pl.picks.length}
+              </div>
+              <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `}
+                onClick={e => { pl.setRaw(!e.target.children[0].checked); e.target.children[0].click() }}>
+                <input className="pointer-events-none" defaultChecked={raw} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
+                Raw
               </div>
             </div>
             <div className="grow h-1 overflow-y-auto overflow-x-hidden">
@@ -303,7 +317,7 @@ function Builds({ }) {
         <div className=""></div>
         <div className="flex ms-auto gap-2">
           <div className={`${option_class} `} onClick={() => { pl.onChange([]); pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back' : 'Clear'}</div>
-          <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2(pl.picks, character)) }}>Generate Build</div>
+          <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2(pl.picks, character, pl.raw)); account.cache[character] = arr; }}>Generate Build</div>
         </div>
       </div>
     </div>

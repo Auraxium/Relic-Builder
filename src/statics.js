@@ -111,12 +111,22 @@ export let chars = {
     recs: [],
   },
   executor: {
-    cups: ["@Urn$ryy", "@Goblet$rbg", "@Chalice$byw", "Soot Covered Urn$rrb", "@Forgotten Executor's Goblet$gbr", "Decrepit Executor's Goblet$rry"],
+    cups: ["@Urn$ryy#ryy", "@Goblet$rbg#rbg", "@Chalice$byw#yyg", "Soot Covered Urn$rrb#rrb", "Decrepit Executor's Goblet$rry#rry", "@Forgotten Executor's Goblet$gbr#ygw"],
     recs: [7034200, 7034400, 6647100, 7011700, 7034300, 7034500, 6500700, 6647000, 7043000],
     augs: [7034400, 7011700, 7034500]
   },
+  scholar: {
+    cups: ["@Urn$rry", "@Goblet$bgy", "@Chalice$gyw", "Soot Covered Urn$bgg", "@Forgotten un's Goblet$ygb", "Decrepit unc's Goblet$bbg"],
+    recs: [],
+    augs: [7036300,7036400,7036500,7036200,6647200,6647300,6500800]
+  },
+  undertaker: {
+    cups: ["@Urn$bgg", "@Goblet$ryy", "@Chalice$gyw", "Soot Covered Urn$rrb", "@Forgotten un's Goblet$rbb", "Decrepit unc's Goblet$ryy"],
+    recs: [],
+    augs: [7036800, 6500900, 7037300, 6647500, 7037000, 6647400, 7036900]
+  },
   universal: {
-    cups: ["Sacred Erdtree Grail$yyy", "Spirit Shelter Grail$ggg", "Giant's Cradle Grail$bbb", "Scadutree Grail$rrr"],
+    cups: ["Sacred Erdtree Grail$yyy#yyy", "Spirit Shelter Grail$ggg#ggg", "Giant's Cradle Grail$bbb#bbb", "Scadutree Grail$rrr#rrr"],
     recs: []
   },
   melee: {
@@ -182,18 +192,13 @@ let events = {
   }
 };
 
-export function generateBuild2(picks, char) {
-  /*
-    optimizations if bb bans g then gg bans b ???
-    less colors.forEach;
-  */
-  // [1,2,3,4,5,6,7]
+export function generateBuild2(picks, char, raw = 1) {
   console.log(picks, char);
   let char_str = char;
   // char = chars[char];
   if (!picks.length) picks = chars[char].recs;
   let augs = new Set(chars[char].augs || []);
-  picks = new Set(picks);
+  
   let any_rec = new Set([...picks, ...chars[char].recs, ...chars.melee.recs]);
   let reccs = new Set(chars[char].recs);
   let uni_reccs = new Set(chars.melee.recs);
@@ -238,6 +243,13 @@ export function generateBuild2(picks, char) {
       }
     })
   });
+  
+  let scores = picks.reduce((acc,e,i) => {
+    acc[e] = (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
+          + (augs.has(e) * .25) - ((3 - perks1.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
+    return acc;
+  }, {});
+  picks = new Set(picks);
 
   let arr = states.relics.filter(e => !e.deep);
 
@@ -304,7 +316,7 @@ export function generateBuild2(picks, char) {
 
   //------------
 
-  console.log(pairs, bests)
+  // console.log(pairs, bests)
   let filt = new Set();
   bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {
     let ids = [arr[b[1]], arr[b[2]], b[3]].map(e => e.id).sort().join(",");
@@ -327,7 +339,7 @@ export function generateBuild2(picks, char) {
     ])
   });
 
-  // console.log(picks, bests);
+  console.log(picks, bests);
   return bests;
 }
 
