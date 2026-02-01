@@ -152,6 +152,7 @@ export let dupe_map = {
   7126002: 7126000,//starlight
   7126001: 7126000,
   7260800: 7260710,//poi and rot vicinity
+  7011500: 6500000,//wyuler blood
 }
 
 let resistances = [311600, 311601, 311700, 311701, 311800, 311801, 311900, 312000, 312001, 312002]
@@ -556,7 +557,6 @@ export let effects = {
   7011100: "[Guardian] Damage negation for allies improved when using Ultimate Art",
   7011200: "[Revenant] Trigger ghostflame explosion during Ultimate Art activation",
   7011400: "[Guardian] Restores allies' HP when Character Skill is used",
-  7011500: "[Wylder] Character Skill inflicts Blood Loss",
   7011600: "[Guardian] Creates whirlwind when charging halberd attacks",
   7011700: "[Executor] Roaring restores HP while Art is active",
   7011900: "[Guardian] Character Skill inflicts Holy damage",

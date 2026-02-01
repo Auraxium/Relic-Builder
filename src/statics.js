@@ -5,6 +5,7 @@ import { check } from "@tauri-apps/plugin-updater"; // Correct import for Tauri 
 import { ask, message } from "@tauri-apps/plugin-dialog"; // If you're using dialogs, also from plugin-dialog
 import { relaunch } from "@tauri-apps/plugin-process";
 import effects from './effects.json'
+import { dupe_map } from './effects_edit'
 
 // let nm = {}
 // Object.keys(effects).forEach(e => {
@@ -83,8 +84,9 @@ let plus_map = {
 
 export let chars = {
   wylder: {
-    cups: ["@Urn$rrb", "@Goblet$ygg", "@Chalice$ryw", "Soot Covered Urn$bby"],
+    cups: ["@Urn$rrb#rrb", "@Goblet$ygg#ygg", "@Chalice$ryw#rbg", "Soot Covered Urn$bby#bby", "Decrepit unc's Goblet$bgy#bgy", "@Forgotten un's Goblet$ygb#rgw"],
     recs: [],
+    augs: [7033200, 7010500, 7032400, 7030500, 6500000, 7020000, 7033000, 6640100, 7032300, 7031400, 6640000]
   },
   guardian: {
     cups: ["@Urn$ryy", "@Goblet$bbg", "@Chalice$byw", "Soot Covered Urn$rgg"],
@@ -95,8 +97,9 @@ export let chars = {
     recs: [],
   },
   duchess: {
-    cups: ["@Urn$rbb", "@Goblet$yyg", "@Chalice$byw", "Soot Covered Urn$rrg"],
-    recs: [],
+    cups: ["@Urn$rbb#rbb", "@Goblet$yyg#yyg", "@Chalice$byw#rby", "Soot Covered Urn$rrg#rrg", "Sealed Duchess' Urn$bbr#ggy", "Decrepit Duchess' Goblet$bgg#bgg", "Forgotten Duchess' Goblet$gyy#rgw"],
+    recs: [7000802],
+    augs: [7031800, 7300000, 7010700, 7290000, 7033600, 7032700, 6643100, 6643000, 6500300]
   },
   raider: {
     cups: ["@Urn$rgg", "@Goblet$rby", "@Chalice$rrw", "Soot Covered Urn$bbg"],
@@ -116,12 +119,12 @@ export let chars = {
     augs: [7034400, 7011700, 7034500]
   },
   scholar: {
-    cups: ["@Urn$rry", "@Goblet$bgy", "@Chalice$gyw", "Soot Covered Urn$bgg", "@Forgotten un's Goblet$ygb", "Decrepit unc's Goblet$bbg"],
+    cups: ["@Urn$rry", "@Goblet$bgy", "@Chalice$gyw", "Soot Covered Urn$bgg", "Decrepit unc's Goblet$bbg", "@Forgotten un's Goblet$ygb",],
     recs: [],
-    augs: [7036300,7036400,7036500,7036200,6647200,6647300,6500800]
+    augs: [7036300, 7036400, 7036500, 7036200, 6647200, 6647300, 6500800]
   },
   undertaker: {
-    cups: ["@Urn$bgg", "@Goblet$ryy", "@Chalice$gyw", "Soot Covered Urn$rrb", "@Forgotten un's Goblet$rbb", "Decrepit unc's Goblet$ryy"],
+    cups: ["@Urn$bgg", "@Goblet$ryy", "@Chalice$gyw", "Soot Covered Urn$rrb", "Decrepit unc's Goblet$ryy", "@Forgotten un's Goblet$rbb",],
     recs: [],
     augs: [7036800, 6500900, 7037300, 6647500, 7037000, 6647400, 7036900]
   },
@@ -192,155 +195,175 @@ let events = {
   }
 };
 
-export function generateBuild2(picks, char, raw = 1) {
+export function generateBuild2(picks, char, raw = 1, deep = 1) {
   console.log(picks, char);
   let char_str = char;
   // char = chars[char];
   if (!picks.length) picks = chars[char].recs;
   let augs = new Set(chars[char].augs || []);
-  
   let any_rec = new Set([...picks, ...chars[char].recs, ...chars.melee.recs]);
   let reccs = new Set(chars[char].recs);
   let uni_reccs = new Set(chars.melee.recs);
   let uni_possibles = ['rr', 'rrr', 'bb', 'bbb', 'gg', 'ggg', 'yy', 'yyy'];
   let colors = ['b', 'g', 'r', 'y'];
 
-  let cups = [...chars.universal.cups, ...chars[char].cups];
-  let cups_map = cups.map(e => e.split('$').at(-1).split("").sort().join(""));
-  let cups_final = {};
-
-  //get total suitable combinations of colors for all cups
-  let possibles = new Set(uni_possibles);
-  cups.map(e => e.split('$').at(-1).split('').sort()).forEach(e => {
-    let cup_fit = cups[cups_map.indexOf(e.join(""))];
-    let w = e.indexOf('w');
-    if (w != -1) {
-      e.splice(w, 1);
-      possibles.add([e[0], e[1]].join(""));
-      colors.forEach(c => {
-        possibles.add([e[0], c].sort().join(""));
-        possibles.add([e[1], c].sort().join(""))
-        let temp = [e[0], e[1], c].sort().join("");
-        possibles.add(temp);
-        cups_final[temp] = cup_fit;
-      });
-      return;
-    }
-    possibles.add(e[0] + e[1]);
-    possibles.add(e[0] + e[2]);
-    possibles.add(e[1] + e[2]);
-    e = e.join("");
-    possibles.add(e);
-    cups_final[e] = cup_fit;
-  });
-
-  let pos_bans = {};
-  [...possibles].filter(e => e.length == 2).forEach(e => {
-    colors.forEach(c => {
-      if (!possibles.has(((e + c).split('').sort().join("")))) {
-        pos_bans[e] ??= [];
-        pos_bans[e].push(c);
-      }
-    })
-  });
-  
-  let scores = picks.reduce((acc,e,i) => {
+  picks = new Set(picks);
+  let scores = [...picks, ...chars[char].recs, ...chars.melee.recs].map(e => dupe_map[e] || e).reduce((acc, e) => {
     acc[e] = (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
-          + (augs.has(e) * .25) - ((3 - perks1.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
+      + (augs.has(e) * .25);
     return acc;
   }, {});
-  picks = new Set(picks);
 
-  let arr = states.relics.filter(e => !e.deep);
-
-  let n = arr.length;
-  let best = -Infinity;
-  let pairs = [];
-
-  for (let i = 0; i < n - 1; i++) {
-    let perks1 = arr[i].perks;
-    for (let j = i + 1; j < n; j++) {
-      let perks2 = arr[j].perks;
-      let seen = new Set();
-      let score = 0;
-      let dupes = 0;
-
-      for (let e of perks1) {
-        score += (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
-          + (augs.has(e) * .25) - ((3 - perks1.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
-        seen.add(e);
-      }
-
-      for (let e of perks2) {
-        if (seen.has(e)) {
-          score -= .7;
-          continue;
-        }
-        score += (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
-          + (augs.has(e) * .25) - ((3 - perks2.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
-        seen.add(e);
-      }
-
-      if (score >= best ) {
-        best = score;
-        pairs.push([score, seen, i, j, arr[i], arr[j]]);
-      }
-    }
-  }
-
-  let final_best = -Infinity;
-  let bests = [];
-  pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0, 20).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
-
-  for (let pair of pairs) {
-    let bans = new Set(pos_bans[pair[5]] || []);
-
-    for (let three of arr.filter((e, i) => !bans.has(e.color) && i != pairs[2] && i != pairs[3])) {
-      let score = pair[0];
-
-      for (let e of three.perks) {
-        if (pair[1].has(e)) {
-          score -= 1.2;
-          continue;
-        }
-        score += (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
-          + (augs.has(e) * .25) - ((3 - three.perks.length) / 1000) - (any_rec.has(e) * (plus_map[e] / 1000 || 0));
-      }
-
-      if (score >= final_best) {
-        final_best = score;
-        bests.push([score, pair[2], pair[3], three]);
-      }
-    }
-  }
-
-  //------------
-
-  // console.log(pairs, bests)
-  let filt = new Set();
-  bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {
-    let ids = [arr[b[1]], arr[b[2]], b[3]].map(e => e.id).sort().join(",");
-    if(filt.has(ids)) return false;
-    filt.add(ids);
-    return true;
-  }).slice(0, 20).map(e => {
-    let rels = [arr[e[1]], arr[e[2]], e[3]];
-
-    return ([
-      e[0],
-      rels,
-      cups_final[rels.map(rel => rel.color).sort().join("")],
-      char,
-      rels.map(el => el.perks).flat().map(el => {
-
-        return effects[el] + ' ' + ((picks.has(el) + (augs.has(el) * .25) || reccs.has(el) * 0.2 || uni_reccs.has(el) * 0.1)
-          + (augs.has(el) * .25))
-      })
-    ])
+  let raw_cups = [...chars.universal.cups, ...chars[char].cups];
+  let light_cups = [];
+  let deep_cups = [];
+  let full_cups = [];
+  raw_cups.forEach(el => {
+    let c = el.split('$').at(-1).split("#");
+    c[0] = c[0].split("").sort().join("");
+    c[1] = c[1].split("").sort().join("");
+    light_cups.push(c[0]);
+    deep_cups.push(c[1]);
+    // full_cups.push(`${c[0]}x${c[1]}`);
   });
+  // let cups_map = cups.map(e => e.split('$').at(-1).split("").sort().join(""));
+  // return console.log(light_cups, deep_cups)
 
-  console.log(picks, bests);
-  return bests;
+  let main = (cups, relics, debug) => {
+    // if(debug) console.log('cups:', cups, 'relics:', relics)
+    let cup_map = {};
+    let possibles = new Set(uni_possibles);
+    cups.forEach((cup, ind) => {
+      let w = cup.indexOf('w');
+      if (w != -1) {
+        let spl = cup.split("").filter((e, i) => i != w);
+        colors.forEach(color => {
+          let temp = [...spl, color].sort().join("");
+          possibles.add(temp[0] + temp[1]);
+          possibles.add(temp[0] + temp[2]);
+          possibles.add(temp[1] + temp[2]);
+          possibles.add(temp);
+          cup_map[temp] ??= ind;
+        })
+        return;
+      }
+      possibles.add(cup[0] + cup[1]);
+      possibles.add(cup[0] + cup[2]);
+      possibles.add(cup[1] + cup[2]);
+      possibles.add(cup);
+      cup_map[cup] ??= ind;
+    });
+
+    let pos_bans = {};
+    [...possibles].filter(e => e.length == 2).forEach(e => {
+      colors.forEach(c => {
+        if (!possibles.has(((e + c).split('').sort().join("")))) {
+          pos_bans[e] ??= [];
+          pos_bans[e].push(c);
+        }
+      })
+    });
+    if (debug) console.log('pos:', possibles);
+
+    let n = relics.length;
+    let best = -Infinity;
+    let pairs = [];
+
+    for (let i = 0; i < n - 1; i++) {
+      let perks1 = relics[i].perks;
+      for (let j = i + 1; j < n; j++) {
+        let perks2 = relics[j].perks;
+        let seen = new Set();
+        let score = 0;
+        for (let e of perks1) {
+          score += scores[dupe_map[e] || e] || 0;
+          seen.add(e);
+        }
+        for (let e of perks2) {
+          if (seen.has(e)) {
+            score -= .7;
+            continue;
+          }
+          score += scores[dupe_map[e] || e] || 0;
+          seen.add(e);
+        }
+        // console.log(score)
+        if (score >= best) {
+          if(score > best) best = score;
+          pairs.push([score, seen, i, j, relics[i], relics[j]]);
+        }
+      }
+    }
+
+    let final_best = -Infinity;
+    let bests = [];
+    pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0, 30).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
+    // if(debug) console.log('pairs:', pairs);
+    if (debug) console.log('pos_pans', pos_bans);
+
+    for (let pair of pairs) {
+      let bans = new Set(pos_bans[pair[6]] || colors);
+      if (debug) console.log(pair[6], bans)
+      for (let three of relics.filter((e, i) => !bans.has(e.color) && i != pairs[2] && i != pairs[3])) {
+        let score = pair[0];
+        for (let e of three.perks) {
+          if (pair[1].has(e)) {
+            score -= 1.2;
+            continue;
+          }
+          score += scores[dupe_map[e] || e] || 0;
+          // pair[1].add(e);
+        }
+        if (score >= final_best -1) {
+          if(score > final_best) final_best = score;
+          bests.push([score, pair[2], pair[3], three]);
+        }
+      }
+    }
+
+    // filter duplicates and map 
+    let filt = new Set();
+    bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {
+      let ids = [relics[b[1]], relics[b[2]], b[3]].map(e => e.id).sort().join(",");
+      if (filt.has(ids)) return false;
+      filt.add(ids);
+      return true;
+    }).slice(0, 30).map(e => {
+      let rels = [relics[e[1]], relics[e[2]], e[3]];
+      let colors = rels.map(rel => rel.color).sort().join("");
+      let cup_ind = cup_map[colors];
+      if (debug) console.log(cups, colors, cups.indexOf(colors))
+      let json = {
+        score: e[0],
+        rels,
+        perks: rels.map(rel => rel.perks).flat(),
+        seen: e[1],
+        colors,
+        cup_ind,
+        // bans: e[5]
+      }
+
+      return json;
+    });
+
+    return bests;
+  };//end main
+
+  let lights = main(light_cups, states.relics.filter(e => !e.deep));
+  let deeps = main(deep_cups, states.relics.filter(e => e.deep), 0);
+
+  console.log(lights, deeps);
+
+  lights.forEach(e => {
+    let deep_rels = deeps.find(el => el.cup_ind == e.cup_ind);
+    if(!deep_rels) return null;
+    e.rels.push(...deep_rels.rels);
+    e.cup = raw_cups[e.cup_ind];
+  });
+  lights = lights.filter(e => e.cup);
+
+  console.log(lights);
+  return lights;
 }
 
 export async function init() {
@@ -378,7 +401,7 @@ export async function init() {
 }
 
 async function runCommand() {
-  if(!isTauri()) return;
+  if (!isTauri()) return;
   if (window.pyspawn?.write) return window.pyspawn;
   if (window.pyspawn === 0) {
     while (!window.pyspawn) await delay(400);
@@ -426,7 +449,7 @@ if (!window.pyspawn?.write) runCommand();
 
 let c = 1;
 export async function ipcFetch(p, j = {}, nr) {
-  if(!isTauri()) return;
+  if (!isTauri()) return;
   if (typeof (window.pyspawn?.write || {}) != "function") await runCommand();
   j.port ??= p;
   if (nr) return window.pyspawn.write(JSON.stringify(j) + "\n");
@@ -458,13 +481,14 @@ export const debounce = function (cb, delay = 400) {
   };
 };
 
-function save() {
+export function save() {
+  window.localStorage.setItem('account', JSON.stringify(account));
   // ipcFetch("save", { data: { relics: states.relics } }).then(console.log);
   // localStorage.setItem('rb_data', JSON.stringify({ relics: states.relics }))
 }
 
 export async function checkForAppUpdates() {
-  if(!isTauri()) return;
+  if (!isTauri()) return;
   try {
     const update = await check();
 
@@ -494,8 +518,8 @@ export async function checkForAppUpdates() {
 
 window.addEventListener("beforeunload", (e) => {
   window.localStorage.setItem('account', JSON.stringify(account));
-  save();
-  if(!isTauri()) return;
+  // save();
+  if (!isTauri()) return;
   window.command.stdout.removeAllListeners("data");
   window.command.stderr.removeAllListeners("data");
   window.pyspawn.kill();

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2 } from "./statics";
+import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2, save } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
 import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
 import effects from './effects.json'
@@ -17,10 +17,10 @@ const Relic = ({ relic, edit, className }) => {
   // return
   // if(!effects[relic.effect_1]?.name) return <></>
   // console.log(relic);
-  if (!relic) return <></>
+  if (!relic) return <></>;
 
   const List = ({ ind, perk = effects[relic.perks[ind]] || '' }) => {
-    if (perk == 'Empty') return <></>
+    if (perk == 'Empty') return <></>;
 
     return (
       <div className="capitalize flex items-center text-nowrap, bg-[#444] gap-[2px] rounded-md w-fit p-1  h-[33.333%], leading-[1.3]"
@@ -32,10 +32,9 @@ const Relic = ({ relic, edit, className }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full xl:w-[46.3%], h-[180px] min-h-[180px] border-[#777] bg-neutral-950 gap-2 py-1 px-2 col ${className}`} style={{}} >
+    <div className={`border-[1px] w-full, xl:w-[46.3%], h-[180px] min-h-[180px] max-h-[180px] border-[#777] bg-neutral-950 gap-2 py-1 px-2 col box-border ${className}`} style={{}} >
       <div className="flex w-full h-12 border, items-center">
         <div className="w-[15%] h-full">
-          {relic.deep ? 'deep' : ''}
           <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(/${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
         </div>
         <div className="text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, grow flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
@@ -61,6 +60,7 @@ function Home({ relics = window.account?.relics || [] }) {
   // let relics_list = window.account?.relics || relics;
   let relics_list = React.useMemo(() => Object.values(relics).reverse(), [relics])
   relics_list = React.useMemo(() => {
+    if (filter['deep']) relics_list = relics_list.filter(rel => rel.deep);
     if ('rbyg'.split('').some(c => filter[c])) relics_list = relics_list.filter(rel => filter[rel.color]);
     if ('123'.split('').some(c => filter[+c])) relics_list = relics_list.filter(rel => filter[rel.size])
     if ('search' in filter) relics_list = relics_list.filter(rel => rel.perks.map(el => effects[el]).join(' ').toLowerCase().includes(filter.search))
@@ -104,6 +104,7 @@ function Home({ relics = window.account?.relics || [] }) {
         <Option color={'b'} />
         <Option color={'g'} />
         <Option color={'y'} />
+        <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px]  p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
         <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px]  p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
         <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
@@ -222,7 +223,6 @@ let build_cache = account.build_cache || [];
 function Builds({ }) {
   let [character, setCharacter] = useState(account.cache.build_char || '');
   let [builds, setBuilds] = useState([]);
-  builds = builds.slice(0, 20);
   let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
   let count = useRef();
   let pl = useRef();
@@ -243,27 +243,37 @@ function Builds({ }) {
 
   useEffect(() => {
     // if(pl.setPerks) pl.setPerks(account.cache[character] || []);
+    save()
   }, [character])
 
   const Build = ({ build, add }) => {
-    if (!build[2]) return <></>;
+    // if (!build[2]) 
     // console.log(build);
-    let cup = build[2].split('$');
-    let colors = cup.at(-1).split('');
-    let name = cup[0] + ':';
-    if (name[0] == '@') name = `${build[3]}'s ${name.slice(1)}`;
+    if (!build?.rels) return <></>;
+    let [cup, colors] = build.cup.split('$');
+    colors = colors.split('#').join("").split("");
+    let temp = build.rels;
+    // let relics = [temp[5], temp[4], temp[3], temp[3], temp[4], temp[5]]
+    let relics = colors.reduce((acc, e, i) => { //sort relics to match cup order
+      let ind = temp.findIndex(el => el.color == e);
+      acc[i] = temp.splice(ind, 1)[0];
+      return acc;
+    }, []);
+    // return console.log(relics)
+    let name = cup + ':';
+    if (name[0] == '@') name = `${character}'s ${name.slice(1)}`;
 
     return (
-      <div className="h-1, space-y-2" >
+      <div className="col gap-y-2 w-full" >
         <div className="capitalize text-[22px] flex h-12 items-center">
           {name}
           <div className="flex gap-1 ms-4">
-            {colors.map(c => <div className="rounded-md flex border-[1px] bg-[#5d4e03],  w-12 h-12 border-[#555]" style={{ backgroundColor: color_muted[c] }} ></div>)}
+            {colors.map(c => <div className="rounded-md flex border-[1px] bg-[#5d4e03], w-12 h-12 border-[#555]" style={{ backgroundColor: color_muted[c] }} ></div>)}
           </div>
         </div>
-        <Relic relic={build[1][0]} />
-        <Relic relic={build[1][1]} />
-        <Relic relic={build[1][2]} />
+        <div className="lg:grid grid-rows-3 grid-flow-col w-full h-[600px], grow gap-1 flex-wrap, ">
+          {relics.map(rel => <Relic className={''} relic={rel} />)}
+        </div>
       </div>
     )
   }
@@ -283,9 +293,9 @@ function Builds({ }) {
           </div>
         ))}
       </div>
-      {builds.length ?
+      {builds?.length ?
         <div className="flex flex-col grow h-1 gap-2 overflow-y-auto">
-          {builds.map(b => <Build build={b} />)}
+          {builds.slice(0, 20).map(b => <Build build={b} />)}
         </div>
         : character ?
           <div className="grow h-1 flex flex-col">
@@ -312,12 +322,11 @@ function Builds({ }) {
           :
           <></>
       }
-
       <div className="mt-auto p-2 h-16 w-full items-center flex bg-neutral-900,">
         <div className=""></div>
         <div className="flex ms-auto gap-2">
-          <div className={`${option_class} `} onClick={() => { pl.onChange([]); pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back' : 'Clear'}</div>
-          <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2(pl.picks, character, pl.raw)); account.cache[character] = arr; }}>Generate Build</div>
+          <div className={`${option_class} `} onClick={() => { account.cache[character] = []; pl.onChange([]); pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back' : 'Clear'}</div>
+          <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2(pl.picks, character, pl.raw)); account.cache[character] = [...pl.picks]; }}>Generate Build</div>
         </div>
       </div>
     </div>

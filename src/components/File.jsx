@@ -1,12 +1,61 @@
 import React from 'react'
 import effects from '../effects.json'
 import rel_names from '../Relic_names.json'
-import {states} from '../statics'
+import { states } from '../statics'
 // let nm = {}
 // Object.keys(names).forEach(e => {
 //   if(names[e]) nm[e] = names[e]
 // })
 // console.log(nm)
+
+export let base_relics = {
+  "cleansing tear": 'r',
+  'note my dear successor': 'y',
+  'glass necklace': 'g',
+  'leather monocle case': 'b',
+  "old pocketwatch": "g",
+  "besmirched frame": "b",
+  "slate whetstone": "r",
+  "silver tear": "r",
+  "the wylder\'s earring": "r",
+  "stone stake": "r",
+  "third volume": "r",
+  "witch\'s brooch": "b",
+  "cracked witch\'s brooch": "b",
+  "cracked sealing wax": "y",
+  "edge of order": "y",
+  "golden dew": "y",
+  "crown medal": "g",
+  "blessed iron coin": "g",
+  "torn braided cord": "b",
+  "black claw necklace": "y",
+  "small makeup brush": "b",
+  "old portrait": "b",
+  "vestige of night": "g",
+  "bone-like stone": "g",
+  "blessed flowers": "g",
+  "golden sprout": "r",
+  "fell omen fetish": "b",
+  "night of the beast": "g",
+  "night of the baron": "b",
+  "night of the wise": "y",
+  "night of the demon": "r",
+  "night of the champion": "g",
+  "night of the miasma": "y",
+  "night of the fathom": "r",
+  "night of the lord": "b",
+  "the will of the balancers": "b",
+  "the night of dregs": "r",
+  "dark night of the wise": "g",
+  "dark night of the miasma": "g",
+  "dark night of the lord": "r",
+  "dark night of the fathom": "b",
+  "dark night of the demon": "b",
+  "dark night of the champion": "y",
+  "dark night of the beast": "y",
+  "dark night of the baron": "r",
+  "the will of balance": "r",
+};
 
 const DS2_KEY = new Uint8Array([
   0x18, 0xF6, 0x32, 0x66, 0x05, 0xBD, 0x17, 0x8A,
@@ -27,7 +76,7 @@ const size_map = {
 }
 
 async function handleFile(e) {
-  console.dir(e.target)
+  // console.dir(e.target)
   let file = e.target.files[0];
   if (!file) return;
   const arrayBuffer = await file.arrayBuffer();
@@ -226,6 +275,7 @@ function item_from_bytes(data, offset) {
   return item(cursor);
 }
 
+let skips = []
 function getProfileData() {
   let data = files[0] || account.USER_DATA_00;
   let offset = 0x14;
@@ -241,14 +291,20 @@ function getProfileData() {
     let real_id = e.item_id - 2147483648;
     let name = rel_names[real_id].toLowerCase();
     let spl = name.split(' ');
-    if(spl[0] == 'deep') {
+    if (spl[0] == 'deep') {
       // console.log(name)
-      rel.deep = 1;  
-      spl.splice(0,1);
-    } 
+      rel.deep = 1;
+      spl.splice(0, 1);
+    }
     // if(real_id <= 2019999 && real_id >= 2000000) console.log(name)
     let size = size_map[spl[0]];
     let color = color_map[spl[1]];
+    color ??= base_relics[name];
+
+    if(!color) {
+      skips.push(name)
+      return null;
+    }
 
     // if(!size || !color) return null;
 
@@ -263,6 +319,7 @@ function getProfileData() {
       // raw: e,
     })
   }).filter(Boolean);
+  console.log('skips', skips)
   let name_offset = offset + 0x94;
   let max_chars = 16;
   const rawName = data.subarray(name_offset, name_offset + (max_chars * 2));
@@ -292,9 +349,7 @@ export default function File() {
   return (
     <div className="full flex flex-col">
       <div class="full col p-1 relative ">
-        <div class="button bg-neutral-700 h-12 p-4 center w-fit rounded-sm hover:bg-blue-600 "
-          onClick={getProfileData}
-        >
+        <div class="button bg-neutral-700 h-12 p-4 center w-fit rounded-sm hover:bg-blue-600 " onClick={getProfileData}>
           get data
         </div>
 
