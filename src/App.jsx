@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2, save } from "./statics";
+import { ipcFetch, openSupport, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2, save } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
 import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
 import effects from './effects.json'
@@ -24,7 +24,7 @@ const Relic = ({ relic, edit, className }) => {
 
     return (
       <div className="capitalize flex items-center text-nowrap, bg-[#444] gap-[2px] rounded-md w-fit p-1  h-[33.333%], leading-[1.3]"
-        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 22px)`, }}
+        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, }}
       >
         {perk || ''}
       </div>
@@ -35,7 +35,7 @@ const Relic = ({ relic, edit, className }) => {
     <div className={`border-[1px] w-full, xl:w-[46.3%], h-[180px] min-h-[180px] max-h-[180px] border-[#777] bg-neutral-950 gap-2 py-1 px-2 col box-border ${className}`} style={{}} >
       <div className="flex w-full h-12 border, items-center">
         <div className="w-[15%] h-full">
-          <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(/${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
+          <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
         </div>
         <div className="text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, grow flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
         <div className="ms-auto flex gap-2 w-[15%] justify-end ">
@@ -333,92 +333,6 @@ function Builds({ }) {
   )
 }
 
-function Create({ edit }) {
-  let [form, setForm] = useState(edit || { perks: [] });
-  let [search, setSearch] = useState('');
-  let perks_list = React.useMemo(() => perks
-    .map((perk, i) => ({ text: perk, ind: i }))
-    .slice(0, varsAt)
-    .sort((a, b) => {
-      const normalize = (s) => s.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-      return normalize(a.text).localeCompare(normalize(b.text));
-    }), [perks]);
-  // console.log(perks_list);
-  if (search) search = perks_list.filter(perk => perk.text.toLowerCase().includes(search.toLowerCase()))
-  let last = useRef();
-  let size = form.perks.length;
-  let perk_set = new Set(form.perks);
-  let bounceSearch = debounce((s) => setSearch(s), 400);
-
-  const List = ({ ind }) => <div className="text-[20px] border-b-[1px] border-[#777] capitalize flex items-center text-nowrap">- {perks[form.perks[ind]]} {form.perks[ind] > -1 && (<IconX className="ms-auto" onClick={e => { form.perks.splice(ind, 1); setForm({ ...form }) }} />)}  </div>
-  const Option = ({ color }) => (
-    <div className="w-[120px] aspect-[2.4] rounded-xl border-[2px] border-[#777] hover:border-[#ddd] center text-[#3a8dc4] bg-[#333] text-[21px]  " style={{ color: color_code[color] }} onClick={() => setForm({ ...form, color })}>
-      {color_text[color]}
-    </div>
-  )
-
-  useEffect(() => {
-    last.current = `/${form.color || "r"}${form.perks.length || 1}.png`;
-  });
-
-  return (
-    <div className="full p-[18px] rounded-xl center, flex flex-col">
-      <div className="flex">
-        <img src={last.current} className={`h-[120px] ${!form.color && "grayscale"} img aspect-square border-[1px] border-[#777] rounded-md, me-4`} />
-        <img src={`/${form.color || "r"}${size || 1}.png`} className={`h-[120px] z-10 ${!form.color && "grayscale"} pointer-events-none hidden img aspect-square border-[1px] border-[#777] rounded-md, me-4 absolute`} onLoad={(e) => (e.target.style.display = "flex")} />
-        <div className="grow flex flex-col relative -top-[12px] ">
-          <div className=" text-[42px] font-light capitalize hightop ">{!form.color && !size ? "Relic" : `${size_text[size] || ""} ${color_text[form.color] || ""} Scene`} </div>
-          <List ind={0} />
-          <List ind={1} />
-          <List ind={2} />
-        </div>
-      </div>
-      <div className="flex justify-around, gap-4 my-4">
-        <Option color={'r'} />
-        <Option color={'b'} />
-        <Option color={'g'} />
-        <Option color={'y'} />
-        <div className="ms-auto flex gap-2">
-          <div className="w-[120px] aspect-[2.4] rounded-xl border-[2px] border-[#777] hover:border-[#ddd] center bg-[#333] text-[21px]" onClick={s => setForm({ perks: [] })}>Clear</div>
-          <div className="w-[120px] aspect-[2.4] rounded-xl border-[2px] border-[#777] hover:border-[#ddd] center bg-teal-700 hover:bg-teal-600 text-[21px]" onClick={e => {
-            if (!form.perks.length || !form.color) return;
-            form.id ??= `${form.color}${form.perks.length}_${form.perks.join("_")}`
-            console.log(form)
-            // ipcFetch('save_relic', { relic: form })
-            states.setRelics(p => ({ ...p, [form.id]: form }))
-            states.setPage('')
-          }}>Save</div>
-        </div>
-      </div>
-      <div className="flex h-6 w-full mb-2  px-">
-        <div className="flex items-center justify-end w-[200px] gap-2 ">
-          <div className="w-[20px]"><IconSearch /> </div>
-          <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
-        </div>
-      </div>
-
-      <div className="grow h-1 border, w-full gap-1 overflow-auto flex flex-wrap content-start">
-        {(search || perks_list).map((perk) => {
-          let on = perk_set.has(perk.ind) && '#226C7D';
-          return (
-            <div key={perk.ind}
-              className="flex p-1 h-8 items-center w-[32.9%] bg-[#3c3c3c] capitalize hover:bg-neutral-600 leading-[1]"
-              style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / perk.text.length}px, 20px)`, backgroundColor: on }}
-              onPointerDown={(e) => {
-                on ? perk_set.delete(perk.ind) : perk_set.add(perk.ind)
-                if (perk_set.size > 3) return setForm({ ...form, perks: [...form.perks.slice(0, 2), perk.ind] })
-                setForm({ ...form, perks: [...perk_set] })
-              }}
-            >
-              {perk.text}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 let nav_icon = {
   relics: <IconHome size={28} stroke={1.5} />
 }
@@ -463,7 +377,7 @@ function App() {
 
   // if (!relics) return;
   return (
-    <div style={{ backgroundImage: `url(/bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
+    <div style={{ backgroundImage: `url(./bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
       <div ref={scan_card} className="fixed -left-[0%] -top-[0%] w-[100vw] h-[100vh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => {
         scan_card.current.style.display = 'none';
         ipcFetch('stop_scan');
@@ -473,7 +387,8 @@ function App() {
       </div>
       <div className="nav bg-[#0d0d0b] h-[6%] min-h-[50px] max-h-[80px] flex p-2 items-center,">
         <div className="flex items-center h-full" onClick={() => setPage("")}>
-          <div style={{ backgroundImage: "url(/rblogo.png)", backgroundPosition: "bottom" }} className="img border-[#777] border-[1px] h-full rounded-md w-12"></div>
+          {/* <div style={{ backgroundImage: "url(/rblogo.png)", backgroundPosition: "bottom" }} className="img border-[#777] border-[1px] h-full rounded-md w-12"></div> */}
+          <img src="./rblogo.png" alt="" className="img border-[#777] border-[1px] h-full rounded-md w-12 bg-bottom" />
           <div className="ms-1 hightop text-[32px]">Relic Builder</div>
         </div>
       </div>
@@ -491,7 +406,7 @@ function App() {
         </div>
         <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>
         <div className="right w-[8%]">
-          <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={() => ipcFetch('support')}>
+          <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={() => openSupport()}>
             <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
             <span>Support Me</span>
           </div>

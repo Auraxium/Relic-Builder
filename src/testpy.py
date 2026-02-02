@@ -26,7 +26,7 @@ def xml_to_dict(file_path):
     return result
 
 # Usage
-data_dict = xml_to_dict('D:\VS_Codes\Relic_Builder2\src\AntiqueName_dlc01.fmg.xml')
+data_dict = xml_to_dict('D:\VS_Codes\Relic_Builder\src\AntiqueName_dlc01.fmg.xml')
 
 # 3. Convert to JSON string
 json_output = json.dumps(data_dict, indent=4)

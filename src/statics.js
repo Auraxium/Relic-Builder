@@ -487,6 +487,10 @@ export function save() {
   // localStorage.setItem('rb_data', JSON.stringify({ relics: states.relics }))
 }
 
+export function openSupport() {
+  isTauri() ? ipcFetch('support') : window.open("https://ko-fi.com/auraxium/")
+}
+
 export async function checkForAppUpdates() {
   if (!isTauri()) return;
   try {
