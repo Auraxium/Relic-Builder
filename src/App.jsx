@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, openSupport, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, base_relics, perks_list, checkForAppUpdates, generateBuild2, save } from "./statics";
+import { ipcFetch, openSupport, CompareStrings, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, perks_list, checkForAppUpdates, generateBuild2, save } from "./statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
 import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
 import effects from './effects.json'
@@ -13,7 +13,7 @@ const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, borde
 const effects_keys = Object.keys(effects);
 export const throw_frontend_error = (j) => states.setError(j)
 
-const Relic = ({ relic, edit, className }) => {
+const Relic = ({ relic, edit, className, pl }) => {
   // return
   // if(!effects[relic.effect_1]?.name) return <></>
   // console.log(relic);
@@ -21,10 +21,12 @@ const Relic = ({ relic, edit, className }) => {
 
   const List = ({ ind, perk = effects[relic.perks[ind]] || '' }) => {
     if (perk == 'Empty') return <></>;
+    let id = relic.perks[ind];
 
     return (
-      <div className="capitalize flex items-center text-nowrap, bg-[#444] gap-[2px] rounded-md w-fit p-1  h-[33.333%], leading-[1.3]"
-        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, }}
+      <div className="capitalize flex items-center text-nowrap,  gap-[2px] rounded-md w-fit p-1  h-[33.333%], leading-[1.3]"
+        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, backgroundColor: pl.perk_set.has(id) ? '#226C7D' : '#444'}}
+        onClick={e => pl.Add(relic.perks[ind])}
       >
         {perk || ''}
       </div>
@@ -104,8 +106,8 @@ function Home({ relics = window.account?.relics || [] }) {
         <Option color={'b'} />
         <Option color={'g'} />
         <Option color={'y'} />
-        <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px]  p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
-        <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px]  p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
+        <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
+        <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
         <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
         <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
@@ -114,7 +116,7 @@ function Home({ relics = window.account?.relics || [] }) {
       <div className="home-main relative grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
         <VirtuosoGrid
           totalCount={relics_list.length}
-          itemContent={(index) => <Relic relic={relics_list[index]} edit={1} key={index} />}
+          itemContent={(index) => <Relic relic={relics_list[index]} edit={1} key={index} pl={perk_list} />}
           listClassName="grid grid-cols-1 xl:grid-cols-2 gap-2 w-full p-2"
           itemClassName="w-full"
           style={{ height: '100%', overflowY: 'auto' }}
@@ -145,12 +147,20 @@ const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
   if (search) perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()), [raw]);
   else perks_list = perks_list.filter(e => !cur.hide_expand.has(e.ind))
   let perk_set = new Set(perk_state || []);
+  _ref.perk_set = perk_set;
 
   useEffect(() => {
     _ref.setPerks = setPerks;
     _ref.picks = perk_state;
     _ref.setSearch = setSearch;
     _ref.setRaw = setRaw;
+    _ref.Add = (id) => {
+      perk_set.add(id);
+      _ref.onChange && _ref.onChange([...perk_set]);
+      console.log(perk_set);
+      // console.log(perk.ind, perk.text);
+      setPerks([...perk_set]);
+    };
   });
 
   const PerkUI = ({ perk, debug }) => {
@@ -223,6 +233,7 @@ let build_cache = account.build_cache || [];
 function Builds({ }) {
   let [character, setCharacter] = useState(account.cache.build_char || '');
   let [builds, setBuilds] = useState([]);
+  let [type, setType] = useState(0);
   let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
   let count = useRef();
   let pl = useRef();
@@ -250,10 +261,11 @@ function Builds({ }) {
     // if (!build[2]) 
     // console.log(build);
     if (!build?.rels) return <></>;
+    build.cup ??= build.pos_cups_raw[0];
     let [cup, colors] = build.cup.split('$');
-    colors = colors.split('#').join("").split("");
-    let temp = build.rels;
-    // let relics = [temp[5], temp[4], temp[3], temp[3], temp[4], temp[5]]
+    colors = colors.split('#');
+    colors = (build.type == 1 ? colors[0] : build.type == 2 ? colors[1] : colors.join("")).split("");
+    let temp = [...build.rels];
     let relics = colors.reduce((acc, e, i) => { //sort relics to match cup order
       let ind = temp.findIndex(el => el.color == e);
       acc[i] = temp.splice(ind, 1)[0];
@@ -295,7 +307,7 @@ function Builds({ }) {
       </div>
       {builds?.length ?
         <div className="flex flex-col grow h-1 gap-2 overflow-y-auto">
-          {builds.slice(0, 20).map(b => <Build build={b} />)}
+          {builds.slice(0, 50).map(b => <Build build={b} />)}
         </div>
         : character ?
           <div className="grow h-1 flex flex-col">
@@ -326,7 +338,15 @@ function Builds({ }) {
         <div className=""></div>
         <div className="flex ms-auto gap-2">
           <div className={`${option_class} `} onClick={() => { account.cache[character] = []; pl.onChange([]); pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back' : 'Clear'}</div>
-          <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2(pl.picks, character, pl.raw)); account.cache[character] = [...pl.picks]; }}>Generate Build</div>
+          <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `} onClick={e => { setType(type == 1 ? 0 : 1); e.target.children[0].click() }}>
+            <input className="pointer-events-none" checked={type == 1} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
+            Light Only
+          </div>
+          <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `} onClick={e => { setType(type == 2 ? 0 : 2); e.target.children[0].click() }}>
+            <input className="pointer-events-none" checked={type == 2} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
+            Deep Only
+          </div>
+          <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2({ picks: pl.picks, char: character, raw: pl.raw, type })); account.cache[character] = [...pl.picks]; }}>Generate Build</div>
         </div>
       </div>
     </div>
@@ -342,10 +362,9 @@ function Config() {
   return (
     <div className="">
       <div className={`${option_class} w-[180px] h-24 border-[#dc3545] text-[#dc3545] mt-[10%],`} onClick={e => {
-        states.setRelics(base_relics)
-        states.relics = base_relics
         // ipcFetch('delete_all_data')
-        localStorage.setItem('rb_data', JSON.stringify({ relics: base_relics }))
+        account = {};
+        localStorage.clear()
       }}>Delete All Data</div>
     </div>
   )

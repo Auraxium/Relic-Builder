@@ -10,7 +10,7 @@ import { states } from '../statics'
 
 export let base_relics = {
   "cleansing tear": 'r',
-  'note my dear successor': 'y',
+  'note "my dear successor"': 'y',
   'glass necklace': 'g',
   'leather monocle case': 'b',
   "old pocketwatch": "g",

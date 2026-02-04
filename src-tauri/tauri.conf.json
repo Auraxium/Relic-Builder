@@ -36,7 +36,7 @@
       "active": true,
       "endpoints": ["https://misc.auraxium.dev/file?name=latest_rb.json"],
       "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFEMjRCMzk3QkE5NjE5NzYKUldSMkdaYTZsN01rcmQycWRPQldQdDlyZnN3Snozc1NOeEE2UHhsRjY0eDNJRzVydjBqZnN3bS8K",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRBMjkzQkY1MUZBMkRGODkKUldTSjM2SWY5VHNwU29jYy9hdjMwQlhmZ3o3OFMrV3pMQ1o0amlJcnppRUxSSVYvUERDcG5MU1cK",
       "windows" : {
         "installMode": "passive"
       }

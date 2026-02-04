@@ -120,6 +120,7 @@ export let dupe_map = {
   7040500: 6040500,//
   6043001: 6043000,//roar & breath
   7043000: 6043000,//
+  321900: 6043000,
   6043101: 6043100,//prefuming
   7043100: 6043100,//
   6090001: 6090000,//art on kill
@@ -200,7 +201,6 @@ export let effects = {
   321500: "Improved Ranged Weapon Attacks",
   321600: "Blood Loss in Vicinity Increases Attack Power",
   321700: "Poison & Rot Improves Attack Power",
-  321900: "Improved Roar & Breath Attacks",
   322000: "Improved Guard Counters",
   322100: "Improved Throwing Pots",
   322200: "Improved Perfuming Arts",

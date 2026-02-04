@@ -1,6 +1,7 @@
 replace pictrures with rimple ball
 deep blue border color to represent deep
 fix sizing in build
+option for light only build
 score deeps 
 score curses
 multiple light and deep matches and cups

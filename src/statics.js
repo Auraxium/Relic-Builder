@@ -6,6 +6,28 @@ import { ask, message } from "@tauri-apps/plugin-dialog"; // If you're using dia
 import { relaunch } from "@tauri-apps/plugin-process";
 import effects from './effects.json'
 import { dupe_map } from './effects_edit'
+import { compareTwoStrings, findBestMatch } from "string-similarity";
+
+export function CompareStrings(s1, s2) {
+  if (!s1 || !s2) return //console.log('?');
+  s1 = s1
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  s2 = s2
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  let [short, long] = s1.length < s2.length ? [s1, s2] : [s2, s1];
+  let [sl, ll] = [short.length, long.length];
+  let score = compareTwoStrings(short, long) * ((ll - sl) / (sl + ll) + 1); // replace 1: Math.sqrt(sl / ll)
+  let inc = long.indexOf(short)
+  if (match && inc != -1) score += 1;
+  score += ((ll - inc) * 0.005)
+
+  if (debug && score > debug) console.log(`${short} | ${long}`, score);
+  return score;
+}
 
 // let nm = {}
 // Object.keys(effects).forEach(e => {
@@ -139,38 +161,6 @@ export let chars = {
 };
 
 export let char_icons = {};
-export let base_relics = {
-  old_pocketwatch: { name: "Old Pocketwatch", perks: [74, 123], color: "g", id: "old_pocketwatch" },
-  besmirched_frame: { name: "Besmirched Frame", perks: [349, 92], color: "b", id: "besmirched_frame" },
-  slate_whetstone: { name: "slate whetstone", perks: [363, 301], color: "r", id: "slate_whetstone" },
-  silver_tear: { name: "silver tear", perks: [361, 354, 2], color: "r", id: "silver_tear" },
-  the_wylders_earring: { name: "the wylders earring", perks: [360, 359, 330], color: "r", id: "the_wylders_earring" },
-  stone_stake: { name: "stone stake", perks: [137, 58], color: "r", id: "stone_stake" },
-  third_volume: { name: "third volume", perks: [134, 162], color: "r", id: "third_volume" },
-  witchs_brooch: { name: "witchs brooch", perks: [140, 138, 357], color: "b", id: "witchs_brooch" },
-  cracked_sealing_wax: { name: "cracked sealing wax", perks: [273, 67], color: "y", id: "cracked_sealing_wax" },
-  edge_of_order: { name: "edge of order", perks: [272, 334, 204], color: "y", id: "edge_of_order" },
-  golden_dew: { name: "golden dew", perks: [81, 35], color: "y", id: " golden_dew" },
-  crown_medal: { name: "crown medal", perks: [78, 214], color: "g", id: "crown_medal" },
-  blessed_iron_coin: { name: "blessed iron coin", perks: [79, 61, 357], color: "g", id: "blessed_iron_coin" },
-  torn_braided_cord: { name: "torn braided cord", perks: [311, 344], color: "b", id: "torn_braided_cord" },
-  black_claw_necklace: { name: "black claw necklace", perks: [70, 69, 307], color: "y", id: "black_claw_necklace" },
-  small_makeup_brush: { name: "small makeup brush", perks: [322, 266], color: "b", id: "small_makeup_brush" },
-  old_portrait: { name: "old portrait", perks: [324, 321, 69], color: "b", id: "old_portrait" },
-  vestige_of_night: { name: "vestige of night", perks: [317, 285], color: "g", id: "vestige_of_night" },
-  bone_like_stone: { name: "bone like stone", perks: [315, 319, 269], color: "g", id: "bone_like_stone" },
-  blessed_flowers: { name: "blessed flowers", perks: [89, 74], color: "g", id: "blessed_flowers" },
-  golden_sprout: { name: "golden sprout", perks: [88, 328, 147], color: "r", id: "golden_sprout" },
-  night_of_the_beast: { name: "night of the beast", perks: [331, 333], color: "g", id: "night_of_the_beast" },
-  night_of_the_baron: { name: "night of the baron", perks: [210, 5, 63], color: "b", id: "night_of_the_baron" },
-  night_of_the_wise: { name: "night of the wise", perks: [263, 339, 308], color: "y", id: "night_of_the_wise" },
-  night_of_the_demon: { name: "night of the demon", perks: [176, 127, 282], color: "r", id: "night_of_the_demon" },
-  night_of_the_champion: { name: "night of the champion", perks: [265, 130, 170], color: "g", id: "night_of_the_champion" },
-  night_of_the_miasma: { name: "night of the miasma", perks: [298, 37, 10], color: "y", id: "night_of_the_miasma" },
-  night_of_the_fathom: { name: "night of the fathom", perks: [264, 100, 274], color: "r", id: "night_of_the_fathom" },
-  night_of_the_lord: { name: "night of the lord", perks: [347, 35, 348], color: "b", id: "night_of_the_lord" },
-  dark_night_of_the_baron: { name: "dark night of the baron", perks: [210, 209, 67], color: "r", id: "dark_night_of_the_baron" },
-};
 
 window.tasks ??= {};
 let events = {
@@ -195,10 +185,10 @@ let events = {
   }
 };
 
-export function generateBuild2(picks, char, raw = 1, deep = 1) {
+export function generateBuild2(args) {
+  let {picks, char, raw, deep, type} = args;
   console.log(picks, char);
   let char_str = char;
-  // char = chars[char];
   if (!picks.length) picks = chars[char].recs;
   let augs = new Set(chars[char].augs || []);
   let any_rec = new Set([...picks, ...chars[char].recs, ...chars.melee.recs]);
@@ -209,15 +199,14 @@ export function generateBuild2(picks, char, raw = 1, deep = 1) {
 
   picks = new Set(picks);
   let scores = [...picks, ...chars[char].recs, ...chars.melee.recs].map(e => dupe_map[e] || e).reduce((acc, e) => {
-    acc[e] = (picks.has(e) + (augs.has(e) * .25) || reccs.has(e) * 0.21 || uni_reccs.has(e) * 0.1)
-      + (augs.has(e) * .25);
+    acc[e] = (picks.has(e) + (augs.has(e) * .15) || reccs.has(e) * 0.11 || uni_reccs.has(e) * 0.1)
+      + (augs.has(e) * .1);
     return acc;
   }, {});
 
   let raw_cups = [...chars.universal.cups, ...chars[char].cups];
   let light_cups = [];
   let deep_cups = [];
-  let full_cups = [];
   raw_cups.forEach(el => {
     let c = el.split('$').at(-1).split("#");
     c[0] = c[0].split("").sort().join("");
@@ -243,7 +232,8 @@ export function generateBuild2(picks, char, raw = 1, deep = 1) {
           possibles.add(temp[0] + temp[2]);
           possibles.add(temp[1] + temp[2]);
           possibles.add(temp);
-          cup_map[temp] ??= ind;
+          cup_map[temp] ??= [];
+          cup_map[temp].push(ind)
         })
         return;
       }
@@ -251,7 +241,8 @@ export function generateBuild2(picks, char, raw = 1, deep = 1) {
       possibles.add(cup[0] + cup[2]);
       possibles.add(cup[1] + cup[2]);
       possibles.add(cup);
-      cup_map[cup] ??= ind;
+      cup_map[cup] ??= [];
+      cup_map[cup].push(ind)
     });
 
     let pos_bans = {};
@@ -297,7 +288,7 @@ export function generateBuild2(picks, char, raw = 1, deep = 1) {
 
     let final_best = -Infinity;
     let bests = [];
-    pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0, 30).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
+    pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0,75).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
     // if(debug) console.log('pairs:', pairs);
     if (debug) console.log('pos_pans', pos_bans);
 
@@ -328,18 +319,20 @@ export function generateBuild2(picks, char, raw = 1, deep = 1) {
       if (filt.has(ids)) return false;
       filt.add(ids);
       return true;
-    }).slice(0, 30).map(e => {
+    }).slice(0, 50).map(e => {
       let rels = [relics[e[1]], relics[e[2]], e[3]];
       let colors = rels.map(rel => rel.color).sort().join("");
-      let cup_ind = cup_map[colors];
-      if (debug) console.log(cups, colors, cups.indexOf(colors))
+      let pos_cups = cup_map[colors];
+      // if (debug) console.log(cups, colors, cups.indexOf(colors))
       let json = {
         score: e[0],
         rels,
         perks: rels.map(rel => rel.perks).flat(),
         seen: e[1],
         colors,
-        cup_ind,
+        pos_cups,
+        pos_cups_raw: pos_cups.map(el => raw_cups[+el]),
+        type
         // bans: e[5]
       }
 
@@ -349,20 +342,27 @@ export function generateBuild2(picks, char, raw = 1, deep = 1) {
     return bests;
   };//end main
 
+  if(type == 1) return main(light_cups, states.relics.filter(e => !e.deep));
+  if(type == 2) return main(deep_cups, states.relics.filter(e => e.deep), 0);
   let lights = main(light_cups, states.relics.filter(e => !e.deep));
   let deeps = main(deep_cups, states.relics.filter(e => e.deep), 0);
 
   console.log(lights, deeps);
 
-  lights.forEach(e => {
-    let deep_rels = deeps.find(el => el.cup_ind == e.cup_ind);
-    if(!deep_rels) return null;
-    e.rels.push(...deep_rels.rels);
-    e.cup = raw_cups[e.cup_ind];
+  lights.forEach(light => {
+    let pool = deeps.filter(deep => {
+      deep.cup_ind = deep.pos_cups.find(ind => light.pos_cups.includes(ind));
+      return deep.cup_ind;
+    })
+    if(!pool.length) return null;
+    let best_deep = pool[0]; // todo: find best 
+    light.rels.push(...best_deep.rels);
+    light.cup = raw_cups[best_deep.cup_ind];
   });
-  lights = lights.filter(e => e.cup);
 
-  console.log(lights);
+  lights = lights.filter(e => e.cup)
+  console.log(lights)
+  
   return lights;
 }
 
@@ -401,7 +401,7 @@ export async function init() {
 }
 
 async function runCommand() {
-  if (!isTauri()) return;
+  if (!isTauri()) return; 
   if (window.pyspawn?.write) return window.pyspawn;
   if (window.pyspawn === 0) {
     while (!window.pyspawn) await delay(400);
