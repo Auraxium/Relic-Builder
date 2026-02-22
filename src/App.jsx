@@ -8,430 +8,22 @@ import effects from './effects.json'
 import * as cur from './effects_edit'
 import "./App.css";
 import File from "./components/File"
+import Home, { Relic } from './components/Home'
+import Workshop from "./components/Workshop";
+import Builds from "./components/Build";
 
 const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 const effects_keys = Object.keys(effects);
 export const throw_frontend_error = (j) => states.setError(j)
 
-const Relic = ({ relic, edit, className, pl, misc }) => {
-  // return
-  // if(!effects[relic.effect_1]?.name) return <></>
-  // console.log(relic);
-  if (!relic) return <></>;
-
-  const List = ({ ind, curse }) => {
-    let perks = curse ? relic.curses : relic.perks;
-    let id = perks[ind];
-    let perk = effects[id];
-    if (perk == 'Empty') return <></>;
-
-    return (
-      <div className="capitalize flex items-center text-nowrap,  gap-[2px] rounded-md w-fit p-1  h-[33.333%], leading-[1.3]"
-        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, backgroundColor: pl?.perk_set?.has(id) ? '#226C7D' : curse ? '#2d007a' : '#444' }}
-        onClick={e => pl && !curse && pl.Add(perks[ind])}
-      >
-        {perk || ''}
-      </div>
-    )
-  }
-  //b 13072c g 062609 r 260606 y 302902
-  return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], h-[180px] min-h-[180px] max-h-[180px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
-      <div className="flex w-full h-[24%] border, items-center">
-        <div className="w-[15%] h-full">
-          <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
-        </div>
-        <div className="text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, grow flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
-        <div className="ms-auto flex gap-2 w-[15%] justify-end ">
-          <IconPencil onClick={() => console.log(relic)} />
-          <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
-          <IconDesk onClick={() => account.workshop[relic.id] = {}} />
-        </div>
-      </div>
-      <div className="flex flex-col w-full h-[80%] mt-1 flex-wrap gap-1 relative -top-[6px],">
-        <List ind={0} />
-        <List ind={1} />
-        <List ind={2} />
-        {relic.curses?.length ?
-          <>
-            <List ind={0} curse={1} />
-            <List ind={1} curse={1} />
-            <List ind={2} curse={1} />
-          </>
-          :
-          <></>
-        }
-      </div>
-    </div>
-  );
-};
-
-function Home({ relics = window.account?.relics || [] }) {
-  let [filter, setFilter] = useState({})
-  let search_bar = useRef()
-  let perk_list = useRef()
-
-  // let relics_list = window.account?.relics || relics;
-  let relics_list = React.useMemo(() => Object.values(relics).reverse(), [relics])
-  relics_list = React.useMemo(() => {
-    if (filter['deep']) relics_list = relics_list.filter(rel => rel.deep);
-    if ('rbyg'.split('').some(c => filter[c])) relics_list = relics_list.filter(rel => filter[rel.color]);
-    if ('123'.split('').some(c => filter[+c])) relics_list = relics_list.filter(rel => filter[rel.size])
-    if ('search' in filter) relics_list = relics_list.filter(rel => rel.perks.map(el => effects[el]).join(' ').toLowerCase().includes(filter.search))
-    if (filter.picks?.length) {
-      // console.log(filter.picks, relics_list[0].perks)
-      // relics_list = relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e)));
-      relics_list = filter.match_all ? relics_list.filter(rel => filter.picks.filter(e => rel.perks.includes(e)).length >= clamp(1, filter.picks.length, 3)) : relics_list.filter(rel => rel.perks.some(e => filter.picks.includes(e) || filter.picks.includes(cur.dupe_map[e])));
-    }
-    return relics_list;
-  }, [filter])
-
-  // perk_list.picks = filter.picks || []
-  // console.log(filter)
-
-  useEffect(() => {
-    perk_list.onChange = (ps) => setFilter(p => ({ ...p, picks: ps }));
-    perk_list.setFilter = setFilter;
-  }, [])
-
-  let bounceSearch = debounce((s) => setFilter(p => ({ ...p, search: s })), 400);
-
-  const Option = ({ color }) => (
-    <div className="w-[40px] rounded-xl border-[2px] border-[#777] hover:border-[#aaa] center text-[#3a8dc4] bg-[#333] text-[21px] center capitalize" style={{ color: color_code[color], borderColor: filter[color] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [color]: !filter[color] })}>
-      {color}
-    </div>
-  )
-
-  return (
-    <div className="full relative space-x-[1px] gap-x-[1px] flex flex-col py-4">
-      <div className="flex relative border-b-[#777] items-center bg-[#111] p-2 gap-2 w-full ">
-        <div ref={perk_list} className="absolute p-1 w-[102%] h-[60vh] z-20 bg-neutral-900 border-neutral-600 border-[1px] -top-[0px] -left-[18px] top-[60px]" style={{ display: 'none' }}>
-          <div className="bg-[rgb(0,0,0,0)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
-          <PerkList _ref={perk_list} className={'z-10 bg-[#07063a]'} searchBar={1} />
-        </div>
-        <div className="flex items-center justify-end w-[250px] gap-2 ">
-          <div className="w-[20px]"><IconSearch /> </div>
-          <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
-        </div>
-        <div className={`${option_class} w-[content] me-4 `} onClick={() => { search_bar.current.value = ''; setFilter({}); perk_list.setPerks([]); perk_list.current.style.display = 'none' }}> Clear </div>
-        <Option color={'r'} />
-        <Option color={'b'} />
-        <Option color={'g'} />
-        <Option color={'y'} />
-        <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
-        <div className="aspect-square h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
-        <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
-        <div className="aspect-square h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
-        <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
-        <div className="ms-auto">{relics_list.length} Relics</div>
-      </div>
-      <div className="home-main relative grow w-full overflow-y-auto, overflow-x-hidden my-4 h-1">
-        <VirtuosoGrid
-          totalCount={relics_list.length}
-          itemContent={(index) => <Relic relic={relics_list[index]} edit={1} key={index} pl={perk_list} />}
-          listClassName="grid grid-cols-1 xl:grid-cols-2 gap-2 w-full p-2"
-          itemClassName="w-full"
-          style={{ height: '100%', overflowY: 'auto' }}
-        />
-      </div>
-    </div>
-  )
-}
-
-// let _raw = false;
-const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
-  let [perk_state, setPerks] = useState(_ref.picks || []);
-  let [search, setSearch] = useState('');
-  let [raw, setRaw] = useState(window.raw);
-  _ref.raw = raw;
-  window.raw = raw;
-  let inp = useRef();
-  let bounceSearch = debounce((s) => setSearch(s), 400);
-  // let perk_list = Obje
-  let perks = raw ? effects : cur.effects;
-  let perks_list = React.useMemo(() => Object.entries(perks)
-    .map(perk => ({ text: perk[1].toLowerCase(), ind: +perk[0] }))
-    .sort((a, b) => {
-      const normalize = (s) => s.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-      return normalize(a.text).localeCompare(normalize(b.text));
-    }), [raw]);
-  perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()));
-  if (search) perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()), [raw]);
-  else perks_list = perks_list.filter(e => !cur.hide_expand.has(e.ind))
-  let perk_set = new Set(perk_state || []);
-  _ref.perk_set = perk_set;
-
-  useEffect(() => {
-    _ref.setPerks = setPerks;
-    _ref.picks = perk_state;
-    _ref.setSearch = setSearch;
-    _ref.setRaw = setRaw;
-    _ref.Add = (id) => {
-      perk_set.add(id);
-      _ref.onChange && _ref.onChange([...perk_set]);
-      console.log(perk_set);
-      // console.log(perk.ind, perk.text);
-      setPerks([...perk_set]);
-    };
-  });
-
-  const PerkUI = ({ perk, debug }) => {
-    // if(debug) console.log(perk)
-    let id = perk;
-    let name = perks[id];
-    let on = perk_set.has(id) && '#226C7D';
-    return (
-      <div key={id}
-        className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, border-[1px] border-[#333] bg-[#181818] capitalize hover:bg-neutral-600 leading-[1]"
-        style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
-        onPointerDown={(e) => {
-          on ? perk_set.delete(id) : perk_set.add(id);
-          _ref.onChange && _ref.onChange([...perk_set]);
-          console.log(perk_set);
-          // console.log(perk.ind, perk.text);
-          setPerks([...perk_set]);
-        }}
-      >
-        {name}
-      </div>
-    );
-  }
-
-  return (
-    <div className={`full flex flex-col p-1 ${className}`} >
-      {searchBar ?
-        <div className="flex items-center mb-2 w-full gap-2 ">
-          <div className="w-[20px]"><IconSearch /> </div>
-          <input ref={inp} className="w-[200px] bg-[#444] p-1" type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} />
-          <IconX onClick={() => { inp.current.value = ''; setSearch(''); }} />
-          <div className={`${option_class} w-[content] ms-2 `} onClick={() => { setPerks([]); _ref.onChange && _ref.onChange([]) }}>Clear</div>
-          <div className={`${option_class} w-[content] ms-2 flex gap-1 pen `}
-            onClick={e => { e.target.children[0].checked ? _ref.setFilter(p => ({ ...p, match_all: 0 })) : _ref.setFilter(p => ({ ...p, match_all: 1 })); e.target.children[0].click() }}>
-            <input className="pointer-events-none" onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
-            Match All
-          </div>
-          {perk_set.size}
-          <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `}
-            onClick={e => { setRaw(!e.target.children[0].checked); e.target.children[0].click() }}>
-            <input className="pointer-events-none" defaultChecked={raw} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
-            Raw
-          </div>
-        </div>
-        :
-        <></>
-      }
-
-      <div className="grow h-1 gap-1 overflow-auto flex flex-wrap  content-start virt ">
-        <VirtuosoGrid
-          totalCount={perks_list.length}
-          itemContent={(index) => <PerkUI perk={perks_list[index].ind} key={index} />}
-          listClassName="grid grid-cols-2 xl:grid-cols-3 gap-1"
-          itemClassName="w-[32.9%], min-w-fit"
-          style={{ width: '100%', height: '100%', display: 'flex' }}
-        />
-        {/* {perks_list.map((perk) => <PerkUI perk={perk.ind} />)} */}
-      </div>
-
-      <div className="h-[45px] flex  mt-2 border-b-[1px], [&>*]:min-w-fit gap-1 overflow-x-auto overflow-y-hidden nsb, flex-wrap, w-full content-start">
-        {[...perk_set].map(e => <PerkUI perk={e} debug={1} />)}
-        <hr />
-      </div>
-    </div >
-  )
-}
-
 // let build_cache = []
-let build_cache = account.build_cache || [];
-function Builds({ }) {
-  let [character, setCharacter] = useState(account.cache.build_char || '');
-  let [builds, setBuilds] = useState([]);
-  let [bans, setBans] = useState({});
-  let [type, setType] = useState(0);
-  let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
-  let count = useRef();
-  let pl = useRef();
-  // console.log(pl.picks, account.build_cache)
-  pl.picks ??= account.cache[character] || [];
-  pl.setPerks && pl.setPerks(account.cache[character] || [])
 
-  let bounceSearch = debounce((s) => pl.setSearch(s), 400);
-
-  useEffect(() => {
-    pl.onChange = (arr) => {
-      count.current.innerHTML = arr.length;
-      pl.picks = arr;
-      account.cache[character] = arr;
-    };
-    pl.setPerks ??= () => { };
-  }, []);
-
-  useEffect(() => {
-    // if(pl.setPerks) pl.setPerks(account.cache[character] || []);
-    save()
-  }, [character])
-
-  const Build = ({ build, add }) => {
-    // if (!build[2]) 
-    // console.log(build);
-    if (!build?.rels) return <></>;
-    if (build.rels.some(rel => bans[rel.id])) return <></>;
-    build.cup ??= build.pos_cups_raw[0];
-    let [cup, colors] = build.cup.split('$');
-    colors = colors.split('#');
-    colors = (build.type == 1 ? colors[0] : build.type == 2 ? colors[1] : colors.join("")).split("");
-    let temp = [...build.rels];
-    let relics = colors.reduce((acc, e, i) => { //sort relics to match cup order
-      let ind = temp.findIndex(el => el.color == e);
-      acc[i] = temp.splice(ind, 1)[0];
-      return acc;
-    }, []);
-    // return console.log(relics)
-    let name = cup + ':';
-    if (name[0] == '@') name = `${character}'s ${name.slice(1)}`;
-
-    return (
-      <div className="col gap-y-2 w-full" >
-        <div className="capitalize text-[22px] flex h-12 items-center">
-          {name}
-          <div className="flex gap-1 ms-4">
-            {colors.map(c => <div className="rounded-md flex border-[1px] bg-[#5d4e03], w-12 h-12 border-[#555]" style={{ backgroundColor: color_muted[c] }} ></div>)}
-          </div>
-        </div>
-        <div className="lg:grid grid-rows-3 grid-flow-col w-full h-[600px], grow gap-1 flex-wrap, ">
-          {relics.map(rel => <Relic misc={{ banEvent: (id) => { console.log(id); bans[id] = !bans[id]; setBans({ ...bans }) } }} className={''} relic={rel} />)}
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="full flex flex-col gap-2 py-4">
-      <div className="flex cont, gap-1 border-[#666]  ">
-        {chars_list.map(char => (
-          <div className={`${option_class}`} style={{ borderColor: character == char.name ? 'teal' : '', color: character == char.name ? '#fff' : '' }} onPointerDown={() => {
-            pl.setPerks(account.cache[character] || [])
-            account.cache.build_char = char.name;
-            setBuilds([]);
-            setCharacter(char.name)
-          }}>
-            {char_icons[char]}
-            {char.name}
-          </div>
-        ))}
-      </div>
-      {builds?.length ?
-        <div className="flex flex-col grow h-1 gap-2 overflow-y-auto">
-          {builds.slice(0, 50).filter(e => !e.rels.some(e => bans[e])).map(b => <Build build={b} />)}
-        </div>
-        : character ?
-          <div className="grow h-1 flex flex-col">
-            <div className="flex gap-2 p-2 items-center">
-              <span className="text-[22px]">Choose perks for <span className="capitalize">{character}'s</span> build:</span>
-              <div className={`${option_class} `} onClick={() => pl.setPerks([...chars[character].recs])} >Recommended</div>
-            </div>
-            <div className="flex items-center mb-2 justify-end w-full gap-2 ">
-              <div className="w-[20px]"><IconSearch /></div>
-              <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="w-[150px] bg-[#444] p-1" />
-              <div ref={count} className="">
-                {pl.picks.length}
-              </div>
-              <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `}
-                onClick={e => { pl.setRaw(!e.target.children[0].checked); e.target.children[0].click() }}>
-                <input className="pointer-events-none" defaultChecked={raw} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
-                Raw
-              </div>
-            </div>
-            <div className="grow h-1 overflow-y-auto overflow-x-hidden">
-              <PerkList _ref={pl} />
-            </div>
-          </div>
-          :
-          <></>
-      }
-      <div className="mt-auto p-2 h-16 w-full items-center flex bg-neutral-900,">
-        <div className=""></div>
-        <div className="flex ms-auto gap-2">
-          <div className={`${option_class} `} onClick={() => { }}>{builds?.length ? 'Back' : 'Clear'}</div>
-          <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `} onClick={e => { setType(type == 1 ? 0 : 1); e.target.children[0].click() }}>
-            <input className="pointer-events-none" checked={type == 1} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
-            Light Only
-          </div>
-          <div className={`${option_class} w-fit ms-auto flex gap-1 pen `} onClick={e => { setType(type == 2 ? 0 : 2); e.target.children[0].click() }}>
-            <input className="pointer-events-none" checked={type == 2} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
-            Deep Only
-          </div>
-          <div className={`${option_class} bg-teal-700 `} onClick={() => { if (!builds?.length) setBuilds(generateBuild2({ picks: pl.picks, char: character, raw: pl.raw, type })); account.cache[character] = [...pl.picks]; }}>Generate Build</div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 let nav_icon = {
   relics: <IconHome size={28} stroke={1.5} />
 }
 
-account.workshop ??= {};
-function Workshop() {
-  let ghost = useRef()
-  let count = 0;
-  let rels = Object.keys(account.workshop);
-  let moving, pos, target, r, ox, oy, cr, seg, idx;
 
-  function down(e) {
-    moving = 1;
-    target = e.target;
-    r = target.getBoundingClientRect();
-    ox = e.pageX - r.left;
-    oy = e.pageY - r.top;
-    target.style.left = e.pageX - ox + 'px';
-    target.style.top = e.pageY - oy + 'px';
-    document.addEventListener('pointermove', move)
-    document.addEventListener('pointerup', up)
-  }
-
-  function move(e) {
-    target.style.left = e.pageX - ox + 'px';
-    target.style.top = e.pageY - oy + 'px';
-  }
-
-  function up(e) {
-    moving = false;
-    ghost.current.style.width = r.width + 'px';
-    ghost.current.style.height = r.height + 'px';
-    ghost.current.style.left = e.pageX - ox + 'px';
-    ghost.current.style.top = e.pageY - oy + 'px';
-    account.workshop[+target.dataset.id].left = e.pageX - ox + 'px';
-    account.workshop[+target.dataset.id].top = e.pageY - oy + 'px';
-    document.removeEventListener('pointermove', move)
-    document.removeEventListener('pointerup', up)
-  }
-
-  return (
-    <div className="full relative overflow-auto">
-      <div className="" onClick={e => account.workshop = {}}>clear</div>
-      <div ref={ghost} className="border absolute pointer-events-none"></div>
-      {rels.map(e => {
-        let info = account.workshop[e];
-
-        if (info.left === undefined) {
-          count++;
-          info.left = 12 * count;
-          info.top = 12 * count;
-          info.data = account.relics[e];
-        }
-
-        return (
-          <div className="absolute mb-[200px] [&>*]:pointer-events-none" data-id={e} style={{ left: info.left, top: info.top }}
-            onPointerDown={down}
-          >
-            <Relic relic={info.data} />
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 function Config() {
 
@@ -472,7 +64,7 @@ function App() {
 
   // if (!relics) return;
   return (
-    <div style={{ backgroundImage: `url(./bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
+    <div style={{ backgroundImage: `url(./bg3.png)` }} className="full, flex flex-col img h-[100svh] w-[100svw] bg-[#202020] ">
       <div className="nav bg-[#0d0d0b] h-[6%] min-h-[50px] max-h-[80px] flex p-2 items-center,">
         <div className="flex items-center h-full w-full gap-1 &>*:[w-fit]">
           {/* <div style={{ backgroundImage: "url(/rblogo.png)", backgroundPosition: "bottom" }} className="img border-[#777] border-[1px] h-full rounded-md w-12"></div> */}
@@ -484,16 +76,17 @@ function App() {
           <Nav to={'file'} comp={<File />} />
           {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
           <Nav className="mt-" to={'Config'} comp={<Config />} />
-          <div className="ms-auto opacity-15">v1.0.3</div>
+          <div className="ms-auto"></div>
+          {/* <div className="ms-auto opacity-15">v1.0.3</div> */}
         </div>
       </div>
       <div className="main grow flex ">
         <div key={Math.random()} className="mid grow p-1 w-1">{page || <Home />}</div>
       </div>
-      <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={openSupport}>
+      {/* <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={openSupport}>
         <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
         <span>Support Me</span>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -102,7 +102,7 @@ async function handleFile(e) {
     let pos = BND4_HEADER_LEN + (BND4_ENTRY_HEADER_LEN * i);
 
     if (pos + BND4_ENTRY_HEADER_LEN > bytes.length) {
-      console.log('account too new');
+      console.log('no save yet');
       break;
     }
 
@@ -140,7 +140,7 @@ async function handleFile(e) {
       continue;
     }
 
-    console.log('finna process ', i)
+    console.log('processing ', i)
 
     let decrypted_raw = await decrypt({
       encrypted_data: bytes.subarray(entry_data_offset, entry_data_offset + entry_size),
@@ -155,6 +155,7 @@ async function handleFile(e) {
 
   // account.USER_DATA_00 = files[0];
   console.log('done')
+  getProfileData()
 }
 
 async function decrypt(mem) {
@@ -306,8 +307,6 @@ function getProfileData() {
       skips.push(name)
       return null;
     }
-
-    // if(!size || !color) return null;
 
     return ({
       ...rel,
