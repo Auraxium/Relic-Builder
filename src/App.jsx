@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import { ipcFetch, openSupport, CompareStrings, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, perks_list, checkForAppUpdates, generateBuild2, save } from "./statics";
-import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch } from "@tabler/icons-react";
+import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch, IconDesk } from "@tabler/icons-react";
 import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
 import effects from './effects.json'
 import * as cur from './effects_edit'
@@ -13,20 +13,22 @@ const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, borde
 const effects_keys = Object.keys(effects);
 export const throw_frontend_error = (j) => states.setError(j)
 
-const Relic = ({ relic, edit, className, pl }) => {
+const Relic = ({ relic, edit, className, pl, misc }) => {
   // return
   // if(!effects[relic.effect_1]?.name) return <></>
   // console.log(relic);
   if (!relic) return <></>;
 
-  const List = ({ ind, perk = effects[relic.perks[ind]] || '' }) => {
+  const List = ({ ind, curse }) => {
+    let perks = curse ? relic.curses : relic.perks;
+    let id = perks[ind];
+    let perk = effects[id];
     if (perk == 'Empty') return <></>;
-    let id = relic.perks[ind];
 
     return (
       <div className="capitalize flex items-center text-nowrap,  gap-[2px] rounded-md w-fit p-1  h-[33.333%], leading-[1.3]"
-        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, backgroundColor: pl.perk_set.has(id) ? '#226C7D' : '#444'}}
-        onClick={e => pl.Add(relic.perks[ind])}
+        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, backgroundColor: pl?.perk_set?.has(id) ? '#226C7D' : curse ? '#2d007a' : '#444' }}
+        onClick={e => pl && !curse && pl.Add(perks[ind])}
       >
         {perk || ''}
       </div>
@@ -34,21 +36,31 @@ const Relic = ({ relic, edit, className, pl }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], h-[180px] min-h-[180px] max-h-[180px] border-[#777] bg-neutral-950 gap-2 py-1 px-2 col box-border ${className}`} style={{}} >
-      <div className="flex w-full h-12 border, items-center">
+    <div className={`border-[1px] w-full, xl:w-[46.3%], h-[180px] min-h-[180px] max-h-[180px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
+      <div className="flex w-full h-[24%] border, items-center">
         <div className="w-[15%] h-full">
           <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
         </div>
         <div className="text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, grow flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
         <div className="ms-auto flex gap-2 w-[15%] justify-end ">
           <IconPencil onClick={() => console.log(relic)} />
-          {/* <IconTrash onClick={() => { delete states.relics[relic.id]; states.setRelics({ ...states.relics }) }} />  */}
+          <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
+          <IconDesk onClick={() => account.workshop[relic.id] = {}} />
         </div>
       </div>
-      <div className="flex flex-col h-1 mt-1 grow w-full gap-1 relative -top-[6px]">
+      <div className="flex flex-col w-full h-[80%] mt-1 flex-wrap gap-1 relative -top-[6px],">
         <List ind={0} />
         <List ind={1} />
         <List ind={2} />
+        {relic.curses?.length ?
+          <>
+            <List ind={0} curse={1} />
+            <List ind={1} curse={1} />
+            <List ind={2} curse={1} />
+          </>
+          :
+          <></>
+        }
       </div>
     </div>
   );
@@ -91,7 +103,7 @@ function Home({ relics = window.account?.relics || [] }) {
   )
 
   return (
-    <div className="full relative flex flex-col py-4">
+    <div className="full relative space-x-[1px] gap-x-[1px] flex flex-col py-4">
       <div className="flex relative border-b-[#777] items-center bg-[#111] p-2 gap-2 w-full ">
         <div ref={perk_list} className="absolute p-1 w-[102%] h-[60vh] z-20 bg-neutral-900 border-neutral-600 border-[1px] -top-[0px] -left-[18px] top-[60px]" style={{ display: 'none' }}>
           <div className="bg-[rgb(0,0,0,0)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
@@ -170,7 +182,7 @@ const PerkList = ({ _ref, pre_picks, searchBar, className }) => {
     let on = perk_set.has(id) && '#226C7D';
     return (
       <div key={id}
-        className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, bg-[#363636] capitalize hover:bg-neutral-600 leading-[1]"
+        className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, border-[1px] border-[#333] bg-[#181818] capitalize hover:bg-neutral-600 leading-[1]"
         style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
         onPointerDown={(e) => {
           on ? perk_set.delete(id) : perk_set.add(id);
@@ -233,6 +245,7 @@ let build_cache = account.build_cache || [];
 function Builds({ }) {
   let [character, setCharacter] = useState(account.cache.build_char || '');
   let [builds, setBuilds] = useState([]);
+  let [bans, setBans] = useState({});
   let [type, setType] = useState(0);
   let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
   let count = useRef();
@@ -261,6 +274,7 @@ function Builds({ }) {
     // if (!build[2]) 
     // console.log(build);
     if (!build?.rels) return <></>;
+    if (build.rels.some(rel => bans[rel.id])) return <></>;
     build.cup ??= build.pos_cups_raw[0];
     let [cup, colors] = build.cup.split('$');
     colors = colors.split('#');
@@ -284,7 +298,7 @@ function Builds({ }) {
           </div>
         </div>
         <div className="lg:grid grid-rows-3 grid-flow-col w-full h-[600px], grow gap-1 flex-wrap, ">
-          {relics.map(rel => <Relic className={''} relic={rel} />)}
+          {relics.map(rel => <Relic misc={{ banEvent: (id) => { console.log(id); bans[id] = !bans[id]; setBans({ ...bans }) } }} className={''} relic={rel} />)}
         </div>
       </div>
     )
@@ -307,7 +321,7 @@ function Builds({ }) {
       </div>
       {builds?.length ?
         <div className="flex flex-col grow h-1 gap-2 overflow-y-auto">
-          {builds.slice(0, 50).map(b => <Build build={b} />)}
+          {builds.slice(0, 50).filter(e => !e.rels.some(e => bans[e])).map(b => <Build build={b} />)}
         </div>
         : character ?
           <div className="grow h-1 flex flex-col">
@@ -337,12 +351,12 @@ function Builds({ }) {
       <div className="mt-auto p-2 h-16 w-full items-center flex bg-neutral-900,">
         <div className=""></div>
         <div className="flex ms-auto gap-2">
-          <div className={`${option_class} `} onClick={() => { account.cache[character] = []; pl.onChange([]); pl.setPerks([]); setBuilds([]) }}>{builds?.length ? 'Back' : 'Clear'}</div>
+          <div className={`${option_class} `} onClick={() => { }}>{builds?.length ? 'Back' : 'Clear'}</div>
           <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `} onClick={e => { setType(type == 1 ? 0 : 1); e.target.children[0].click() }}>
             <input className="pointer-events-none" checked={type == 1} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
             Light Only
           </div>
-          <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `} onClick={e => { setType(type == 2 ? 0 : 2); e.target.children[0].click() }}>
+          <div className={`${option_class} w-fit ms-auto flex gap-1 pen `} onClick={e => { setType(type == 2 ? 0 : 2); e.target.children[0].click() }}>
             <input className="pointer-events-none" checked={type == 2} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
             Deep Only
           </div>
@@ -355,6 +369,68 @@ function Builds({ }) {
 
 let nav_icon = {
   relics: <IconHome size={28} stroke={1.5} />
+}
+
+account.workshop ??= {};
+function Workshop() {
+  let ghost = useRef()
+  let count = 0;
+  let rels = Object.keys(account.workshop);
+  let moving, pos, target, r, ox, oy, cr, seg, idx;
+
+  function down(e) {
+    moving = 1;
+    target = e.target;
+    r = target.getBoundingClientRect();
+    ox = e.pageX - r.left;
+    oy = e.pageY - r.top;
+    target.style.left = e.pageX - ox + 'px';
+    target.style.top = e.pageY - oy + 'px';
+    document.addEventListener('pointermove', move)
+    document.addEventListener('pointerup', up)
+  }
+
+  function move(e) {
+    target.style.left = e.pageX - ox + 'px';
+    target.style.top = e.pageY - oy + 'px';
+  }
+
+  function up(e) {
+    moving = false;
+    ghost.current.style.width = r.width + 'px';
+    ghost.current.style.height = r.height + 'px';
+    ghost.current.style.left = e.pageX - ox + 'px';
+    ghost.current.style.top = e.pageY - oy + 'px';
+    account.workshop[+target.dataset.id].left = e.pageX - ox + 'px';
+    account.workshop[+target.dataset.id].top = e.pageY - oy + 'px';
+    document.removeEventListener('pointermove', move)
+    document.removeEventListener('pointerup', up)
+  }
+
+  return (
+    <div className="full relative overflow-auto">
+      <div className="" onClick={e => account.workshop = {}}>clear</div>
+      <div ref={ghost} className="border absolute pointer-events-none"></div>
+      {rels.map(e => {
+        let info = account.workshop[e];
+
+        if (info.left === undefined) {
+          count++;
+          info.left = 12 * count;
+          info.top = 12 * count;
+          info.data = account.relics[e];
+        }
+
+        return (
+          <div className="absolute mb-[200px] [&>*]:pointer-events-none" data-id={e} style={{ left: info.left, top: info.top }}
+            onPointerDown={down}
+          >
+            <Relic relic={info.data} />
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 function Config() {
@@ -375,8 +451,8 @@ function App() {
   let [page, setPage] = useState(<Home />);
   let scan_card = useRef();
 
-  const Nav = ({ to, comp, click, className }) => <div className={`w-full h-[60px] bg-[#434343] hover:bg-[#777] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
-    click && click()
+  const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[#333] p-1 border-[1px] h-[60px], bg-[#1f1f1f] hover:bg-[#777] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
+    click && click();
     setPage(comp)
   }}>{nav_icon[to]}{to}</div>
 
@@ -397,39 +473,26 @@ function App() {
   // if (!relics) return;
   return (
     <div style={{ backgroundImage: `url(./bg3.png)` }} className="full, flex flex-col  img h-[100svh] w-[100svw] bg-[#202020] ">
-      <div ref={scan_card} className="fixed -left-[0%] -top-[0%] w-[100vw] h-[100vh] center bg-[rgba(0,0,0,0.6)] bg-black, z-10" style={{ display: 'none' }} onClick={e => {
-        scan_card.current.style.display = 'none';
-        ipcFetch('stop_scan');
-        window.scanning = false
-      }}>
-
-      </div>
       <div className="nav bg-[#0d0d0b] h-[6%] min-h-[50px] max-h-[80px] flex p-2 items-center,">
-        <div className="flex items-center h-full" onClick={() => setPage("")}>
+        <div className="flex items-center h-full w-full gap-1 &>*:[w-fit]">
           {/* <div style={{ backgroundImage: "url(/rblogo.png)", backgroundPosition: "bottom" }} className="img border-[#777] border-[1px] h-full rounded-md w-12"></div> */}
           <img src="./rblogo.png" alt="" className="img border-[#777] border-[1px] h-full rounded-md w-12 bg-bottom" />
-          <div className="ms-1 hightop text-[32px]">Relic Builder</div>
+          <Nav to={'relics'} comp={<Home />} />
+          <Nav to={'Builds'} comp={<Builds />} />
+          <Nav to={'Workshop'} comp={<Workshop />} />
+          {/* <Nav to={'add'} comp={<Create />} /> */}
+          <Nav to={'file'} comp={<File />} />
+          {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
+          <Nav className="mt-" to={'Config'} comp={<Config />} />
+          <div className="ms-auto opacity-15">v1.0.3</div>
         </div>
       </div>
       <div className="main grow flex ">
-        <div className="left h-full w-[12%] center">
-          <div className="w-[70%] h-[85%] bg-neutral-950 rounded xl p-2 col gap-y-1">
-            <Nav to={'relics'} comp={<Home />} />
-            <Nav to={'Builds'} comp={<Builds />} />
-            {/* <Nav to={'add'} comp={<Create />} /> */}
-            <Nav to={'file'} comp={<File />} />
-            {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
-            <Nav className="mt-" to={'Config'} comp={<Config />} />
-            <div className="mt-auto opacity-15">v1.0.3</div>
-          </div>
-        </div>
-        <div key={Math.random()} className="mid grow w-1">{page || <Home />}</div>
-        <div className="right w-[8%]">
-          <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={() => openSupport()}>
-            <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
-            <span>Support Me</span>
-          </div>
-        </div>
+        <div key={Math.random()} className="mid grow p-1 w-1">{page || <Home />}</div>
+      </div>
+      <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={openSupport}>
+        <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
+        <span>Support Me</span>
       </div>
     </div>
   );

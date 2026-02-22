@@ -128,8 +128,9 @@ export let chars = {
     recs: []
   },
   revenant: {
-    cups: ["@Urn$bby", "@Goblet$rrg", "@Chalice$bgw", "Soot Covered Urn$ryy"],
+    cups: ["@Urn$bby#bby", "@Goblet$rrg#rrg", "@Chalice$bgw#byg", "Soot Covered Urn$ryy#rry", 'sealed @$ybb#ggr', 'decrepit$rry#rry', 'forgotten$grr#ygw'],
     recs: [],
+    augs: [7320000,6645000,7031200,7011200,6500500,7010900,6645100,7220000,7036200]
   },
   recluse: {
     cups: ["@Urn$bbg", "@Goblet$rby", "@Chalice$ygw", "Soot Covered Urn$rry"],
@@ -141,12 +142,12 @@ export let chars = {
     augs: [7034400, 7011700, 7034500]
   },
   scholar: {
-    cups: ["@Urn$rry", "@Goblet$bgy", "@Chalice$gyw", "Soot Covered Urn$bgg", "Decrepit unc's Goblet$bbg", "@Forgotten un's Goblet$ygb",],
+    cups: ["@Urn$rry#rry", "@Goblet$bgy#bgy", "@Chalice$rbw#ryy", "Soot Covered Urn$bgg#bgg", 'sealed @\'s Urn$yrr#gbb', "Decrepit unc's Goblet$bbg#bbg", "@Forgotten un's Goblet$ygb#rgw",],
     recs: [],
-    augs: [7036300, 7036400, 7036500, 7036200, 6647200, 6647300, 6500800]
+    augs: [6500800, 6647300, 7036300, 7036400, 6647200, 7036200, 7036500]
   },
   undertaker: {
-    cups: ["@Urn$bgg", "@Goblet$ryy", "@Chalice$gyw", "Soot Covered Urn$rrb", "Decrepit unc's Goblet$ryy", "@Forgotten un's Goblet$rbb",],
+    cups: ["@Urn$bgg#bgg", "@Goblet$ryy#ryy", "@Chalice$gyw#bgy", "Soot Covered Urn$rrb#rrb", "sealed @ Urn$ggb#yrr", "Decrepit unc's Goblet$rbb#rbb", "@Forgotten un's Goblet$yyr#byg"],
     recs: [],
     augs: [7036800, 6500900, 7037300, 6647500, 7037000, 6647400, 7036900]
   },
@@ -186,7 +187,7 @@ let events = {
 };
 
 export function generateBuild2(args) {
-  let {picks, char, raw, deep, type} = args;
+  let { picks, char, raw, deep, type } = args;
   console.log(picks, char);
   let char_str = char;
   if (!picks.length) picks = chars[char].recs;
@@ -199,8 +200,8 @@ export function generateBuild2(args) {
 
   picks = new Set(picks);
   let scores = [...picks, ...chars[char].recs, ...chars.melee.recs].map(e => dupe_map[e] || e).reduce((acc, e) => {
-    acc[e] = (picks.has(e) + (augs.has(e) * .15) || reccs.has(e) * 0.11 || uni_reccs.has(e) * 0.1)
-      + (augs.has(e) * .1);
+    acc[e] = (picks.has(e) + (augs.has(e) * .35) || reccs.has(e) * 0.11 || uni_reccs.has(e) * 0.1)
+      + (augs.has(e) * .15);
     return acc;
   }, {});
 
@@ -268,19 +269,19 @@ export function generateBuild2(args) {
         let score = 0;
         for (let e of perks1) {
           score += scores[dupe_map[e] || e] || 0;
-          seen.add(e);
+          seen.add(dupe_map[e] || e);
         }
         for (let e of perks2) {
-          if (seen.has(e)) {
-            score -= .7;
+          if (seen.has(dupe_map[e] || e)) {
+            // score -= .7;
             continue;
           }
           score += scores[dupe_map[e] || e] || 0;
-          seen.add(e);
+          seen.add(dupe_map[e] || e);
         }
         // console.log(score)
-        if (score >= best) {
-          if(score > best) best = score;
+        if (score >= best - 2.5) {
+          if (score > best) best = score;
           pairs.push([score, seen, i, j, relics[i], relics[j]]);
         }
       }
@@ -288,7 +289,7 @@ export function generateBuild2(args) {
 
     let final_best = -Infinity;
     let bests = [];
-    pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0,75).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
+    pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0, 75).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
     // if(debug) console.log('pairs:', pairs);
     if (debug) console.log('pos_pans', pos_bans);
 
@@ -298,15 +299,15 @@ export function generateBuild2(args) {
       for (let three of relics.filter((e, i) => !bans.has(e.color) && i != pairs[2] && i != pairs[3])) {
         let score = pair[0];
         for (let e of three.perks) {
-          if (pair[1].has(e)) {
-            score -= 1.2;
+          if (pair[1].has(dupe_map[e] || e)) {
+            // score -= 1.2;
             continue;
           }
           score += scores[dupe_map[e] || e] || 0;
           // pair[1].add(e);
         }
-        if (score >= final_best -1) {
-          if(score > final_best) final_best = score;
+        if (score >= final_best - 2.5) {
+          if (score > final_best) final_best = score;
           bests.push([score, pair[2], pair[3], three]);
         }
       }
@@ -315,9 +316,10 @@ export function generateBuild2(args) {
     // filter duplicates and map 
     let filt = new Set();
     bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {
-      let ids = [relics[b[1]], relics[b[2]], b[3]].map(e => e.id).sort().join(",");
-      if (filt.has(ids)) return false;
-      filt.add(ids);
+      let ids = [relics[b[1]], relics[b[2]], b[3]].map(e => e.id).sort();
+      let join = ids.join(",");
+      if (filt.has(join)) return false;
+      filt.add(join);
       return true;
     }).slice(0, 50).map(e => {
       let rels = [relics[e[1]], relics[e[2]], e[3]];
@@ -342,28 +344,43 @@ export function generateBuild2(args) {
     return bests;
   };//end main
 
-  if(type == 1) return main(light_cups, states.relics.filter(e => !e.deep));
-  if(type == 2) return main(deep_cups, states.relics.filter(e => e.deep), 0);
-  let lights = main(light_cups, states.relics.filter(e => !e.deep));
-  let deeps = main(deep_cups, states.relics.filter(e => e.deep), 0);
+  let builds = []
+  if (type == 1) builds = main(light_cups, states.relics.filter(e => !e.deep));
+  else if (type == 2) builds = main(deep_cups, states.relics.filter(e => e.deep), 0);
+  else {
+    let lights = main(light_cups, states.relics.filter(e => !e.deep));
+    let deeps = main(deep_cups, states.relics.filter(e => e.deep), 0);
 
-  console.log(lights, deeps);
+    console.log(lights, deeps);
 
-  lights.forEach(light => {
-    let pool = deeps.filter(deep => {
-      deep.cup_ind = deep.pos_cups.find(ind => light.pos_cups.includes(ind));
-      return deep.cup_ind;
-    })
-    if(!pool.length) return null;
-    let best_deep = pool[0]; // todo: find best 
-    light.rels.push(...best_deep.rels);
-    light.cup = raw_cups[best_deep.cup_ind];
+    lights.forEach(light => {
+      let pool = deeps.filter(deep => {
+        deep.cup_ind = deep.pos_cups.find(ind => light.pos_cups.includes(ind));
+        return deep.cup_ind;
+      })
+      if (!pool.length) return null;
+      let best_deep = pool[0]; // todo: find best 
+      light.rels.push(...best_deep.rels);
+      light.cup = raw_cups[best_deep.cup_ind];
+    });
+
+    builds = lights.filter(e => e.cup);
+    console.log(lights);
+  }
+
+  let cap = {};
+  console.log([...builds])
+  builds = builds.filter(e => {
+    let ids = e.rels.map(el => el.id);
+    // for (let ex of ids.slice(0,3)) {
+      // cap[ex] ??= 0;
+      // if (++cap[ex] > 3) return false;
+    // }
+    return true;
   });
+  console.log(builds)
 
-  lights = lights.filter(e => e.cup)
-  console.log(lights)
-  
-  return lights;
+  return builds;
 }
 
 export async function init() {
@@ -401,7 +418,7 @@ export async function init() {
 }
 
 async function runCommand() {
-  if (!isTauri()) return; 
+  if (!isTauri()) return;
   if (window.pyspawn?.write) return window.pyspawn;
   if (window.pyspawn === 0) {
     while (!window.pyspawn) await delay(400);

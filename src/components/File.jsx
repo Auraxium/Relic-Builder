@@ -294,6 +294,7 @@ function getProfileData() {
     if (spl[0] == 'deep') {
       // console.log(name)
       rel.deep = 1;
+      rel.curses = [e.sec_effect1, e.sec_effect2, e.sec_effect3]
       spl.splice(0, 1);
     }
     // if(real_id <= 2019999 && real_id >= 2000000) console.log(name)
@@ -309,6 +310,7 @@ function getProfileData() {
     // if(!size || !color) return null;
 
     return ({
+      ...rel,
       id: i,
       real_id,
       name,
