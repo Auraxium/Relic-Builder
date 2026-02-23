@@ -11,16 +11,19 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   // if(!effects[relic.effect_1]?.name) return <></>
   // console.log(relic);
   if (!relic) return <></>;
+  let rel_perks = relic.perks.sort((b,a) => effects[a].length - effects[b].length)
+  let rel_curses;
+  if(relic.curses?.length) rel_curses = relic.curses.sort((a,b) => effects[a].length - effects[b].length)
 
   const List = ({ ind, curse }) => {
-    let perks = curse ? relic.curses : relic.perks;
+    let perks = curse ? rel_curses : rel_perks;
     let id = perks[ind];
     let perk = effects[id];
     if (perk == 'Empty') return <></>;
 
     return (
       <div className="capitalize flex items-center text-nowrap,  gap-[2px],  rounded-md w-fit h-fit p-1  h-[33.333%], leading-[1.3], border, [border:solid_1px_#444]"
-        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#1f1f1f' }}
+        style={{ fontSize: `12px`, backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#1f1f1f' }}
         onClick={e => pl && !curse && pl.Toggle(perks[ind])}
       >
         {perk || ''}
@@ -29,11 +32,11 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], h-[190px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
-      <div className="flex w-full h-[20%] border, items-center">
+    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[130px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
+      <div className="flex w-full h-[25%] border, items-center">
         <div className="w-[20%] h-full">
-          <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div>
-          {/* <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div> */}
+          {/* <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div> */}
+          <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
         </div>
         <div className="grow text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
         <div className="w-[20%] ms-auto flex gap-2 justify-end ">
@@ -42,11 +45,11 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
           <IconDesk onClick={() => account.workshop[relic.id] = {}} />
         </div>
       </div>
-      <div className="flex flex-col, w-full h-[80%] mt-1 flex-wrap content-start items-start gap-1 relative -top-[6px],">
+      <div className="flex flex-col, w-full h-[75%] mt-1 flex-wrap content-start items-start gap-1 relative -top-[6px], overflow-scroll nsb">
         <List ind={0} />
         <List ind={1} />
         <List ind={2} />
-        {relic.curses?.length ?
+        {rel_curses ?
           <>
             <List ind={0} curse={1} />
             <List ind={1} curse={1} />
