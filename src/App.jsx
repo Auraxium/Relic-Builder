@@ -65,10 +65,10 @@ function App() {
   // if (!relics) return;
   return (
     <div style={{ backgroundImage: `url(./bg3.png)` }} className="full, flex flex-col img h-[100svh] w-[100svw] bg-[#202020] ">
-      <div className="nav bg-[#0d0d0b] h-[6%] min-h-[50px] max-h-[80px] flex p-2 items-center,">
+      <div className="nav bg-[#0d0d0b] h-[6%] min-h-[50px] max-h-[80px] flex p-1 items-center,">
         <div className="flex items-center h-full w-full gap-1 &>*:[w-fit]">
           {/* <div style={{ backgroundImage: "url(/rblogo.png)", backgroundPosition: "bottom" }} className="img border-[#777] border-[1px] h-full rounded-md w-12"></div> */}
-          <img src="./rblogo.png" alt="" className="img border-[#777] border-[1px] h-full rounded-md w-12 bg-bottom" />
+          <img src="./rblogo.png" alt="" className="img border-[#777] border-[1px] h-full aspect-square rounded-md bg-bottom" />
           <Nav to={'relics'} comp={<Home />} />
           <Nav to={'Builds'} comp={<Builds />} />
           <Nav to={'Workshop'} comp={<Workshop />} />
@@ -80,7 +80,7 @@ function App() {
           {/* <div className="ms-auto opacity-15">v1.0.3</div> */}
         </div>
       </div>
-      <div className="main grow flex ">
+      <div className="main grow flex px-[50px] ">
         <div key={Math.random()} className="mid grow p-1 w-1">{page || <Home />}</div>
       </div>
       {/* <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={openSupport}>
