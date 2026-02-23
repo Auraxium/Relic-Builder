@@ -43,7 +43,7 @@ function App() {
   let [page, setPage] = useState(<Home />);
   let scan_card = useRef();
 
-  const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[#333] p-1 border-[1px] h-[60px], bg-[#1f1f1f] hover:bg-[#777] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
+  const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[#333] p-1 border-[1px] h-[60px], bg-[#1f1f1f] hover:bg-[#555] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
     click && click();
     setPage(comp)
   }}>{nav_icon[to]}{to}</div>
@@ -80,8 +80,8 @@ function App() {
           {/* <div className="ms-auto opacity-15">v1.0.3</div> */}
         </div>
       </div>
-      <div className="main grow flex px-[50px] ">
-        <div key={Math.random()} className="mid grow p-1 w-1">{page || <Home />}</div>
+      <div className="main grow flex w-full center ">
+        <div key={Math.random()} className="mid h-full w-[90%] p-1 w-1,">{page || <Home />}</div>
       </div>
       {/* <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={openSupport}>
         <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />

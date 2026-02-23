@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ipcFetch, openSupport, CompareStrings, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, perks_list, checkForAppUpdates, generateBuild2, save } from "../statics";
+import { option_class } from "../statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch, IconDesk } from "@tabler/icons-react";
 import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
 import effects from '../effects.json'
 import * as cur from '../effects_edit'
 import { Relic } from "./Home";
-
-const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 
 account.workshop ??= {};
 export default function Workshop() {
@@ -45,7 +43,7 @@ export default function Workshop() {
   }
 
   return (
-    <div className="full relative overflow-auto">
+    <div className="full fixed h-[100vh] w-[100vw] left-0 overflow-auto">
       <div className="" onClick={e => account.workshop = {}}>clear</div>
       <div ref={ghost} className="border absolute pointer-events-none"></div>
       {rels.map(e => {
@@ -53,16 +51,16 @@ export default function Workshop() {
 
         if (info.left === undefined) {
           count++;
-          info.left = 12 * count;
-          info.top = 12 * count;
+          info.left = 120 + (12 * count);
+          info.top = 70 + (12 * count);
           info.data = account.relics[e];
         }
 
         return (
-          <div className="absolute mb-[200px] [&>*]:pointer-events-none" data-id={e} style={{ left: info.left, top: info.top }}
+          <div className="absolute mb-[200px]  [&>*]:pointer-events-none" data-id={e} style={{ left: info.left, top: info.top }}
             onPointerDown={down}
           >
-            <Relic relic={info.data} />
+            <Relic relic={info.data} className={'max-w-[700px] w-fit mb-[200px] mr-[100px] !flex-c,ol'} />
           </div>
         )
       })}

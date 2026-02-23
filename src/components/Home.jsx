@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { color_text, size_text, color_code, debounce, clamp } from "../statics";
+import { color_text, color_muted, size_text, color_code, debounce, clamp, option_class } from "../statics";
 import { IconSearch, IconTrash, IconPencil, IconListSearch, IconDesk } from "@tabler/icons-react";
 import { VirtuosoGrid } from 'react-virtuoso'
 import effects from '../effects.json'
 import * as cur from '../effects_edit'
 import PerkList from './PerkList'
-
-const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 
 export const Relic = ({ relic, edit, className, pl, misc }) => {
   // return
@@ -21,9 +19,9 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
     if (perk == 'Empty') return <></>;
 
     return (
-      <div className="capitalize flex items-center text-nowrap,  gap-[2px] rounded-md w-fit p-1  h-[33.333%], leading-[1.3]"
-        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, backgroundColor: pl?.perk_set?.has(id) ? '#226C7D' : curse ? '#2d007a' : '#444' }}
-        onClick={e => pl && !curse && pl.Add(perks[ind])}
+      <div className="capitalize flex items-center text-nowrap,  gap-[2px],  rounded-md w-fit h-fit p-1  h-[33.333%], leading-[1.3], border, [border:solid_1px_#444]"
+        style={{ fontSize: `clamp(14px, calc(1vw - ${(perk.length) * .001}px), 17px)`, backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#1f1f1f' }}
+        onClick={e => pl && !curse && pl.Toggle(perks[ind])}
       >
         {perk || ''}
       </div>
@@ -31,19 +29,20 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], h-[180px] min-h-[180px] max-h-[180px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
-      <div className="flex w-full h-[24%] border, items-center">
-        <div className="w-[15%] h-full">
-          <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
+    <div className={`border-[1px] w-full, xl:w-[46.3%], h-[190px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
+      <div className="flex w-full h-[20%] border, items-center">
+        <div className="w-[20%] h-full">
+          <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div>
+          {/* <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div> */}
         </div>
-        <div className="text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, grow flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
-        <div className="ms-auto flex gap-2 w-[15%] justify-end ">
+        <div className="grow text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
+        <div className="w-[20%] ms-auto flex gap-2 justify-end ">
           <IconPencil onClick={() => console.log(relic)} />
           <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
           <IconDesk onClick={() => account.workshop[relic.id] = {}} />
         </div>
       </div>
-      <div className="flex flex-col w-full h-[80%] mt-1 flex-wrap gap-1 relative -top-[6px],">
+      <div className="flex flex-col, w-full h-[80%] mt-1 flex-wrap content-start items-start gap-1 relative -top-[6px],">
         <List ind={0} />
         <List ind={1} />
         <List ind={2} />
@@ -93,8 +92,8 @@ export default function Home({ relics = window.account?.relics || [] }) {
 
   let bounceSearch = debounce((s) => setFilter(p => ({ ...p, search: s })), 400);
 
-  const Option = ({ color }) => (
-    <div className="w-[40px] h-fit rounded-xl border-[2px] border-[#777] hover:border-[#aaa] center text-[#3a8dc4] bg-[#333] text-[21px] center capitalize" style={{ color: color_code[color], borderColor: filter[color] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [color]: !filter[color] })}>
+  const Option = ({ color, className, style={} }) => (
+    <div className={`${className} w-[40px] h-fit rounded-xl border-[2px] border-[#777] hover:border-[#aaa] center text-[#3a8dc4] bg-[#333] text-[21px] center capitalize `} style={{ color: color_code[color], borderColor: filter[color] ? '#fff' : '', ...style }} onClick={() => setFilter({ ...filter, [color]: !filter[color] })}>
       {color}
     </div>
   )
@@ -115,10 +114,10 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <Option color={'b'} />
         <Option color={'g'} />
         <Option color={'y'} />
-        <div className="aspect-square, h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
-        <div className="aspect-square, h-full rounded-lg border-[2px] ms-4 border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
-        <div className="aspect-square, h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
-        <div className="aspect-square, h-full rounded-lg border-[2px] border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize" style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
+        <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
+        <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
+        <div className={`${option_class} `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
+        <div className={`${option_class} `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
         <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>

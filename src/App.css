@@ -64,7 +64,7 @@ input {
 
 body {
   /* font-family: Arial, Helvetica, sans-serif; */
-  /* font-family: 'Poppins', sans-serif; */
+  font-family: 'Poppins', sans-serif;
   color: rgb(223, 225, 236);
   background-color: #141618;
   -webkit-touch-callout: none;

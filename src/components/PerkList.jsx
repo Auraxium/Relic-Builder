@@ -6,7 +6,7 @@ import { VirtuosoGrid } from 'react-virtuoso'
 import effects from '../effects.json'
 import * as cur from '../effects_edit'
 
-const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
+const option_class = 'aspect-square, h-full, rounded-lg border-[1px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 
 export default function PerkList({ _ref, pre_picks, searchBar, className }) {
   let [perk_state, setPerks] = useState(_ref.picks || []);
@@ -35,8 +35,8 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
     _ref.picks = perk_state;
     _ref.setSearch = setSearch;
     _ref.setRaw = setRaw;
-    _ref.Add = (id) => {
-      perk_set.add(id);
+    _ref.Toggle = (id) => {
+      perk_set.has(id) ? perk_set.delete(id) : perk_set.add(id)
       _ref.onChange && _ref.onChange([...perk_set]);
       console.log(perk_set);
       // console.log(perk.ind, perk.text);
@@ -71,7 +71,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
       {searchBar ?
         <div className="flex items-center mb-2 w-full gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>
-          <input ref={inp} className="w-[200px] bg-[#444] p-1" type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} />
+          <input ref={inp} className="w-[200px] bg-[#18181a] p-1" type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} />
           <IconX onClick={() => { inp.current.value = ''; setSearch(''); }} />
           <div className={`${option_class} w-[content] ms-2 `} onClick={() => { setPerks([]); _ref.onChange && _ref.onChange([]) }}>Clear</div>
           <div className={`${option_class} w-[content] ms-2 flex gap-1 pen `}
