@@ -11,9 +11,17 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   // if(!effects[relic.effect_1]?.name) return <></>
   // console.log(relic);
   if (!relic) return <></>;
-  let rel_perks = relic.perks.sort((b,a) => effects[a].length - effects[b].length)
+  let rel_perks = relic.perks.sort((b, a) => effects[a].length - effects[b].length)
   let rel_curses;
-  if(relic.curses?.length) rel_curses = relic.curses.sort((a,b) => effects[a].length - effects[b].length)
+  if (relic.curses?.length) rel_curses = relic.curses.sort((a, b) => effects[a].length - effects[b].length)
+  let name = relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`; 
+  // if(relic.deep) {
+  //   name = name.split(' ');
+  //   let part = name.splice(0,1);
+  //   name = <div className="">
+  //     <span className="text-[#a349f8]">{part}</span> {name.join(' ')}
+  //   </div>
+  // }
 
   const List = ({ ind, curse }) => {
     let perks = curse ? rel_curses : rel_perks;
@@ -22,8 +30,8 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
     if (perk == 'Empty') return <></>;
 
     return (
-      <div className="capitalize flex items-center text-nowrap,  gap-[2px],  rounded-md w-fit h-fit p-1  h-[33.333%], leading-[1.3], border, [border:solid_1px_#444]"
-        style={{ fontSize: `12px`, backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#1f1f1f' }}
+      <div className="capitalize flex items-center text-[16px] rounded-md w-fit h-fit p-1 leading-[90%] [border:solid_1px_#444]"
+        style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#1f1f1f' }}
         onClick={e => pl && !curse && pl.Toggle(perks[ind])}
       >
         {perk || ''}
@@ -34,12 +42,17 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   return (
     <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[130px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
       <div className="flex w-full h-[25%] border, items-center">
-        <div className="w-[20%] h-full">
+        <div className="w-[28%] h-full flex gap-4">
           {/* <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div> */}
           <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
+          <div className="rounded-lg p-1 bg-[#444] center ">{relic.size}</div>
         </div>
-        <div className="grow text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, flex justify-center ">{relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`}</div>
-        <div className="w-[20%] ms-auto flex gap-2 justify-end ">
+        <div className="grow text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, flex justify-center ">
+          <span className="rounded-sm p-1 bg-[#292929], w-fit text-[#200059]," style={{background: color_muted[relic.color], color: relic.deep ? '#fff' : '#fff', border: relic.deep ? 'solid 2px #200059' : ''}}>
+            {name}
+          </span>
+        </div>
+        <div className="w-[28%] ms-auto flex gap-2 justify-end ">
           <IconPencil onClick={() => console.log(relic)} />
           <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
           <IconDesk onClick={() => account.workshop[relic.id] = {}} />
@@ -95,7 +108,7 @@ export default function Home({ relics = window.account?.relics || [] }) {
 
   let bounceSearch = debounce((s) => setFilter(p => ({ ...p, search: s })), 400);
 
-  const Option = ({ color, className, style={} }) => (
+  const Option = ({ color, className, style = {} }) => (
     <div className={`${className} w-[40px] h-fit rounded-xl border-[2px] border-[#777] hover:border-[#aaa] center text-[#3a8dc4] bg-[#333] text-[21px] center capitalize `} style={{ color: color_code[color], borderColor: filter[color] ? '#fff' : '', ...style }} onClick={() => setFilter({ ...filter, [color]: !filter[color] })}>
       {color}
     </div>
@@ -118,9 +131,9 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <Option color={'g'} />
         <Option color={'y'} />
         <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
-        <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
-        <div className={`${option_class} `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
-        <div className={`${option_class} `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
+        <div className={`${option_class} ms-2 `} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
+        <div className={`${option_class}  `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
+        <div className={`${option_class}  `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
         <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>

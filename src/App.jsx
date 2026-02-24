@@ -23,8 +23,6 @@ let nav_icon = {
   relics: <IconHome size={28} stroke={1.5} />
 }
 
-
-
 function Config() {
 
   return (

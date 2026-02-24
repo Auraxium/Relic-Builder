@@ -48,7 +48,7 @@ export let color_text = { g: "Tranquil", r: "Burning", y: "Luminous", b: "Drizzl
 export let color_code = { g: "#6fb139", r: "#e33727", y: "#dead31", b: "#3a8dc4" };
 export let color_muted = { g: "#0c4d11", r: "#610f0f", y: "#5d4e03", b: "#245678", w: "#aaa" };
 
-export const option_class = 'aspect-square, h-full, rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
+export const option_class = 'aspect-square, h-full, w-fit min-w-[40px] rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 // export let color_muted = { b: "#13072c", g: "#041a06", r: "#260606", y: "#262001", w: '#aaa' };
 // export let color_code = { g: "#53802d", r: "#A22A1F", y: "#c1972d", b: "#286187" };
 
