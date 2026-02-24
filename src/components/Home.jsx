@@ -30,7 +30,7 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
     if (perk == 'Empty') return <></>;
 
     return (
-      <div className="capitalize flex items-center text-[16px] rounded-md w-fit h-fit p-1 leading-[90%] [border:solid_1px_#444]"
+      <div className="capitalize flex items-center text-[15px] rounded-md w-fit h-fit [font-weight:300] p-1 leading-[90%] [border:solid_1px_#444]"
         style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#1f1f1f' }}
         onClick={e => pl && !curse && pl.Toggle(perks[ind])}
       >
@@ -46,13 +46,14 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
           {/* <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div> */}
           <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
           <div className="rounded-lg p-1 bg-[#444] center ">{relic.size}</div>
+         {relic.deep ? <div className="rounded-lg p-2 bg-[#290073] center ">Deep</div> : ''}
         </div>
         <div className="grow text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, flex justify-center ">
-          <span className="rounded-sm p-1 bg-[#292929], w-fit text-[#200059]," style={{background: color_muted[relic.color], color: relic.deep ? '#fff' : '#fff', border: relic.deep ? 'solid 2px #200059' : ''}}>
+          <span className="rounded-sm p-1 bg-[#292929], w-fit text-[#200059]," style={{color: relic.deep ? '#fff' : '#fff', border: `solid 1px ${color_code[relic.color]}`}}>
             {name}
           </span>
         </div>
-        <div className="w-[28%] ms-auto flex gap-2 justify-end ">
+        <div className="w-[28%] ms-auto flex gap-2 justify-end [&>*]:bg-[#333] ">
           <IconPencil onClick={() => console.log(relic)} />
           <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
           <IconDesk onClick={() => account.workshop[relic.id] = {}} />
