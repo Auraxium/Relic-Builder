@@ -14,7 +14,7 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   let rel_perks = relic.perks.sort((b, a) => effects[a].length - effects[b].length)
   let rel_curses;
   if (relic.curses?.length) rel_curses = relic.curses.sort((a, b) => effects[a].length - effects[b].length)
-  let name = relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`; 
+  let name = relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`;
   // if(relic.deep) {
   //   name = name.split(' ');
   //   let part = name.splice(0,1);
@@ -30,8 +30,8 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
     if (perk == 'Empty') return <></>;
 
     return (
-      <div className="capitalize flex items-center text-[15px] rounded-md w-fit h-fit [font-weight:300] p-1 leading-[90%] [border:solid_1px_#444]"
-        style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#1f1f1f' }}
+      <div className="capitalize flex items-center text-[16px] text-[#c9c9c9] rounded-md w-fit h-fit hover:bg-[#555] [font-weight:100] helvetica p-2 leading-[90%] [border:solid_1px_#444]"
+        style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#2b2b2b' }}
         onClick={e => pl && !curse && pl.Toggle(perks[ind])}
       >
         {perk || ''}
@@ -40,26 +40,29 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[130px] border-[#777] bg-neutral-950 gap-[2px] py-1 px-2 col box-border ${className}`} style={{}} >
+    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`} style={{border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 80%, #333 100%)`, borderImageSlice: 1}} >
       <div className="flex w-full h-[25%] border, items-center">
-        <div className="w-[28%] h-full flex gap-4">
+        <div className="w-[28%] h-full flex items-center gap-4">
           {/* <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div> */}
           <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
-          <div className="rounded-lg p-1 bg-[#444] center ">{relic.size}</div>
-         {relic.deep ? <div className="rounded-lg p-2 bg-[#290073] center ">Deep</div> : ''}
+          <div className="rounded-sm p-1 h-fit bg-[#444] center [border:solid_1px_#666], ">
+            {/* <span className="text-neutral-950 absolute">size</span> */}
+            {relic.size || relic.perks.length}
+          </div>
+          {relic.deep ? <div className="rounded-lg p-[6px] bg-[#290073] center box-border  ">Deep</div> : ''}
         </div>
-        <div className="grow text-[clamp(28px,_2vw,_30px)], font-light, capitalize hightop, h-full, flex justify-center ">
-          <span className="rounded-sm p-1 bg-[#292929], w-fit text-[#200059]," style={{color: relic.deep ? '#fff' : '#fff', border: `solid 1px ${color_code[relic.color]}`}}>
+        <div className="grow text-[clamp(28px,_2vw,_30px)], font-light, capitalize h-full, flex justify-center " style={{}}>
+          <span className="rounded-sm p-1 bg-[#292929], w-fit text-[#defce6]," style={{ border: `solid 1px linear-gradient(135deg, ${color_code[relic.color]} 0%, #777 100%)` }}>
             {name}
           </span>
         </div>
-        <div className="w-[28%] ms-auto flex gap-2 justify-end [&>*]:bg-[#333] ">
+        <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
           <IconPencil onClick={() => console.log(relic)} />
           <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
           <IconDesk onClick={() => account.workshop[relic.id] = {}} />
         </div>
       </div>
-      <div className="flex flex-col, w-full h-[75%] mt-1 flex-wrap content-start items-start gap-1 relative -top-[6px], overflow-scroll nsb">
+      <div className="flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-scroll nsb">
         <List ind={0} />
         <List ind={1} />
         <List ind={2} />
@@ -117,7 +120,7 @@ export default function Home({ relics = window.account?.relics || [] }) {
 
   return (
     <div className="full relative space-x-[1px] gap-x-[1px] flex flex-col py-4,">
-      <div className="flex relative border-b-[#777] items-center bg-[#111] p-1 gap-2 w-full ">
+      <div className="flex relative [border:solid_1px_#555] items-center bg-[#111] p-1 gap-2 w-full ">
         <div ref={perk_list} className="absolute p-1 w-[102%] h-[60vh] z-20 bg-neutral-900 border-neutral-600 border-[1px] -top-[0px] -left-[18px] top-[60px]" style={{ display: 'none' }}>
           <div className="bg-[rgb(0,0,0,0)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
           <PerkList _ref={perk_list} className={'z-10 bg-[#07063a]'} searchBar={1} />
@@ -131,14 +134,14 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <Option color={'b'} />
         <Option color={'g'} />
         <Option color={'y'} />
-        <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
         <div className={`${option_class} ms-2 `} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
+        <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
         <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>
-      <div className="home-main relative grow w-full overflow-y-auto, overflow-x-hidden my-2 h-1">
+      <div className="home-main relative grow w-full overflow-y-auto, overflow-x-hidden mt-4 mb-1 h-1">
         <VirtuosoGrid
           totalCount={relics_list.length}
           itemContent={(index) => <Relic relic={relics_list[index]} edit={1} key={index} pl={perk_list} />}
