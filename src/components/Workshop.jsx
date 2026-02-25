@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { option_class } from "../statics";
+import { option_class, clamp } from "../statics";
 import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch, IconDesk } from "@tabler/icons-react";
 import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
 import effects from '../effects.json'
@@ -26,6 +26,7 @@ export default function Workshop() {
   }
 
   function move(e) {
+    if(!moving) return;
     target.style.left = e.pageX - ox + 'px';
     target.style.top = e.pageY - oy + 'px';
   }
@@ -57,10 +58,10 @@ export default function Workshop() {
         }
 
         return (
-          <div className="absolute mb-[200px]  [&>*]:pointer-events-none" data-id={e} style={{ left: info.left, top: info.top }}
+          <div className="fixed mb-[200px] [&>*]:pointer-events-none" data-id={e} style={{ left: info.left, top: info.top }}
             onPointerDown={down}
           >
-            <Relic relic={info.data} className={'max-w-[700px] w-fit mb-[200px] mr-[100px] !flex-c,ol'} />
+            <Relic relic={info.data} className={'max-w-[700px] w-fit '} />
           </div>
         )
       })}

@@ -30,7 +30,7 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
     if (perk == 'Empty') return <></>;
 
     return (
-      <div className="capitalize flex items-center text-[16px] text-[#c9c9c9] rounded-md w-fit h-fit hover:bg-[#555] [font-weight:100] helvetica p-2 leading-[90%] [border:solid_1px_#444]"
+      <div className="capitalize flex items-center text-[16px] text-[#c9c9c9] rounded-md w-fit h-fit hover:bg-[#555] [font-weight:100] helvetica p-[6px] leading-[90%] [border:solid_1px_#444]"
         style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#2b2b2b' }}
         onClick={e => pl && !curse && pl.Toggle(perks[ind])}
       >
@@ -40,7 +40,9 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`} style={{border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 80%, #333 100%)`, borderImageSlice: 1}} >
+    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`} 
+    style={{border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 75%, #333 100%)`, borderImageSlice: 1}} 
+    >
       <div className="flex w-full h-[25%] border, items-center">
         <div className="w-[28%] h-full flex items-center gap-4">
           {/* <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div> */}
@@ -57,12 +59,10 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
           </span>
         </div>
         <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
-          <IconPencil onClick={() => console.log(relic)} />
-          <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
           <IconDesk onClick={() => account.workshop[relic.id] = {}} />
         </div>
       </div>
-      <div className="flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-scroll nsb">
+      <div className="flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-hidden nsb">
         <List ind={0} />
         <List ind={1} />
         <List ind={2} />
@@ -121,10 +121,12 @@ export default function Home({ relics = window.account?.relics || [] }) {
   return (
     <div className="full relative space-x-[1px] gap-x-[1px] flex flex-col py-4,">
       <div className="flex relative [border:solid_1px_#555] items-center bg-[#111] p-1 gap-2 w-full ">
-        <div ref={perk_list} className="absolute p-1 w-[102%] h-[60vh] z-20 bg-neutral-900 border-neutral-600 border-[1px] -top-[0px] -left-[18px] top-[60px]" style={{ display: 'none' }}>
+        <div ref={perk_list} className="absolute p-1 w-[102%] h-[60vh] z-20 bg-neutral-900 border-neutral-600 border-[1px] -left-[18px] top-[60px]" style={{ display: 'none' }}>
           <div className="bg-[rgb(0,0,0,0)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
           <PerkList _ref={perk_list} className={'z-10 bg-[#07063a]'} searchBar={1} />
         </div>
+        <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
+
         <div className="flex items-center justify-end w-[250px] gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>
           <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
@@ -138,7 +140,6 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <div className={`${option_class}  `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
         <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
-        <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>
       <div className="home-main relative grow w-full overflow-y-auto, overflow-x-hidden mt-4 mb-1 h-1">

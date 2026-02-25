@@ -1,7 +1,7 @@
 import React from 'react'
 import effects from '../effects.json'
 import rel_names from '../Relic_names.json'
-import { states } from '../statics'
+import { states, account } from '../statics'
 // let nm = {}
 // Object.keys(names).forEach(e => {
 //   if(names[e]) nm[e] = names[e]
@@ -75,7 +75,7 @@ const size_map = {
   delicate: 1
 }
 
-async function handleFile(e) {
+export async function handleFile(e) {
   // console.dir(e.target)
   let file = e.target.files[0];
   if (!file) return;
@@ -146,16 +146,21 @@ async function handleFile(e) {
       encrypted_data: bytes.subarray(entry_data_offset, entry_data_offset + entry_size),
     })
 
-    // console.log(decrypted_raw);
-    // download(decrypted_raw);
-    files[i] = decrypted_raw;
-    // return;
-
+    files.push(decrypted_raw);
   } //end loop
 
   // account.USER_DATA_00 = files[0];
   console.log('done')
-  getProfileData()
+  account.characters = files.slice(0, 10).map(e => getProfileData(e));
+  console.log(account)
+  localStorage.setItem('account', JSON.stringify(account));
+  if (account.current === undefined) account.current = 0;
+  let character = account.characters[account.current];
+  account.name = character.name;
+  account.relics = character.relics;
+  account.workshop = character.workshop || {};
+  account.scan_date = Date.now();
+  // getProfileData()
 }
 
 async function decrypt(mem) {
@@ -277,8 +282,9 @@ function item_from_bytes(data, offset) {
 }
 
 let skips = []
-function getProfileData() {
-  let data = files[0] || account.USER_DATA_00;
+function getProfileData(data) {
+  if (!data || data[4] === 0) return null;
+  // let data = files[0] || account.USER_DATA_00;
   let offset = 0x14;
   let slot_count = 5120;
   let items = [];
@@ -287,10 +293,11 @@ function getProfileData() {
     items.push(item);
     offset += item.size;
   }
-  account.relics = items.filter(e => e.effect_1).map((e, i) => {
+  let relics = items.filter(e => e.effect_1).map((e, i) => {
     let rel = {};
     let real_id = e.item_id - 2147483648;
-    let name = rel_names[real_id].toLowerCase();
+    let name = rel_names[real_id]?.toLowerCase();
+    if (!name) return null;
     let spl = name.split(' ');
     if (spl[0] == 'deep') {
       // console.log(name)
@@ -303,7 +310,7 @@ function getProfileData() {
     let color = color_map[spl[1]];
     color ??= base_relics[name];
 
-    if(!color) {
+    if (!color) {
       skips.push(name)
       return null;
     }
@@ -326,9 +333,12 @@ function getProfileData() {
   const rawName = data.subarray(name_offset, name_offset + (max_chars * 2));
   const decoder = new TextDecoder('utf-16le');
   const name = decoder.decode(rawName).replace(/\0+$/, '');
+  return ({
+    name,
+    relics
+  });
   account.name = name;
   console.log('got ', items.length);
-  localStorage.setItem('account', JSON.stringify(account));
   states.setRelics(account.relics);
 }
 
@@ -353,16 +363,14 @@ export default function File() {
         <div class="button bg-neutral-700 h-12 p-4 center w-fit rounded-sm hover:bg-blue-600 " onClick={getProfileData}>
           get data
         </div>
-
         <div class="center grow w-full ">
           <div class="w-[60%] rounded-lg p-2 h-[20%] relative bg-[#444]">
-            <input type="file" class="opacity-0 absolute full z-10" onChange={handleFile} />
+            <input type="file" class="opacity-0 absolute full z-10" accept='sl2' onChange={handleFile} />
             <div class="full center text-white" style={{ border: 'dotted #222 4px' }}>
               FILE
             </div>
           </div>
         </div>
-
       </div>
     </div>
   )

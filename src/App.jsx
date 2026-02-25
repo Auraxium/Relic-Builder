@@ -1,13 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import { ipcFetch, openSupport, CompareStrings, color_text, size_text, color_code, color_muted, perks, init, debounce, clamp, states, varsAt, chars, char_icons, perks_list, checkForAppUpdates, generateBuild2, save } from "./statics";
-import { IconSearch, IconX, IconTrash, IconHome, IconPencil, IconListSearch, IconDesk } from "@tabler/icons-react";
-import { VirtuosoGrid, Virtuoso, } from 'react-virtuoso'
+import { account, init, states, checkForAppUpdates, openSupport } from "./statics";
+import { IconHome, IconFileUpload, IconCaretDown, IconCaretDownFilled } from "@tabler/icons-react";
 import effects from './effects.json'
 import * as cur from './effects_edit'
 import "./App.css";
-import File from "./components/File"
+import File, { handleFile } from "./components/File"
 import Home, { Relic } from './components/Home'
 import Workshop from "./components/Workshop";
 import Builds from "./components/Build";
@@ -17,7 +14,44 @@ const effects_keys = Object.keys(effects);
 export const throw_frontend_error = (j) => states.setError(j)
 
 // let build_cache = []
+function Account() {
+  if (!account.scan_date) return (
+    <div className="p-1 text-[#777] full relative flex gap-1 center">
+      <input type="file" className="absolute opacity-0 full" accept='.sl2' onChange={handleFile} name="" id="" />
+      <IconFileUpload />
+      <span className="">Scan .sl2 file</span>
+    </div>
+  )
 
+  let last_ref = useRef();
+  let ago = () => {
+    let now = Date.now();
+    let time = (now - account.scan_date) / 1000;
+    if (time < 60) return 'Just now';
+    let minutes = ~~(time / 60);
+    if (minutes < 60) return `${minutes} ${minutes == 1 ? 'min' : 'mins'} ago`;
+    let hours = ~~(minutes / 60);
+    if (hours < 24) return `${hours} ${hours == 1 ? 'hour' : 'hours'} ago`;
+    let days = ~~(hours / 24);
+    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+  }
+
+  useEffect(() => {
+    let ev = () => last_ref.current.innerHTML = `Last Scan: ${ago()}`;
+    window.addEventListener('focus', ev);
+    return () => window.removeEventListener('focus', ev);
+  }, []);
+
+  return (
+    <div className="min-w-[200px] p-[2px]">
+      <div className="flex justify-between">
+        <span className="text-[18px] font-medium">{account.name}</span>
+        <span className=""><IconCaretDownFilled /></span>
+      </div>
+      <div ref={last_ref} className="absolute, center, text-[#777]">Last Scan: {ago()}</div>
+    </div>
+  )
+}
 
 let nav_icon = {
   relics: <IconHome size={28} stroke={1.5} />
@@ -72,14 +106,20 @@ function App() {
           <Nav to={'Workshop'} comp={<Workshop />} />
           {/* <Nav to={'add'} comp={<Create />} /> */}
           <Nav to={'file'} comp={<File />} />
+         
           {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
           <Nav className="mt-" to={'Config'} comp={<Config />} />
-          <div className="ms-auto"></div>
-          {/* <div className="ms-auto opacity-15">v1.0.3</div> */}
+           <div className="ms-auto flex items-center border border-[#555] bg-[#1f1f1f] h-full p-1 gap-1 cursor-pointer" onClick={openSupport}>
+            <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
+            <span>Support Me</span>
+          </div>
+          <div className="ms-auto, w-fit border-s-[1px] border-[#333] h-full">
+            <Account />
+          </div>
         </div>
       </div>
       <div className="main grow flex w-full center ">
-        <div key={Math.random()} className="mid h-full w-[90%] p-1 w-1,">{page || <Home />}</div>
+        <div key={Math.random()} className="mid h-full xl:w-[90%] w-full p-1 w-1,">{page || <Home />}</div>
       </div>
       {/* <div className="fixed left-0 bottom-0 flex items-center border border-[#555] p-1 gap-1 cursor-pointer" onClick={openSupport}>
         <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />

@@ -126,6 +126,7 @@ input {
   padding: 3px;
   box-sizing: border-box;
   background-color: #303030;
+  border-radius: 4px;
 }
 
 .rel_icons > *:hover {
