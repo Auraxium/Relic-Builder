@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { color_muted, debounce, chars, char_icons, generateBuild2, save } from "../statics";
+import { color_muted, color_full, debounce, chars, char_icons, generateBuild2, save } from "../statics";
 import { IconSearch } from "@tabler/icons-react";
 import { Relic } from "./Home";
 import PerkList from "./PerkList";
@@ -56,13 +56,13 @@ export default function Builds({ }) {
 
     return (
       <div className="col gap-y-2 w-full" >
-        <div className="capitalize text-[22px] flex h-12 items-center">
+        <div className="capitalize text-[20px] flex h-12 items-center">
           {name}
           <div className="flex gap-1 ms-4">
-            {colors.map(c => <div className="rounded-md flex border-[1px] bg-[#5d4e03], w-12 h-12 border-[#555]" style={{ backgroundColor: color_muted[c] }} ></div>)}
+            {colors.map((c,i) => <img src={`./rel_${color_full[c]}.webp`} alt="" className="rounded-md flex border-[1px], bg-black/70 w-12 h-12 border-[#555]," style={{border: i>2 ? 'solid 1px #290073' : ''}} />)}
           </div>
         </div>
-        <div className="lg:grid grid-rows-3 grid-flow-col w-full h-[600px], grow gap-1 flex-wrap, ">
+        <div className="lg:grid grid-rows-3 grid-flow-col  space-y-1, w-full h-[600px], grow gap-1 flex-wrap, ">
           {relics.map(rel => <Relic misc={{ banEvent: (id) => { console.log(id); bans[id] = !bans[id]; setBans({ ...bans }) } }} className={''} relic={rel} />)}
         </div>
       </div>

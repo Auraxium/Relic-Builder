@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { color_text, color_muted, size_text, color_code, debounce, clamp, option_class } from "../statics";
-import { IconSearch, IconTrash, IconPencil, IconListSearch, IconDesk } from "@tabler/icons-react";
+import { IconSearch, IconTrash, IconPencil, IconListSearch, IconDesk, IconX } from "@tabler/icons-react";
 import { VirtuosoGrid } from 'react-virtuoso'
 import effects from '../effects.json'
 import * as cur from '../effects_edit'
@@ -31,7 +31,7 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
 
     return (
       <div className="capitalize flex items-center text-[16px] text-[#c9c9c9] rounded-md w-fit h-fit hover:bg-[#555] [font-weight:100] helvetica p-[6px] leading-[90%] [border:solid_1px_#444]"
-        style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d5c6b' : curse ? '#200059' : '#2b2b2b' }}
+        style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d586b' : curse ? '#200059' : '#2b2b2b' }}
         onClick={e => pl && !curse && pl.Toggle(perks[ind])}
       >
         {perk || ''}
@@ -121,17 +121,11 @@ export default function Home({ relics = window.account?.relics || [] }) {
   return (
     <div className="full relative space-x-[1px] gap-x-[1px] flex flex-col py-4,">
       <div className="flex relative [border:solid_1px_#555] items-center bg-[#111] p-1 gap-2 w-full ">
-        <div ref={perk_list} className="absolute p-1 w-[102%] h-[60vh] z-20 bg-neutral-900 border-neutral-600 border-[1px] -left-[18px] top-[60px]" style={{ display: 'none' }}>
-          <div className="bg-[rgb(0,0,0,0)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
-          <PerkList _ref={perk_list} className={'z-10 bg-[#07063a]'} searchBar={1} />
+        <div ref={perk_list} className="absolute p-1 w-[100%] h-[60vh] z-20 center bg-neutral-900 border-neutral-600 border-[1px] -left-[18px], top-[60px]" style={{ display: 'none' }}>
+          <div className="bg-[rgb(0,0,0,.7)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
+          <PerkList _ref={perk_list} className={'z-10  bg-black/40'} searchBar={1} />
         </div>
-        <div className="ms-2"><IconListSearch size={34} color="#bbb" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'} /></div>
-
-        <div className="flex items-center justify-end w-[250px] gap-2 ">
-          <div className="w-[20px]"><IconSearch /> </div>
-          <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
-        </div>
-        <div className={`${option_class} w-[content] me-4 `} onClick={() => { search_bar.current.value = ''; setFilter({}); perk_list.setPerks([]); perk_list.current.style.display = 'none' }}> Clear </div>
+        <div className="ms-2 p-1 bg-[#2b2b2b] rounded border flex items-center" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'}><IconListSearch size={34} color="#bbb" />Perks</div>
         <Option color={'r'} />
         <Option color={'b'} />
         <Option color={'g'} />
@@ -140,6 +134,13 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <div className={`${option_class}  `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
         <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
+        <div className="flex items-center justify-end w-[250px] gap-2 ">
+          <div className="w-[20px]"><IconSearch /> </div>
+          <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
+          <IconX onClick={e => search_bar.current.value = ''} />
+        </div>
+        <div className={`${option_class} w-[content] me-4 `} onClick={() => { search_bar.current.value = ''; setFilter({}); perk_list.setPerks([]); perk_list.current.style.display = 'none' }}> Clear </div>
+
         <div className="ms-auto">{relics_list.length} Relics</div>
       </div>
       <div className="home-main relative grow w-full overflow-y-auto, overflow-x-hidden mt-4 mb-1 h-1">

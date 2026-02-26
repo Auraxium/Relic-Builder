@@ -154,7 +154,10 @@ export let dupe_map = {
   7126001: 7126000,
   7260800: 7260710,//poi and rot vicinity
   7011500: 6500000,//wyuler blood
-  7121001: 7121000
+  7121001: 7121000,
+  10002: 7035900,//switching weapon power
+  10000: 7036000,
+  7034900: 350500, // crit hp
 }
 
 let resistances = [311600, 311601, 311700, 311701, 311800, 311801, 311900, 312000, 312001, 312002]
@@ -184,8 +187,6 @@ export let effects = {
   6: "Changes compatible armament's skill to <Skill> at start of expedition",
   7: "Improved Attack Power with 3+ <Weapon> Equipped",
   8: "<Item> in possession at start of expedition",
-  10000: "FP Restoration upon Successive Attacks (Old Pocket Watch)",
-  10002: "Switching Weapons Boosts Attack Power (Fell Omen Fetish)",
   311000: "Improved Item Discovery",
   311100: "More Runes From Defeated Enemies",
   311500: "Improved Stamina Recovery",
@@ -378,7 +379,6 @@ export let effects = {
   7032200: "Taking attacks improves attack power",
   // 7033700: "Colossal armaments are coated in rock when performing charged attacks",
   7034800: "Fire Critical Hit Grants Max Stamina Boost",
-  7034900: "Critical Hit HP Restoration",
   7035000: "Critical Hit Adds Lightning Effect",
   7035100: "Critical Hit Boosts Stamina Recovery Speed",
   7035200: "Consecutive Guards Harden Skin",

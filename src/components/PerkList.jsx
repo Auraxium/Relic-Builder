@@ -51,7 +51,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
     let on = perk_set.has(id) && '#226C7D';
     return (
       <div key={id}
-        className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, border-[1px] border-[#333] bg-[#181818] capitalize hover:bg-neutral-600 leading-[1]"
+        className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, border-[1px] border-[#333] bg-[#2b2b2b] capitalize hover:bg-neutral-600 leading-[1]"
         style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
         onPointerDown={(e) => {
           on ? perk_set.delete(id) : perk_set.add(id);

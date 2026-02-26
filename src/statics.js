@@ -48,6 +48,7 @@ export let color_text = { g: "Tranquil", r: "Burning", y: "Luminous", b: "Drizzl
 export let color_code = { g: "#6fb139", r: "#e33727", y: "#dead31", b: "#3a8dc4" };
 export let color_muted = { g: "#0c4d11", r: "#610f0f", y: "#5d4e03", b: "#245678", w: "#aaa" };
 export let color_tint = { g: "#defce6", r: "#610f0f", y: "#5d4e03", b: "#245678", w: "#aaa" };
+export let color_full = { g: "green", r: "red", y: "yellow", b: "blue", w: "white" };
 
 export const option_class = 'aspect-square, h-full, w-fit min-w-[40px] rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 window.scanning = 0
@@ -130,7 +131,7 @@ export let chars = {
   revenant: {
     cups: ["@Urn$bby#bby", "@Goblet$rrg#rrg", "@Chalice$bgw#byg", "Soot Covered Urn$ryy#rry", 'sealed @$ybb#ggr', 'decrepit$rry#rry', 'forgotten$grr#ygw'],
     recs: [],
-    augs: [7320000,6645000,7031200,7011200,6500500,7010900,6645100,7220000,7036200]
+    augs: [7320000, 6645000, 7031200, 7011200, 6500500, 7010900, 6645100, 7220000, 7036200]
   },
   recluse: {
     cups: ["@Urn$bbg", "@Goblet$rby", "@Chalice$ygw", "Soot Covered Urn$rry"],
@@ -189,7 +190,6 @@ let events = {
 export function generateBuild2(args) {
   let { picks, char, raw, deep, type } = args;
   console.log(picks, char);
-  let char_str = char;
   if (!picks.length) picks = chars[char].recs;
   let augs = new Set(chars[char].augs || []);
   let any_rec = new Set([...picks, ...chars[char].recs, ...chars.melee.recs]);
@@ -197,6 +197,9 @@ export function generateBuild2(args) {
   let uni_reccs = new Set(chars.melee.recs);
   let uni_possibles = ['rr', 'rrr', 'bb', 'bbb', 'gg', 'ggg', 'yy', 'yyy'];
   let colors = ['b', 'g', 'r', 'y'];
+
+  let reg_relics = states.relics.filter(e => !e.deep);
+  let deep_relics = states.relics.filter(e => e.deep)
 
   picks = new Set(picks);
   let scores = [...picks, ...chars[char].recs, ...chars.melee.recs].map(e => dupe_map[e] || e).reduce((acc, e) => {
@@ -261,7 +264,7 @@ export function generateBuild2(args) {
     let best = -Infinity;
     let pairs = [];
 
-    for (let i = 0; i < n - 1; i++) {
+    for (let i = 0; i < n - 1; i++) { //find best pairs
       let perks1 = relics[i].perks;
       for (let j = i + 1; j < n; j++) {
         let perks2 = relics[j].perks;
@@ -298,9 +301,10 @@ export function generateBuild2(args) {
       if (debug) console.log(pair[6], bans)
       for (let three of relics.filter((e, i) => !bans.has(e.color) && i != pairs[2] && i != pairs[3])) {
         let score = pair[0];
+        let seen = pair[1];
         for (let e of three.perks) {
-          if (pair[1].has(dupe_map[e] || e)) {
-            // score -= 1.2;
+          if (seen.has(dupe_map[e] || e)) {
+            score -= 1.2;
             continue;
           }
           score += scores[dupe_map[e] || e] || 0;
@@ -308,7 +312,7 @@ export function generateBuild2(args) {
         }
         if (score >= final_best - 2.5) {
           if (score > final_best) final_best = score;
-          bests.push([score, pair[2], pair[3], three]);
+          bests.push([score, pair[2], pair[3], three, seen]);
         }
       }
     }
@@ -330,7 +334,6 @@ export function generateBuild2(args) {
         score: e[0],
         rels,
         perks: rels.map(rel => rel.perks).flat(),
-        seen: e[1],
         colors,
         pos_cups,
         pos_cups_raw: pos_cups.map(el => raw_cups[+el]),
@@ -345,27 +348,84 @@ export function generateBuild2(args) {
   };//end main
 
   let builds = []
-  if (type == 1) builds = main(light_cups, states.relics.filter(e => !e.deep));
-  else if (type == 2) builds = main(deep_cups, states.relics.filter(e => e.deep), 0);
+  if (type == 1) builds = main(light_cups, reg_relics);
+  else if (type == 2) builds = main(deep_cups, deep_relics, 0);
   else {
-    let lights = main(light_cups, states.relics.filter(e => !e.deep));
-    let deeps = main(deep_cups, states.relics.filter(e => e.deep), 0);
+    let lights = main(light_cups, reg_relics);
+    let deeps = main(deep_cups, deep_relics, 0);
 
     console.log(lights, deeps);
 
-    lights.forEach(light => {
-      let pool = deeps.filter(deep => {
-        deep.cup_ind = deep.pos_cups.find(ind => light.pos_cups.includes(ind));
-        return deep.cup_ind;
+    const fill = (full) => {
+      if(full.rels.length == 6) return build.push(full);
+      let seen = new Set(full.rels.map(e => e.perks).flat());
+      let bests = [-999];
+      for (let rel of deep_relics.filter(el => full.bans[el.color])) {
+        let score = full.score;
+        for (let e of rel.perks) {
+          if (seen.has(dupe_map[e] || e)) {
+            score -= 1.2;
+            continue;
+          }
+          score += scores[dupe_map[e] || e] || 0;
+          seen.add(e);
+        }
+        if (score > bests[0][0]) bests = [[score, rel]];
+        else if (score == bests[0][0]) bests.push([score, rel]);
+      }
+      bests.forEach(best => {
+        let rel = best[1];
+        if(!rel) return console.log(full.bans);
+        let next = {...full};
+        next.rels.push(rel);
+        next.score = best[0];
+        next.bans[rel.color]--;
+        fill(next);
       })
-      if (!pool.length) return null;
-      let best_deep = pool[0]; // todo: find best 
-      light.rels.push(...best_deep.rels);
-      light.cup = raw_cups[best_deep.cup_ind];
-    });
+    }
 
-    builds = lights.filter(e => e.cup);
-    console.log(lights);
+    for (let full of lights) { //since only one best relic we can alter 
+
+      full.pos_cups_raw.forEach((e) => {
+        let cup = e.split('#').at(-1).split('');
+        let bans = {
+          r: 0,
+          b: 0,
+          g: 0,
+          y: 0,
+          w: 0
+        };
+        cup.forEach(e => {
+          if (e == 'w') {
+            bans.r++;
+            bans.b++;
+            bans.g++;
+            bans.y++;
+          } else bans[e]++;
+        });
+        fill({ ...full, cup, bans });
+      })
+    }
+
+    return console.log(builds)
+
+    for (let full of deeps) {
+
+    }
+
+    // lights.forEach(light => {
+    //   let pool = deeps.filter(deep => {
+    //     deep.cup_ind = deep.pos_cups.find(ind => light.pos_cups.includes(ind));
+    //     return deep.cup_ind;
+    //   })
+    //   if (!pool.length) return null;
+    //   let best_deep = pool[0]; // todo: find best 
+    //   light.rels.push(...best_deep.rels);
+    //   light.cup = raw_cups[best_deep.cup_ind];
+    // });
+
+    // builds = lights.filter(e => e.cup);
+    // console.log(lights);
   }
 
   let cap = {};
@@ -373,8 +433,8 @@ export function generateBuild2(args) {
   builds = builds.filter(e => {
     let ids = e.rels.map(el => el.id);
     // for (let ex of ids.slice(0,3)) {
-      // cap[ex] ??= 0;
-      // if (++cap[ex] > 3) return false;
+    // cap[ex] ??= 0;
+    // if (++cap[ex] > 3) return false;
     // }
     return true;
   });
