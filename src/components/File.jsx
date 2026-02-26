@@ -375,3 +375,19 @@ export default function File() {
     </div>
   )
 }
+
+window.addEventListener('dragover', (e) => {
+  e.preventDefault(); // REQUIRED
+});
+
+window.addEventListener('drop', (e) => {
+  e.preventDefault();
+
+  const files = e.dataTransfer.files;
+  if (!files.length) return;
+
+  for (const file of files) {
+    console.log('Dropped file:', file.name);
+    // process file here
+  }
+});

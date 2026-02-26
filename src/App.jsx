@@ -70,9 +70,18 @@ function Config() {
   )
 }
 
+let navs = {
+  Relics: <Home/>,
+  Builds: <Builds/>,
+  Workshop: <Workshop/>,
+  File: <File/>,
+  Config: <Config/>
+}
+
 function App() {
   let [relics, setRelics] = useState(account.relics);
   let [page, setPage] = useState(<Home />);
+  if(typeof page == 'string') page = navs[page];
   let scan_card = useRef();
 
   const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[#333] p-1 border-[1px] h-[60px], bg-[#1f1f1f] hover:bg-[#555] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
@@ -101,7 +110,7 @@ function App() {
         <div className="flex items-center h-full w-full gap-1 &>*:[w-fit]">
           {/* <div style={{ backgroundImage: "url(/rblogo.png)", backgroundPosition: "bottom" }} className="img border-[#777] border-[1px] h-full rounded-md w-12"></div> */}
           <img src="./rblogo.png" alt="" className="img border-[#777] border-[1px] h-full aspect-square rounded-md bg-bottom" />
-          <Nav to={'relics'} comp={<Home />} />
+          <Nav to={'Relics'} comp={<Home />} />
           <Nav to={'Builds'} comp={<Builds />} />
           <Nav to={'Workshop'} comp={<Workshop />} />
           {/* <Nav to={'add'} comp={<Create />} /> */}
