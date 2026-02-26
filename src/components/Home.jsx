@@ -40,8 +40,8 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`} 
-    style={{border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 75%, #333 100%)`, borderImageSlice: 1}} 
+    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`}
+      style={{ border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 75%, #333 100%)`, borderImageSlice: 1 }}
     >
       <div className="flex w-full h-[25%] border, items-center">
         <div className="w-[28%] h-full flex items-center gap-4">
@@ -60,9 +60,9 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
         </div>
         <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
           {/* <IconDesk onClick={() => account.workshop[relic.id] = {}} /> */}
-           <IconPencil onClick={() => console.log(relic)} />
-                    <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
-                    <IconDesk onClick={() => account.workshop[relic.id] = {}} />
+          <IconPencil onClick={() => console.log(relic)} />
+          <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
+          <IconDesk onClick={() => account.workshop[relic.id] = {}} />
         </div>
       </div>
       <div className="flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-hidden nsb">

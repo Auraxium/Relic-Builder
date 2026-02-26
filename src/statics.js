@@ -276,7 +276,7 @@ export function generateBuild2(args) {
         }
         for (let e of perks2) {
           if (seen.has(dupe_map[e] || e)) {
-            // score -= .7;
+            score -= .7;
             continue;
           }
           score += scores[dupe_map[e] || e] || 0;
@@ -292,8 +292,18 @@ export function generateBuild2(args) {
 
     let final_best = -Infinity;
     let bests = [];
-    pairs = pairs.sort((a, b) => b[0] - a[0]).slice(0, 75).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
-    // if(debug) console.log('pairs:', pairs);
+    let caps = {};
+    pairs = pairs.sort((a, b) => b[0] - a[0]).filter(pair => {
+      let [id1, id2] = [pair[4].id, pair[5].id];
+      caps[id1] ??= 0;
+      caps[id2] ??= 0;
+      if (caps[id1] > 2) return false;
+      if (caps[id2] > 2) return false;
+      if (caps[id1] >= caps[id2]) caps[id1]++;
+      else caps[id2]++;
+      return true;
+    }).slice(0, 50).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
+    // console.log('pairs:', pairs);
     if (debug) console.log('pos_pans', pos_bans);
 
     for (let pair of pairs) {
@@ -310,7 +320,7 @@ export function generateBuild2(args) {
           score += scores[dupe_map[e] || e] || 0;
           // pair[1].add(e);
         }
-        if (score >= final_best - 2.5) {
+        if (score >= final_best - 1) {
           if (score > final_best) final_best = score;
           bests.push([score, pair[2], pair[3], three, seen]);
         }
@@ -420,7 +430,11 @@ export function generateBuild2(args) {
       })
     }
 
-    builds = builds.sort((a, b) => b.score - a.score).slice(0, 30);
+    let caps = {};
+    builds = builds.sort((a, b) => b.score - a.score).filter(e => {
+      caps[e.cup] ??= 0;
+      return ++caps[e.cup] < 4;
+    }).slice(0, 30);
     console.log(builds);
     return builds;
 

@@ -113,7 +113,7 @@ function App() {
         <Nav to={'Builds'} comp={<Builds />} />
         <Nav to={'Workshop'} comp={<Workshop />} />
         {/* <Nav to={'add'} comp={<Create />} /> */}
-        <Nav to={'file'} comp={<File />} />
+        <Nav to={'File'} comp={<File />} />
 
         {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
         <Nav className="mt-" to={'Config'} comp={<Config />} />
