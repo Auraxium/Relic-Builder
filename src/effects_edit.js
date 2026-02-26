@@ -158,6 +158,8 @@ export let dupe_map = {
   10002: 7035900,//switching weapon power
   10000: 7036000,
   7034900: 350500, // crit hp
+  7035100: 6035100,
+  7000290: 6610600,
 }
 
 let resistances = [311600, 311601, 311700, 311701, 311800, 311801, 311900, 312000, 312001, 312002]
@@ -189,7 +191,6 @@ export let effects = {
   8: "<Item> in possession at start of expedition",
   311000: "Improved Item Discovery",
   311100: "More Runes From Defeated Enemies",
-  311500: "Improved Stamina Recovery",
   312100: "Improved Poise",
   312300: "Improved Skill Attack Power",
   // 312500: "Improved Dexterity",
@@ -349,7 +350,6 @@ export let effects = {
   7000102: "Mind +",
   7000190: "Increased Maximum FP",
   7000202: "Endurance +",
-  7000290: "Increased Maximum Stamina",
   7000302: "Strength +",
   7000402: "Dexterity +",
   7000502: "Intelligence +",
@@ -380,7 +380,6 @@ export let effects = {
   // 7033700: "Colossal armaments are coated in rock when performing charged attacks",
   7034800: "Fire Critical Hit Grants Max Stamina Boost",
   7035000: "Critical Hit Adds Lightning Effect",
-  7035100: "Critical Hit Boosts Stamina Recovery Speed",
   7035200: "Consecutive Guards Harden Skin",
   7035300: "Critical Hit Creates Sleep Mist",
   7035400: "Gesture \"Crossed Legs\" Builds Up Madness",

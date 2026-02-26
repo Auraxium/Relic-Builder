@@ -60,6 +60,7 @@ export default function Builds({ }) {
           {name}
           <div className="flex gap-1 ms-4">
             {colors.map((c,i) => <img src={`./rel_${color_full[c]}.webp`} alt="" className="rounded-md flex border-[1px], bg-black/70 w-12 h-12 border-[#555]," style={{border: i>2 ? 'solid 1px #290073' : ''}} />)}
+            {build.score}
           </div>
         </div>
         <div className="lg:grid grid-rows-3 grid-flow-col  space-y-1, w-full h-[600px], grow gap-1 flex-wrap, ">

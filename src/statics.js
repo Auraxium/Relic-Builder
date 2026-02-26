@@ -356,31 +356,36 @@ export function generateBuild2(args) {
 
     console.log(lights, deeps);
 
-    const fill = (full) => {
-      if(full.rels.length == 6) return build.push(full);
+    const fill = (full, relics) => {
+      if (full.rels.length == 6) return builds.push(full);
       let seen = new Set(full.rels.map(e => e.perks).flat());
-      let bests = [-999];
-      for (let rel of deep_relics.filter(el => full.bans[el.color])) {
+      let bests = [[-999]];
+      let filt = deep_relics.filter(el => full.bans.w || full.bans[el.color]);
+      for (let rel of filt) { // if has w go ahead 
         let score = full.score;
         for (let e of rel.perks) {
-          if (seen.has(dupe_map[e] || e)) {
+          let code = dupe_map[e] || e;
+          if (seen.has(code)) {
             score -= 1.2;
             continue;
           }
-          score += scores[dupe_map[e] || e] || 0;
-          seen.add(e);
+          score += scores[code] || 0;
+          seen.add(code);
         }
+        // console.log(score)
         if (score > bests[0][0]) bests = [[score, rel]];
         else if (score == bests[0][0]) bests.push([score, rel]);
       }
-      bests.forEach(best => {
+      bests.slice(0, 3).forEach(best => {
         let rel = best[1];
-        if(!rel) return console.log(full.bans);
-        let next = {...full};
+        if (!rel) return //console.log(filt[0]);
+        let next = structuredClone(full);
         next.rels.push(rel);
         next.score = best[0];
-        next.bans[rel.color]--;
-        fill(next);
+        if (next.bans[rel.color]) next.bans[rel.color]--;
+        else next.bans.w--;
+        // console.log(bests.length)
+        fill(next, relics);
       })
     }
 
@@ -395,23 +400,31 @@ export function generateBuild2(args) {
           y: 0,
           w: 0
         };
-        cup.forEach(e => {
-          if (e == 'w') {
-            bans.r++;
-            bans.b++;
-            bans.g++;
-            bans.y++;
-          } else bans[e]++;
-        });
-        fill({ ...full, cup, bans });
+        cup.forEach(e => bans[e]++);
+        fill({ ...full, cup: e, bans }, deep_relics);
       })
     }
 
-    return console.log(builds)
-
     for (let full of deeps) {
-
+      full.pos_cups_raw.forEach((e) => {
+        let cup = e.split('$').at(-1).split('#')[0].split('');
+        let bans = {
+          r: 0,
+          b: 0,
+          g: 0,
+          y: 0,
+          w: 0
+        };
+        cup.forEach(e => bans[e]++);
+        fill({ ...full, cup: e, bans }, reg_relics);
+      })
     }
+
+    builds = builds.sort((a, b) => b.score - a.score).slice(0, 30);
+    console.log(builds);
+    return builds;
+
+
 
     // lights.forEach(light => {
     //   let pool = deeps.filter(deep => {

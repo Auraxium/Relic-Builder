@@ -59,7 +59,10 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
           </span>
         </div>
         <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
-          <IconDesk onClick={() => account.workshop[relic.id] = {}} />
+          {/* <IconDesk onClick={() => account.workshop[relic.id] = {}} /> */}
+           <IconPencil onClick={() => console.log(relic)} />
+                    <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
+                    <IconDesk onClick={() => account.workshop[relic.id] = {}} />
         </div>
       </div>
       <div className="flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-hidden nsb">
