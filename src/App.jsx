@@ -84,7 +84,7 @@ function App() {
   if (typeof page == 'string') page = navs[page];
   let scan_card = useRef();
 
-  const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[#333] p-1 border-[1px] h-[60px], bg-[#1f1f1f] hover:bg-[#555] rounded-sm center gap-1 capitalize text-[22px] ${className}`} onClick={() => {
+  const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[#636363] p-1 border-[1px] h-[60px], text-[#e9e9e9] bg-[#1f1f1f] hover:bg-[#555] rounded-sm center gap-1 capitalize text-[20px] ${className}`} onClick={() => {
     click && click();
     setPage(comp)
   }}>{nav_icon[to]}{to}</div>
@@ -113,14 +113,14 @@ function App() {
         <Nav to={'Builds'} comp={<Builds />} />
         <Nav to={'Workshop'} comp={<Workshop />} />
         {/* <Nav to={'add'} comp={<Create />} /> */}
-        <Nav to={'File'} comp={<File />} />
+        <Nav to={'Import Save'} comp={<File />} />
 
         {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
         <Nav className="mt-" to={'Config'} comp={<Config />} />
-        {/* <div className="ms-auto flex items-center border border-[#555] bg-[#1f1f1f] h-full p-1 gap-1 cursor-pointer" onClick={openSupport}>
+        <div className="ms-auto, flex items-center border border-[#555] bg-[#1f1f1f] h-full p-1 gap-1 cursor-pointer" onClick={openSupport}>
             <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
             <span>Support Me</span>
-          </div> */}
+          </div>
         <div className="ms-auto w-fit border-s-[1px] border-[#333] h-full">
           <Account />
         </div>

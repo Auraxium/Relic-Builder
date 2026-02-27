@@ -59,7 +59,6 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
           </span>
         </div>
         <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
-          {/* <IconDesk onClick={() => account.workshop[relic.id] = {}} /> */}
           <IconPencil onClick={() => console.log(relic)} />
           <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
           <IconDesk onClick={() => account.workshop[relic.id] = {}} />
@@ -125,10 +124,10 @@ export default function Home({ relics = window.account?.relics || [] }) {
     <div className="full relative space-x-[1px] gap-x-[1px] flex flex-col py-4,">
       <div className="flex relative [border:solid_1px_#555] items-center bg-[#111] p-1 gap-2 w-full ">
         <div ref={perk_list} className="absolute p-1 w-[100%] h-[60vh] z-20 center bg-neutral-900 border-neutral-600 border-[1px] -left-[18px], top-[60px]" style={{ display: 'none' }}>
-          <div className="bg-[rgb(0,0,0,.7)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
-          <PerkList _ref={perk_list} className={'z-10  bg-black/40'} searchBar={1} />
+          <div className="bg-[rgba(16,12,80,0.7)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
+          <PerkList _ref={perk_list} className={'z-10  bg-black/70'} searchBar={1} />
         </div>
-        <div className="ms-2 p-1 bg-[#2b2b2b] rounded border flex items-center" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'}><IconListSearch size={34} color="#bbb" />Perks</div>
+        <div className="ms-2 p-1 bg-[#2b2b2b] hover:bg-[#494949] rounded [border:solid_1px_#666] flex items-center" onClick={() => perk_list.current.style.display = perk_list.current.style.display == 'flex' ? 'none' : 'flex'}><IconListSearch size={34} color="#bbb" />Perks</div>
         <Option color={'r'} />
         <Option color={'b'} />
         <Option color={'g'} />

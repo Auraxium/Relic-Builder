@@ -360,13 +360,13 @@ export default function File() {
   return (
     <div className="full flex flex-col">
       <div class="full col p-1 relative ">
-        <div class="button bg-neutral-700 h-12 p-4 center w-fit rounded-sm hover:bg-blue-600 " onClick={getProfileData}>
+        {/* <div class="button bg-neutral-700 h-12 p-4 center w-fit rounded-sm hover:bg-blue-600 " onClick={getProfileData}>
           get data
-        </div>
+        </div> */}
         <div class="center grow w-full ">
-          <div class="w-[60%] rounded-lg p-2 h-[20%] relative bg-[#444]">
+          <div class="w-[60%] rounded-lg p-2 h-[20%] relative text-[#cccccc] bg-[#2b2b2b]">
             <input type="file" class="opacity-0 absolute full z-10" accept='sl2' onChange={handleFile} />
-            <div class="full center text-white" style={{ border: 'dotted #222 4px' }}>
+            <div class="full center text-white," style={{ border: 'dotted #222 4px' }}>
               FILE
             </div>
           </div>
