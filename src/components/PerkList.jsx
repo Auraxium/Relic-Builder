@@ -44,7 +44,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
     };
   });
 
-  const PerkUI = ({ perk, debug }) => {
+  const PerkUI = ({ perk, debug, cols=3 }) => {
     // if(debug) console.log(perk)
     let id = perk;
     let name = perks[id];
@@ -76,7 +76,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
           <div className={`${option_class} w-[content] ms-2 `} onClick={() => { setPerks([]); _ref.onChange && _ref.onChange([]) }}>Clear</div>
           <div className={`${option_class} w-[content] ms-2 flex gap-1 pen `}
             onClick={e => { e.target.children[0].checked ? _ref.setFilter(p => ({ ...p, match_all: 0 })) : _ref.setFilter(p => ({ ...p, match_all: 1 })); e.target.children[0].click() }}>
-            <input className="pointer-events-none" onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
+            <input className="pointer-events-none grid-cols-2, grid-cols-3," onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
             Match All
           </div>
           {perk_set.size}
@@ -94,7 +94,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
         <VirtuosoGrid
           totalCount={perks_list.length}
           itemContent={(index) => <PerkUI perk={perks_list[index].ind} key={index} />}
-          listClassName="grid grid-cols-2 xl:grid-cols-3 gap-1"
+          listClassName={`grid grid-cols-${2} xl:grid-cols-3, gap-1`}
           itemClassName="w-[32.9%], min-w-fit"
           style={{ width: '100%', height: '100%', display: 'flex' }}
         />

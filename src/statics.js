@@ -347,7 +347,7 @@ export function generateBuild2(args) {
         for (let e of rel.perks) {
           let code = dupe_map[e] || e;
           if (seen.has(code)) {
-            score -= good_dupe.has(code) ? .3 :1.2;
+            score -= good_dupe.has(code) ? .15 :1.2;
             continue;
           }
           score += scores[code] || 0;

@@ -35,6 +35,7 @@ export let dupe_map = {
   6611001: 6611000,
   6611002: 6611000,
   7006200: 6611000,
+  340500: 6611000,
   340000: 6611000,
   340100: 6002600,//magic negation
   7002600: 6002600,//
@@ -112,6 +113,7 @@ export let dupe_map = {
   7040000: 6040000,//
   6040101: 6040100,//guard counter
   7040100: 6040100,//
+  322000: 6040100,
   6040301: 6040300,//throwing pot
   7040300: 6040300,//
   6040401: 6040400,//throw knife
@@ -145,12 +147,15 @@ export let dupe_map = {
   7006300: 6611100,//
   6611201: 6611200,//impr sorceries
   6611202: 6611200,//
+  330000: 6611200,
   6611301: 6611300,//imprv incants
   6611302: 6611300,//
+  330400: 6611300,
   7100110: 7100100, //stam on hit
   7100190: 7100100, //
   7040201: 7040200,//crits
   7040290: 7040200,
+  320900: 7040200,
   7126002: 7126000,//starlight
   7126001: 7126000,
   7260800: 7260710,//poi and rot vicinity
@@ -161,6 +166,10 @@ export let dupe_map = {
   7034900: 350500, // crit hp
   7035100: 6035100,
   7000290: 6610600,
+  312501: 7037600, //success atk boost
+  320800: 7037600,
+  312300: 7006700, //skill atk power
+  330600: 7006400, // extend spell
 }
 
 let resistances = [311600, 311601, 311700, 311701, 311800, 311801, 311900, 312000, 312001, 312002]
@@ -267,6 +276,11 @@ export const plus_map = {
 8130003: 0,
 }
 
+export let curses = [6800000,6800200,6810100,6820000,6820100,6820200,6820300,6820400,6820500,6820600,6830000,6830100,
+  6830200,6830300,6830400,6840000,6840100,6840200,6850000,6850100,6850200,6850300,6850400,6850500,6850600,6850700,
+  6850800,6850900,6851000,6851100,6851200,6851300,6851400,6851500,6851600,6851700
+]
+
 export let hide_expand = new Set([...resistances, ...dormants, ...weapon_power, ...hp_weapon, ...fp_weapon, ...start_skill, ...weapon_3, ...start_item]);
 
 export let effects = {
@@ -278,32 +292,6 @@ export let effects = {
   6: "Changes compatible armament's skill to <Skill> at start of expedition",
   7: "Improved Attack Power with 3+ <Weapon> Equipped",
   8: "<Item> in possession at start of expedition",
-  311000: "Improved Item Discovery",
-  311100: "More Runes From Defeated Enemies",
-  312100: "Improved Poise",
-  312300: "Improved Skill Attack Power",
-  // 312500: "Improved Dexterity",
-  312501: "Successive Attacks Boost Attack Power",
-  320400: "Improved Attack Power at Low HP",
-  320500: "Improved Attack Power at Full HP",
-  320600: "Improved Thrusting Counterattack",
-  320700: "Improved Guard Breaking",
-  320800: "Successive Attacks Boost Attack Power",
-  320900: "Improved Critical Hits",
-  321500: "Improved Ranged Weapon Attacks",
-  321600: "Blood Loss in Vicinity Increases Attack Power",
-  321700: "Poison & Rot Improves Attack Power",
-  322000: "Improved Guard Counters",
-  322100: "Improved Throwing Pots",
-  322200: "Improved Perfuming Arts",
-  330000: "Improved Sorceries",
-  330400: "Improved Incantations",
-  330600: "Extended Spell Duration",
-  330700: "Improved Spell Casting Speed",
-  330800: "Reduced Spell FP Cost",
-  330900: "Improved Charged Spells & Skills",
-  340500: "Improved Non-Physical Damage Negation",
-  // 340700: "Improved Dodging",
   340800: "Improved Damage Negation at Low HP",
   340900: "Improved Damage Negation at Full HP",
   341000: "Improved Guarding Ability",

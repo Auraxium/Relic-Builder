@@ -15,6 +15,7 @@ export default function Builds({ }) {
   let [builds, setBuilds] = useState([]);
   let [bans, setBans] = useState({});
   let [type, setType] = useState(0);
+  const [page, setPage] = useState()
   let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
   let count = useRef();
   let pl = useRef();
@@ -38,6 +39,18 @@ export default function Builds({ }) {
     save()
   }, [character])
 
+  const Option = ({ name, text, desc }) => {
+
+    return (
+      <div className="">
+        <div className="flex" style={{ borderColor: page == name ? 'teal' : '', color: page == name ? '#fff' : '' }} onClick={e => setPage(name)}>
+          <div className={`${option_class} w-fit `}>{text}</div>
+        </div>
+        <span className="mb-2">{desc}</span>
+      </div>
+    )
+  }
+
   const Build = ({ build, add }) => {
     // if (!build[2]) 
     // console.log(build);
@@ -50,7 +63,7 @@ export default function Builds({ }) {
     let temp = [...build.rels].sort((a, b) => a.deep || 0 - b.deep || 0);
     let relics = colors.reduce((acc, e, i) => { //sort relics to match cup order
       let ind = temp.findIndex(el => el.color == e);
-      if(ind == -1) ind = 0
+      if (ind == -1) ind = 0
       acc[i] = temp.splice(ind, 1)[0];
       return acc;
     }, []);
@@ -71,8 +84,8 @@ export default function Builds({ }) {
             {colors.map((c, i) => <img src={`./rel_${color_full[c]}.webp`} alt="" className="rounded-md flex border-[1px], bg-black/70 w-12 h-12 border-[#555]," style={{ border: i > 2 ? 'solid 1px #290073' : '' }} />)}
           </div>
           {missing.length ?
-            <div className="text-[#dfc533] text-[13px] grow w-1 overflow-hidden flex h-full flex-wrap items-center">Missing: {missing.map(e => effects[e]).join(', ')}</div>
-          : <></>}
+            <div className="text-[#dfc533] text-[12px] grow w-1 overflow-hidden flex h-full flex-wrap items-center">Missing: {missing.map(e => effects[e]).join(', ')}</div>
+            : <></>}
         </div>
         <div className="lg:grid grid-rows-3 grid-flow-col  space-y-1, w-full h-[600px], grow gap-1 flex-wrap, ">
           {relics.map(rel => <Relic misc={{ banEvent: (id) => { console.log(id); bans[id] = !bans[id]; setBans({ ...bans }) } }} className={''} relic={rel} />)}
@@ -114,25 +127,29 @@ export default function Builds({ }) {
         ))}
       </div>
       {character ?
-        <div className="grow h-1 flex flex-col">
-          <div className="flex gap-2 p-2 items-center">
-            <span className="text-[22px]">Choose perks for <span className="capitalize">{character}'s</span> build:</span>
-            <div className={`${option_class} `} onClick={() => pl.setPerks([...chars[character].recs])} >Recommended</div>
+        <div className="flex full gap-4 ">
+          <div className="w-[33%] h-full col justify-around gap-1 bg-black/40">
+            {/* <div className="mb-2 p-1, text-[#444]" /> */}
+            <Option name={'main'} text={'Choose main perks'} desc={''} />
+            <Option name={'sub'} text={'Choose sub perks'} desc={'Optionial. Choose perk useful, but not integral to your build. Used to resolve as tie breakers.'} />
+            <Option name={'curse'} text={'manage curses'} desc={'Optionial. For builds using deep relics, select curses to avoid'} />
           </div>
-          <div className="flex items-center mb-2 justify-end w-full gap-2 ">
-            <div className="w-[20px]"><IconSearch /></div>
-            <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="w-[150px] bg-[#444] p-1" />
-            <div ref={count} className="">
-              {pl.picks.length}
+          <div className="grow w-1 h-full flex flex-col bg-black/40">
+            <div className="flex items-center mb-2 justify-end w-full gap-2 ">
+              <div className="w-[20px]"><IconSearch /></div>
+              <input type="text" placeholder={'Search'} onChange={(e => bounceSearch(e.target.value))} className="w-[150px] bg-[#444] p-1" />
+              <div ref={count} className="">
+                {pl.picks.length}
+              </div>
+              <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `}
+                onClick={e => { pl.setRaw(!e.target.children[0].checked); e.target.children[0].click() }}>
+                <input className="pointer-events-none" defaultChecked={raw} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
+                Raw
+              </div>
             </div>
-            <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `}
-              onClick={e => { pl.setRaw(!e.target.children[0].checked); e.target.children[0].click() }}>
-              <input className="pointer-events-none" defaultChecked={raw} onClick={e => e.stopPropagation()} type="checkbox" name="" id="" />
-              Raw
+            <div className="grow h-1 overflow-y-auto overflow-x-hidden">
+              <PerkList _ref={pl} />
             </div>
-          </div>
-          <div className="grow h-1 overflow-y-auto overflow-x-hidden">
-            <PerkList _ref={pl} />
           </div>
         </div>
         :

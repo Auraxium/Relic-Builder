@@ -61,7 +61,15 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
         <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
           <IconPencil onClick={() => console.log(relic)} />
           <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
-          <IconDesk onClick={() => account.workshop[relic.id] = {}} />
+          <IconDesk className='pen' style={{backgroundColor: account.workshop[relic.id] ? '#1d586b':''}} onClick={e => {
+            if(account.workshop[relic.id]) {
+              e.target.style.backgroundColor = '';
+              delete account.workshop[relic.id];
+            } else {
+              e.target.style.backgroundColor = '#1d586b';
+              account.workshop[relic.id] = {};
+            }
+          }} />
         </div>
       </div>
       <div className="flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-hidden nsb">
@@ -138,7 +146,7 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
         <div className="flex items-center justify-end w-[250px] gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>
-          <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value))} className="grow w-1 bg-[#444] p-1" />
+          <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value.toLowerCase()))} className="grow w-1 bg-[#444] p-1" />
           <IconX onClick={e => search_bar.current.value = ''} />
         </div>
         <div className={`${option_class} w-[content] me-4 `} onClick={() => { search_bar.current.value = ''; setFilter({}); perk_list.setPerks([]); perk_list.current.style.display = 'none' }}> Clear </div>

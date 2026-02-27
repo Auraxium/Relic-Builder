@@ -46,7 +46,7 @@ export default function Workshop() {
   return (
     <div className="full fixed h-[100vh] w-[100vw] left-0 overflow-auto">
       <div className="" onClick={e => account.workshop = {}}>clear</div>
-      <div ref={ghost} className="border absolute pointer-events-none"></div>
+      <div ref={ghost} className="border, absolute pointer-events-none"></div>
       {rels.map(e => {
         let info = account.workshop[e];
 
@@ -61,7 +61,7 @@ export default function Workshop() {
           <div className="fixed mb-[200px] [&>*]:pointer-events-none" data-id={e} style={{ left: info.left, top: info.top }}
             onPointerDown={down}
           >
-            <Relic relic={info.data} className={'max-w-[700px] w-fit '} />
+            <Relic relic={info.data} className={'max-w-[700px] w-fit bg-black/80 '} />
           </div>
         )
       })}
