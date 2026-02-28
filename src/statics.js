@@ -51,6 +51,7 @@ export let color_tint = { g: "#defce6", r: "#610f0f", y: "#5d4e03", b: "#245678"
 export let color_full = { g: "green", r: "red", y: "yellow", b: "blue", w: "white" };
 
 export const option_class = 'aspect-square, h-full, w-fit min-w-[40px] rounded-lg border-[2px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
+// export const option_style = {width: 'fit', minWidth: '40px'}
 window.scanning = 0
 let home_list;
 
@@ -65,58 +66,46 @@ window.plus_map = {};
 
 export let chars = {
   wylder: {
-    cups: ["@Urn$rrb$rrb", "@Goblet$ygg$ygg", "@Chalice$ryw$rbg", "Soot Covered Urn$bby$bby", "Decrepit unc's Goblet$bgy$bgy", "@Forgotten un's Goblet$ygb$rgw"],
-    recs: [],
-    augs: [7033200, 7010500, 7032400, 7030500, 6500000, 7020000, 7033000, 6640100, 7032300, 7031400, 6640000]
+    cups: ["@Urn$rrb$rrb", "@Goblet$ygg$ygg", "@Chalice$ryw$rby", "Soot Covered @ Urn$bby$bby", "Sealed @ Urn$brr$gyy", "Decrepit @ Goblet$bgy$bgy", "@Forgotten Goblet$ygb$rgw"],
+    augs: [7033200,7010500,7032400,6500000,7020000,7030500,6640100,7032300,7033000,6640000,7031400]
   },
   guardian: {
-    cups: ["@Urn$ryy", "@Goblet$bbg", "@Chalice$byw", "Soot Covered Urn$rgg"],
-    recs: [],
+    cups: ["@Urn$ryy$ryy", "@Goblet$bbg$$bbg", "@Chalice$byw$yyg", "Soot Covered @Urn$rgg$rgg", "Sealed @ Urn$yyr$ggb", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
+    augs: [7012000,7011400,7011000,7033400,6641000,6641100,7011100,7010000,7011600,7011900,7033300,6500100]
   },
   ironeye: {
-    cups: ["@Urn$ygg", "@Goblet$rby", "@Chalice$rgw", "Soot Covered Urn$byy"],
-    recs: [],
+    cups: ["@Urn$ygg$ygg", "@Goblet$rby$rby", "@Chalice$rgw$rrg", "Soot Covered @Urn$byy$byy", "Sealed @ Urn$ggy$bbr", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
+    augs: [6642100,6642000,7280000,7034700,6500200,7034600,7270100]
   },
   duchess: {
-    cups: ["@Urn$rbb$rbb", "@Goblet$yyg$yyg", "@Chalice$byw$rby", "Soot Covered Urn$rrg$rrg", "Sealed Duchess' Urn$bbr$ggy", "Decrepit Duchess' Goblet$bgg$bgg", "Forgotten Duchess' Goblet$gyy$rgw"],
-    recs: [7000802],
-    augs: [7031800, 7300000, 7010700, 7290000, 7033600, 7032700, 6643100, 6643000, 6500300]
+    cups: ["@Urn$rbb$rbb", "@Goblet$yyg$yyg", "@Chalice$byw$rby", "Soot Covered @Urn$rrg$rrg", "Sealed @ Urn$bbr$ggy", "Decrepit @ Goblet$bgg$bgg", "Forgotten @ Goblet$gyy$rgw"],
+    augs: [6500300,6643100,6643000,7290000,7033600,7010700,7032700,7300000,7031800]
   },
   raider: {
-    cups: ["@Urn$rgg", "@Goblet$rby", "@Chalice$rrw", "Soot Covered Urn$bbg"],
-    recs: []
+    cups: ["@Urn$rgg$rgg", "@Goblet$rby$rby", "@Chalice$rrw$ryy", "Soot Covered @Urn$bbg$bbg", "Sealed @ Urn$ggr$ybb", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
   },
   revenant: {
-    cups: ["@Urn$bby$bby", "@Goblet$rrg$rrg", "@Chalice$bgw$byg", "Soot Covered Urn$ryy$rry", 'sealed @$ybb$ggr', 'decrepit$rry$rry', 'forgotten$grr$ygw'],
-    recs: [],
+    cups: ["@Urn$bby$bby", "@Goblet$rrg$rrg", "@Chalice$bgw$byg", "Soot Covered @Urn$ryy$ryy", "Sealed @ Urn$ybb$ggr", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
     augs: [7320000, 6645000, 7031200, 7011200, 6500500, 7010900, 6645100, 7220000, 7036200]
   },
   recluse: {
-    cups: ["@Urn$bbg", "@Goblet$rby", "@Chalice$ygw", "Soot Covered Urn$rry"],
-    recs: [],
+    cups: ["@Urn$bbg$bbg", "@Goblet$rby$rby", "@Chalice$ygw$bgg", "Soot Covered @Urn$rry$rry", "Sealed @ Urn$gbb$yyr", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
+    augs: []
   },
   executor: {
-    cups: ["@Urn$ryy$ryy", "@Goblet$rbg$rbg", "@Chalice$byw$yyg", "Soot Covered Urn$rrb$rrb", 'Sealed @ Urn$yyr$ggb', "Decrepit @ Goblet$rry$rry", "Forgotten @ Goblet$gbr$ygw"],
-    recs: [7034200, 7034400, 6647100, 7011700, 7034300, 7034500, 6500700, 6647000, 7043000],
+    cups: ["@Urn$ryy$ryy", "@Goblet$rbg$rbg", "@Chalice$byw$yyg", "Soot Covered @ Urn$rrb$rrb", 'Sealed @ Urn$yyr$ggb', "Decrepit @ Goblet$rry$rry", "Forgotten @ Goblet$gbr$ygw"],
     augs: [7034400, 7011700, 7034500]
   },
   scholar: {
-    cups: ["@Urn$rry$rry", "@Goblet$bgy$bgy", "@Chalice$rbw$ryy", "Soot Covered Urn$bgg$bgg", 'Sealed @ Urn$yrr$gbb', "Decrepit @ Goblet$bbg$bbg", "@Forgotten @ Goblet$ygb$rgw",],
-    recs: [],
+    cups: ["@Urn$$", "@Goblet$$", "@Chalice$$", "Soot Covered @Urn$$", "Sealed @ Urn$$", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
     augs: [6500800, 6647300, 7036300, 7036400, 6647200, 7036200, 7036500]
   },
   undertaker: {
-    cups: ["@Urn$bgg$bgg", "@Goblet$ryy$ryy", "@Chalice$gyw$bgy", "Soot Covered Urn$rrb$rrb", "Sealed @ Urn$ggb$yrr", "Decrepit @ Goblet$rbb$rbb", "@Forgotten @ Goblet$yyr$byg"],
-    recs: [],
+    cups: ["@Urn$bgg$bgg", "@Goblet$ryy$ryy", "@Chalice$gyw$bgy", "Soot Covered Urn$rrb$rrb", "Sealed @ Urn$ggb$yrr", "Decrepit @ Goblet$rbb$rbb", "Forgotten @ Goblet$yyr$byg"],
     augs: [7036800, 6500900, 7037300, 6647500, 7037000, 6647400, 7036900]
   },
   universal: {
     cups: ["Sacred Erdtree Grail$yyy$yyy", "Spirit Shelter Grail$ggg$ggg", "Giant's Cradle Grail$bbb$bbb", "Scadutree Grail$rrr$rrr"],
-    recs: []
-  },
-  melee: {
-    recs: [7005600, 6005600, 6005601, 7100100, 7100190, 7100110, 7001401, 7001402, 7001400, 7001409, 7001403, 6001401, 6001400, 7000002, 7000001,
-      7000400, 7000401, 7000402, 7000900, 7000901, 7000902, 6040001, 6040000, 7040000, 7060000, 7080600, 7330600, 7350600, 7340600]
   }
 };
 
@@ -148,13 +137,11 @@ let events = {
 const ashes_of_wars = new Set(start_skill);
 const good_dupe = new Set(fine_dupe)
 export function generateBuild2(args) {
-  let { picks, char, raw, deep, type } = args;
+  let { picks, char, subs, curses_avoid, raw, deep, type } = args;
   console.log(picks, char);
-  if (!picks.length) picks = chars[char].recs;
+  if (!picks.length) picks = sybs;
   let augs = new Set(chars[char].augs || []);
-  let any_rec = new Set([...picks, ...chars[char].recs, ...chars.melee.recs]);
-  let reccs = new Set(chars[char].recs);
-  let uni_reccs = new Set(chars.melee.recs);
+  let reccs = new Set(subs || []);
   let uni_possibles = ['rr', 'rrr', 'bb', 'bbb', 'gg', 'ggg', 'yy', 'yyy'];
   let colors = ['b', 'g', 'r', 'y'];
 
@@ -164,8 +151,8 @@ export function generateBuild2(args) {
   let ash_picked = picks.some(e => ashes_of_wars)
   picks = new Set(picks);
 
-  let scores = [...picks, ...chars[char].recs, ...chars.melee.recs].map(e => dupe_map[e] || e).reduce((acc, e) => {
-    acc[e] = ((picks.has(e) * (1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)))) || reccs.has(e) * 0.11 || uni_reccs.has(e) * 0.1) 
+  let scores = [...picks, ...subs].map(e => dupe_map[e] || e).reduce((acc, e) => {
+    acc[e] = ((picks.has(e) * (1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)))) || reccs.has(e) * 0.07) 
     - ((plus_map[e] || 0)/25) 
     return acc;
   }, {});
@@ -257,7 +244,7 @@ export function generateBuild2(args) {
     let final_best = -Infinity;
     let bests = [];
     let caps = {};
-    pairs = pairs.sort((a, b) => b[0] - a[0]).filter(pair => {
+    pairs = pairs.sort((a, b) => b[0] - a[0]).filter(pair => { //limit good relic to ~3 partners
       let [id1, id2] = [pair[4].id, pair[5].id];
       caps[id1] ??= 0;
       caps[id2] ??= 0;
@@ -296,14 +283,10 @@ export function generateBuild2(args) {
     // filter duplicates and map 
     let filt = new Set();
     let caps2 = {};
-    bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {
+    bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {// filter out dupes (shouldnt be possible for pairs)
       let ids = [relics[b[1]], relics[b[2]], b[3]].map(e => e.id).sort();
       let join = ids.join(",");
       if (filt.has(join)) return false;
-      // for(let id in ids) {
-      //   caps2[id] ??=0;
-      //   if(++caps2[id] > 2) return false;
-      // }
       filt.add(join);
       return true;
     }).map(e => {
@@ -347,7 +330,7 @@ export function generateBuild2(args) {
         for (let e of rel.perks) {
           let code = dupe_map[e] || e;
           if (seen.has(code)) {
-            score -= good_dupe.has(code) ? 0 : 1.2;
+            score -= good_dupe.has(code) ? 0.08 : 1.2;
             continue;
           }
           score += scores[code] || 0;
@@ -403,11 +386,9 @@ export function generateBuild2(args) {
     picks = [...picks]
     builds = builds.sort((a, b) => b.score - a.score).slice(0, 100).filter(build => {
       let perks = build.rels.map(e => e.perks).flat().map(e => dupe_map[e] || e);
-      let missing = picks.filter(e => !(perks.includes(dupe_map[e]) || perks.includes(e)));
-      build.missing = missing;
-      caps[missing.join()] ??= 0;
-      return ++caps[missing.join()] < 4;
-      return true;
+      build.missing = picks.filter(e => !(perks.includes(dupe_map[e]) || perks.includes(e)));
+      // caps[missing.join()] ??= 0;
+      return true
     });
     console.log(builds);
   }
@@ -536,6 +517,12 @@ export function save() {
   // localStorage.setItem('rb_data', JSON.stringify({ relics: states.relics }))
 }
 
+export function wipe() {
+  account = {};
+  localStorage.clear();
+  window.location.reload()
+}
+
 export function openSupport() {
   isTauri() ? ipcFetch('support') : window.open("https://ko-fi.com/auraxium/")
 }
@@ -571,12 +558,6 @@ export async function checkForAppUpdates() {
 
 window.addEventListener("beforeunload", (e) => {
   window.localStorage.setItem('account', JSON.stringify(account));
-  // save();
-  if (!isTauri()) return;
-  window.command.stdout.removeAllListeners("data");
-  window.command.stderr.removeAllListeners("data");
-  window.pyspawn.kill();
-  window.pyspawn = null;
 });
 
 // perks_list = perks //+X perks

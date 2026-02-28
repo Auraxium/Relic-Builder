@@ -8,7 +8,7 @@ import * as cur from '../effects_edit'
 
 const option_class = 'aspect-square, h-full, rounded-lg border-[1px] ms-4, border-[#666] hover:border-[#aaa] center text-[#ccc] bg-[#333] text-[18px] p-1 center capitalize';
 
-export default function PerkList({ _ref, pre_picks, searchBar, className }) {
+export default function PerkList({ _ref, pre_picks, searchBar, className, onChange }) {
   let [perk_state, setPerks] = useState(_ref.picks || []);
   let [search, setSearch] = useState('');
   let [raw, setRaw] = useState(window.raw);
@@ -37,6 +37,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
     _ref.setRaw = setRaw;
     _ref.Toggle = (id) => {
       perk_set.has(id) ? perk_set.delete(id) : perk_set.add(id)
+      onChange && onChange([...perk_set]);
       _ref.onChange && _ref.onChange([...perk_set]);
       console.log(perk_set);
       // console.log(perk.ind, perk.text);
@@ -55,6 +56,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
         style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
         onPointerDown={(e) => {
           on ? perk_set.delete(id) : perk_set.add(id);
+          onChange && onChange([...perk_set]);
           _ref.onChange && _ref.onChange([...perk_set]);
           console.log(perk_set);
           // console.log(perk.ind, perk.text);
@@ -67,7 +69,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className }) {
   }
 
   return (
-    <div className={`full flex flex-col p-1 ${className}`} >
+    <div className={`${className} full flex flex-col p-1 `} >
       {searchBar ?
         <div className="flex items-center mb-2 w-full gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>

@@ -59,8 +59,7 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
           </span>
         </div>
         <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
-          <IconPencil onClick={() => console.log(relic)} />
-          <IconTrash onClick={() => { if (misc?.banEvent) misc.banEvent(relic.id) }} />
+          {/* <IconPencil onClick={() => console.log(relic)} /> */}
           <IconDesk className='pen' style={{backgroundColor: account.workshop[relic.id] ? '#1d586b':''}} onClick={e => {
             if(account.workshop[relic.id]) {
               e.target.style.backgroundColor = '';
@@ -143,7 +142,7 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <div className={`${option_class} ms-2 `} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
-        <div className={`${option_class} ms-2`} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
+        <div className={`${option_class} ms-2`} style={{ borderColor: filter['deep'] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
         <div className="flex items-center justify-end w-[250px] gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>
           <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value.toLowerCase()))} className="grow w-1 bg-[#444] p-1" />

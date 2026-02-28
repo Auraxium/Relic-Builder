@@ -154,12 +154,14 @@ export async function handleFile(e) {
   account.characters = files.slice(0, 10).map(e => getProfileData(e));
   console.log(account)
   localStorage.setItem('account', JSON.stringify(account));
-  if (account.current === undefined) account.current = 0;
+  // if (account.current === undefined) 
+  account.current = 0;
   let character = account.characters[account.current];
   account.name = character.name;
   account.relics = character.relics;
   account.workshop = character.workshop || {};
   account.scan_date = Date.now();
+  states.home()
   // getProfileData()
 }
 
@@ -359,15 +361,14 @@ export default function File() {
 
   return (
     <div className="full flex flex-col">
-      <div class="full col p-1 relative ">
-        {/* <div class="button bg-neutral-700 h-12 p-4 center w-fit rounded-sm hover:bg-blue-600 " onClick={getProfileData}>
-          get data
-        </div> */}
+      <div class="full col center p-1 relative ">
+        {!account.characters?.length ? <div className="w-[60%] center absolute top-[10%] text-[#cccccc] bg-black/60 mt-4 text-[20px]">Welcome to Relics QOL! Scan you Nightreign save file to begin</div> : ''}
         <div class="center grow w-full ">
-          <div class="w-[60%] rounded-lg p-2 h-[20%] relative text-[#cccccc] bg-[#2b2b2b]">
-            <input type="file" class="opacity-0 absolute full z-10" accept='sl2' onChange={handleFile} />
-            <div class="full center text-white," style={{ border: 'dotted #222 4px' }}>
-              FILE
+          <div class="w-[60%] rounded-lg p-2 h-[60%] relative text-[#cccccc] bg-[#161616] ">
+            <input type="file" class="opacity-0 absolute full z-10 cursor-pointer" accept='sl2' onChange={handleFile} />
+            <div class="full col center text-white," style={{ border: 'dotted #222 4px' }}>
+              <span className="text-[20px] font-medium">Import Nightreign .sl2 save file</span>
+              <span className="mt-4 helvetica">The file can be found at Windows directory: <span className='bg-[#313131] p-2 poppins hlable relative z-10' onClick={e => {e.preventDefault(); e.stopPropagation()}}>%APPDATA%\Nightreign</span> </span>
             </div>
           </div>
         </div>

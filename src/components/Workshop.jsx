@@ -8,6 +8,7 @@ import { Relic } from "./Home";
 
 account.workshop ??= {};
 export default function Workshop() {
+  let [s, rs] = useState()
   let ghost = useRef()
   let count = 0;
   let rels = Object.keys(account.workshop);
@@ -45,7 +46,7 @@ export default function Workshop() {
 
   return (
     <div className="full fixed h-[100vh] w-[100vw] left-0 overflow-auto">
-      <div className="" onClick={e => account.workshop = {}}>clear</div>
+      <div className={option_class} onClick={e => {account.workshop = {}; rs(Math.random())}}>clear</div>
       <div ref={ghost} className="border, absolute pointer-events-none"></div>
       {rels.map(e => {
         let info = account.workshop[e];

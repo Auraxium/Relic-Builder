@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { account, init, states, checkForAppUpdates, openSupport } from "./statics";
+import { account, init, states, checkForAppUpdates, openSupport, save, wipe } from "./statics";
 import { IconHome, IconFileUpload, IconCaretDown, IconCaretDownFilled } from "@tabler/icons-react";
 import effects from './effects.json'
 import * as cur from './effects_edit'
@@ -43,12 +43,22 @@ function Account() {
   }, []);
 
   return (
-    <div className="min-w-[200px] full col justify-center relative, p-[2px]">
-      <div className="flex justify-between,">
-        <span className="text-[18px] font-medium">{account.name}</span>
-        <span className=""><IconCaretDownFilled /></span>
-      </div>
-      <div ref={last_ref} className="absolute, relative bottom-0 center, text-[#777]">Last Scan: {ago()}</div>
+    <div className="min-w-[200px] border, full box-content relative p-[2px],">
+      <div ref={last_ref} className="absolute -bottom-[20%] left-[4px] text-[#777] pen pointer-events-none">Last Scan: {ago()}</div>
+      <select className="full, w-full" defaultValue={account.current || 0} onChange={e => {
+        let currentChar = account.characters[account.current];
+        //save 
+        let character = account.characters[+e.target.value];
+        account.current = +e.target.value;
+        account.relics = character.relics || [];
+        account.workshop = {};
+        save();
+        states.home()
+      }}>
+        {account.characters.filter(Boolean).map((e,i) => <option className="bg-[#2b2b2b]" value={i}>
+          <span className="text-[18px] font-medium">{account.characters[i]?.name}</span>
+        </option>)}
+      </select>
     </div>
   )
 }
@@ -60,13 +70,16 @@ let nav_icon = {
 function Config() {
 
   return (
-    <div className="">
-      <div className={`${option_class} w-[180px] h-24 border-[#dc3545] text-[#dc3545] mt-[10%],`} onClick={e => {
-        // ipcFetch('delete_all_data')
-        account = {};
-        localStorage.clear();
-      }}>Delete All Data</div>
+    <div className="center full col ">
+      <div className="w-[75%] h-[75%] bg-black/40 p-4">
+        <div className={`${option_class} w-[180px] mb-4  border-[#dc3545] text-[#dc3545] mt-[10%],`} onClick={wipe}>
+          Delete All Data
+        </div>
+        {/* <div className="mt-auto text-[20px]">Shout out to <span className="text-teal-500 text-[24px] cursor-pointer" onClick={e => window.open('https://github.com/alfizari')}>alfizari on GitHub</span> for the save file decryption and parsing algorithms</div> */}
+        <div className="mt-auto, text-[20px]">This website's source code: <span className="text-teal-500 text-[24px] cursor-pointer" onClick={e => window.open('https://github.com/Auraxium/Relic-Builder')}>https://github.com/Auraxium/Relic-Builder</span></div>
+      </div>
     </div>
+
   )
 }
 
@@ -80,7 +93,7 @@ let navs = {
 
 function App() {
   let [relics, setRelics] = useState(account.relics);
-  let [page, setPage] = useState(<Home />);
+  let [page, setPage] = useState(!account.characters?.length ? <File /> : <Home/> );
   if (typeof page == 'string') page = navs[page];
   let scan_card = useRef();
 
@@ -89,17 +102,16 @@ function App() {
     setPage(comp)
   }}>{nav_icon[to]}{to}</div>
 
-  states.relics = relics;
+  states.relics = account.relics;
   // console.log(chars.ironeye.recs.map(e => perks[e]));
 
   useEffect(() => {
     // console.log('use effect reran');
     states.setRelics = setRelics;
     states.setPage = setPage;
-    init().then(res => {
-      // setRelics(res)
-    });
-    checkForAppUpdates();
+    states.home = () => {
+      setPage(<Home/>)
+    }
     window.scan_card = scan_card;
   }, []);
 
@@ -108,7 +120,7 @@ function App() {
     <div style={{ backgroundImage: `url(./bg5.png)` }} className="full, flex flex-col img h-[100svh] w-[100svw] bg-[#202020] ">
       <div className="nav bg-[#0d0d0b] h-[6%] min-h-[40px] max-h-[50px]  flex items-center w-full gap-1 &>*:[w-fit] p-1 items-center,">
         {/* <div style={{ backgroundImage: "url(/rblogo.png)", backgroundPosition: "bottom" }} className="img border-[#777] border-[1px] h-full rounded-md w-12"></div> */}
-        <img src="./rblogo.png" alt="" className="img border-[#777] border-[1px] h-full aspect-square rounded-md bg-bottom" />
+        <img src="./rblogo.png" alt="" className="img border-[#777] border-[1px] h-full aspect-square rounded-md bg-bottom" onClick={e => setPage(<Home />)} />
         <Nav to={'Relics'} comp={<Home />} />
         <Nav to={'Builds'} comp={<Builds />} />
         <Nav to={'Workshop'} comp={<Workshop />} />
@@ -118,9 +130,9 @@ function App() {
         {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
         <Nav className="mt-" to={'Config'} comp={<Config />} />
         <div className="ms-auto, flex items-center border border-[#555] hover:bg-[#555] bg-[#1f1f1f] h-full p-1 gap-1 cursor-pointer" onClick={openSupport}>
-            <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
-            <span>Support Me</span>
-          </div>
+          <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
+          <span>Support</span>
+        </div>
         <div className="ms-auto w-fit border-s-[1px] border-[#333] h-full">
           <Account />
         </div>

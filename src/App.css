@@ -9,6 +9,34 @@
   font-family: Helvetica, arial, sans-serif !important;
 }
 
+.poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.hlable {
+  -webkit-touch-callout: unset;
+  -webkit-user-select: unset;
+  -khtml-user-select: unset;
+  -moz-user-select: unset;
+  -ms-user-select: unset;
+  user-select: all;
+}
+
+.unset {
+  all: unset
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none;    */
+  /* appearance: none;     */
+}
+
+select {
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important; 
+  text-align-last: left !important; 
+  /* all: unset; */
+}
+
 body {
   /* font-family: Arial, Helvetica, sans-serif; */
   font-family: 'Poppins', sans-serif;
