@@ -15,7 +15,7 @@ export default function Builds({ }) {
   let [builds, setBuilds] = useState([]);
   let [bans, setBans] = useState({});
   let [type, setType] = useState(0);
-  const [page, setPage] = useState()
+  const [page, setPage] = useState('main')
   let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
   let count = useRef();
   let pl = useRef();
@@ -83,12 +83,13 @@ export default function Builds({ }) {
           <div className="flex gap-1 w-fit">
             {colors.map((c, i) => <img src={`./rel_${color_full[c]}.webp`} alt="" className="rounded-md flex border-[1px], bg-black/70 w-12 h-12 border-[#555]," style={{ border: i > 2 ? 'solid 1px #290073' : '' }} />)}
           </div>
+          <div className="w-fit">{build.score.toFixed(2)}</div>
           {missing.length ?
             <div className="text-[#dfc533] text-[12px] grow w-1 overflow-hidden flex h-full flex-wrap items-center">Missing: {missing.map(e => effects[e]).join(', ')}</div>
             : <></>}
         </div>
         <div className="lg:grid grid-rows-3 grid-flow-col  space-y-1, w-full h-[600px], grow gap-1 flex-wrap, ">
-          {relics.map(rel => <Relic misc={{ banEvent: (id) => { console.log(id); bans[id] = !bans[id]; setBans({ ...bans }) } }} className={''} relic={rel} />)}
+          {relics.map(rel => <Relic misc={{ banEvent: (id) => { console.log(id); bans[id] = !bans[id]; setBans({ ...bans }) } }} className={'h-fit,'} innerClassName={'overflow-y-auto nsb'} relic={rel} />)}
         </div>
       </div>
     )
@@ -105,7 +106,6 @@ export default function Builds({ }) {
           <div className={`${option_class} ms-auto w-fit`} onClick={e => setBuilds([])}>back</div>
         </div>
       </div>
-
     )
   }
 
@@ -128,7 +128,7 @@ export default function Builds({ }) {
       </div>
       {character ?
         <div className="flex full gap-4 ">
-          <div className="w-[33%] h-full col justify-around gap-1 bg-black/40">
+          <div className="w-[33%] h-full col justify-around gap-1 p-1 bg-black/40">
             {/* <div className="mb-2 p-1, text-[#444]" /> */}
             <Option name={'main'} text={'Choose main perks'} desc={''} />
             <Option name={'sub'} text={'Choose sub perks'} desc={'Optionial. Choose perk useful, but not integral to your build. Used to resolve as tie breakers.'} />

@@ -165,8 +165,8 @@ export function generateBuild2(args) {
   picks = new Set(picks);
 
   let scores = [...picks, ...chars[char].recs, ...chars.melee.recs].map(e => dupe_map[e] || e).reduce((acc, e) => {
-    acc[e] = (picks.has(e) + ((augs.has(e) * .35) || (ashes_of_wars.has(e) * 1)) || reccs.has(e) * 0.11 || uni_reccs.has(e) * 0.1) 
-    - ((plus_map[e] || 0)/2) 
+    acc[e] = ((picks.has(e) * (1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)))) || reccs.has(e) * 0.11 || uni_reccs.has(e) * 0.1) 
+    - ((plus_map[e] || 0)/25) 
     return acc;
   }, {});
 
@@ -339,7 +339,7 @@ export function generateBuild2(args) {
     const fill = (full, relics) => {
       if (full.rels.length == 6) return builds.push(full);
       let ids = new Set(full.rels.map(e => e.id))
-      let seen = new Set(full.rels.map(e => e.perks).flat());
+      let seen = new Set(full.rels.map(e => e.perks).flat().map(e => dupe_map[e] || e));
       let bests = [[-999]];
       let filt = relics.filter(el => !ids.has(el.id) && (full.bans.w || full.bans[el.color]));
       for (let rel of filt) { // if has w go ahead 
@@ -347,7 +347,7 @@ export function generateBuild2(args) {
         for (let e of rel.perks) {
           let code = dupe_map[e] || e;
           if (seen.has(code)) {
-            score -= good_dupe.has(code) ? .15 :1.2;
+            score -= good_dupe.has(code) ? 0 : 1.2;
             continue;
           }
           score += scores[code] || 0;
@@ -400,9 +400,14 @@ export function generateBuild2(args) {
     }
 
     let caps = {};
+    picks = [...picks]
     builds = builds.sort((a, b) => b.score - a.score).slice(0, 100).filter(build => {
-      caps[build.cup] ??= 0;
-      return ++caps[build.cup] < 3;
+      let perks = build.rels.map(e => e.perks).flat().map(e => dupe_map[e] || e);
+      let missing = picks.filter(e => !(perks.includes(dupe_map[e]) || perks.includes(e)));
+      build.missing = missing;
+      caps[missing.join()] ??= 0;
+      return ++caps[missing.join()] < 4;
+      return true;
     });
     console.log(builds);
   }

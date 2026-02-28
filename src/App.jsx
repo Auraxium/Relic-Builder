@@ -117,7 +117,7 @@ function App() {
 
         {/* <Nav to={'Scan'} comp={<Scan relics={relics} />} click={() => { window.scanning = true; scan_card.current.style.display = 'flex'; ipcFetch('scan_rdy') }} /> */}
         <Nav className="mt-" to={'Config'} comp={<Config />} />
-        <div className="ms-auto, flex items-center border border-[#555] bg-[#1f1f1f] h-full p-1 gap-1 cursor-pointer" onClick={openSupport}>
+        <div className="ms-auto, flex items-center border border-[#555] hover:bg-[#555] bg-[#1f1f1f] h-full p-1 gap-1 cursor-pointer" onClick={openSupport}>
             <img height={18} width={26} src="https://storage.ko-fi.com/cdn/logomarkLogo.png" alt="" />
             <span>Support Me</span>
           </div>

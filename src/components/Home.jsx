@@ -6,7 +6,7 @@ import effects from '../effects.json'
 import * as cur from '../effects_edit'
 import PerkList from './PerkList'
 
-export const Relic = ({ relic, edit, className, pl, misc }) => {
+export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
   // return
   // if(!effects[relic.effect_1]?.name) return <></>
   // console.log(relic);
@@ -46,7 +46,7 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
       <div className="flex w-full h-[25%] border, items-center">
         <div className="w-[28%] h-full flex items-center gap-4">
           {/* <div className="rounded-full p-1, capitalize text-neutral-950, font-bold, h-full aspect-square center" style={{background: color_muted[relic.color]}}>{relic.color}</div> */}
-          <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
+          <div className="img border-s-[3px] border-y-[1px_solid_grey], h-full min-h-[32px] aspect-square box-content " style={{ backgroundImage: `url(./${relic.color}${relic.size}.png)`, borderColor: color_code[relic.color] }}></div>
           <div className="rounded-sm p-1 h-fit bg-[#444] center [border:solid_1px_#666], ">
             {/* <span className="text-neutral-950 absolute">size</span> */}
             {relic.size || relic.perks.length}
@@ -72,7 +72,7 @@ export const Relic = ({ relic, edit, className, pl, misc }) => {
           }} />
         </div>
       </div>
-      <div className="flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-hidden nsb">
+      <div className={`${innerClassName} flex  w-full mt-1 flex-wrap content-start items-start gap-1 overflow-hidden nsb`}>
         <List ind={0} />
         <List ind={1} />
         <List ind={2} />
