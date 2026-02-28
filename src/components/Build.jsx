@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { color_muted, color_full, debounce, chars, char_icons, generateBuild2, save, option_class,  } from "../statics";
+import { color_muted, color_full, debounce, chars, char_icons, generateBuild2, save, option_class, } from "../statics";
 import { IconSearch } from "@tabler/icons-react";
 import { Relic } from "./Home";
 import PerkList from "./PerkList";
-import { dupe_map, effects, default_caster_perks, default_melee_perks } from "../effects_edit";
+import { dupe_map, effects, default_caster_perks, default_melee_perks, curses } from "../effects_edit";
+import raw_effects from '../effects.json'
 
 let build_cache = account.build_cache || [];
 export default function Builds({ }) {
@@ -20,8 +21,8 @@ export default function Builds({ }) {
   let page_defaults = {
     main: <></>,
     sub: <>
-      <div className={`${option_class}  `} onClick={e => { account.cache.build_subs = default_melee_perks; sub_pl.setPerks(default_melee_perks)}}>Default Melee</div>
-      <div className={`${option_class}  `} onClick={e => { account.cache.build_subs = default_caster_perks; sub_pl.setPerks(default_caster_perks)}}>Default Caster</div>
+      <div className={`${option_class}  `} onClick={e => { account.cache.build_subs = default_melee_perks; sub_pl.setPerks(default_melee_perks) }}>Default Melee</div>
+      <div className={`${option_class}  `} onClick={e => { account.cache.build_subs = default_caster_perks; sub_pl.setPerks(default_caster_perks) }}>Default Caster</div>
     </>,
     curse: <></>,
   }
@@ -34,6 +35,7 @@ export default function Builds({ }) {
   sub_pl.picks ??= account.cache.build_subs || [];
   curse_pl.picks ??= account.cache.build_curses || [];
   main_pl.setPerks && main_pl.setPerks(account.cache[character] || [])
+  curse_pl.perkSet ??= new Set(curse_pl.picks || []);
 
   let bounceSearch = debounce((s) => main_pl.setSearch(s), 400);
 
@@ -44,6 +46,12 @@ export default function Builds({ }) {
       account.cache[character] = arr;
     };
     main_pl.setPerks ??= () => { };
+    curse_pl.setPerks = () => {
+      curse_pl.perkSet.clear();
+      curse_pl.picks = [];
+      setBans({...bans})
+    };
+
   }, []);
 
   useEffect(() => {
@@ -143,11 +151,11 @@ export default function Builds({ }) {
       <div className="flex cont, gap-1 border-[#666]  ">
         {chars_list.map(char => (
           <div className={`${option_class}`} style={{ borderColor: character == char.name ? 'teal' : '', color: character == char.name ? '#fff' : '' }} onPointerDown={() => {
-            main_pl.setPerks(account.cache[character] || [])
+            main_pl.setPerks(account.cache[character] || []);
             account.cache.build_char = char.name;
             setBuilds([]);
-            setCharacter(char.name)
-            setPage('main')
+            setCharacter(char.name);
+            setPage('main');
           }}>
             {char_icons[char]}
             {char.name}
@@ -171,14 +179,27 @@ export default function Builds({ }) {
               </div>
               {page_defaults[page] || <></>}
               <div className={`${option_class} w-[content] ms-auto flex gap-1 pen `}
-                onClick={e => {pl_map[page].setPerks([])}}>
+                onClick={e => { pl_map[page].picks = []; pl_map[page].setPerks([]); if(pl_map[page].onChange) pl_map[page].onChange([]) }}>
                 Clear
               </div>
             </div>
             <div className="grow h-1 overflow-y-auto overflow-x-hidden">
               <PerkList _ref={main_pl} className={page == 'main' ? '' : 'hidden'} />
               <PerkList _ref={sub_pl} className={page == 'sub' ? '' : 'hidden'} onChange={arr => { account.cache.build_subs = arr }} />
-              <PerkList _ref={curse_pl} className={page == 'curse' ? '' : 'hidden'} onChange={arr => { account.cache.build_curses = arr }} color={'#290073'} />
+              <div className="full col p-1 gap-1 text-[14px]  " style={{ display: page === 'curse' ? 'flex' : 'none' }}>
+                {curses.map(e => <div key={Math.random()} className="h-8 p-1 border-[1px] border-[#333] pen bg-[#2b2b2b] capitalize hover:bg-neutral-600 leading-[1]"
+                  style={{backgroundColor: curse_pl.perkSet.has(e) ? '#290073' : ''}}
+                  onClick={el => {
+                    curse_pl.perkSet.has(e) ? curse_pl.perkSet.delete(e) : curse_pl.perkSet.add(e);
+                    el.target.style.backgroundColor = curse_pl.perkSet.has(e) ? '#290073' : '';
+                    curse_pl.picks = [...curse_pl.perkSet];
+                    account.cache.build_curses = [...curse_pl.picks]
+                  }}
+                >
+                  {raw_effects[e]}
+                </div>)}
+              </div>
+              {/* <PerkList _ref={curse_pl} className={page == 'curse' ? '' : 'hidden'} onChange={arr => { account.cache.build_curses = arr }} color={'#290073'} /> */}
             </div>
           </div>
         </div>
@@ -199,10 +220,10 @@ export default function Builds({ }) {
           </div>
           <div className={`${option_class} bg-teal-700 `} onClick={() => {
             account.cache[character] = [...main_pl.picks];
-            account.cache.build_subs = [...sub_pl.picks]; 
-            account.cache.build_curses = [...curse_pl.picks]; 
-            save(); 
-            setBuilds(generateBuild2({ picks: main_pl.picks, subs: sub_pl.picks, char: character, raw: main_pl.raw, type })) 
+            account.cache.build_subs = [...sub_pl.picks];
+            account.cache.build_curses = [...curse_pl.picks];
+            save();
+            setBuilds(generateBuild2({ picks: main_pl.picks, subs: sub_pl.picks, curses: curse_pl.picks, char: character, raw: main_pl.raw, type }))
           }}>Generate Build</div>
         </div>
       </div>

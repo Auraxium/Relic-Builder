@@ -310,6 +310,7 @@ function getProfileData(data) {
     // if(real_id <= 2019999 && real_id >= 2000000) console.log(name)
     let size = size_map[spl[0]];
     let color = color_map[spl[1]];
+    let perks = [e.effect_1, e.effect_2, e.effect_3];
     color ??= base_relics[name];
 
     if (!color) {
@@ -317,14 +318,16 @@ function getProfileData(data) {
       return null;
     }
 
+    if(name == "the will of balance") console.log(size, perks, color)
+
     return ({
       ...rel,
       id: i,
       real_id,
       name,
-      perks: [e.effect_1, e.effect_2, e.effect_3],
+      perks,
       deep: real_id <= 2019999 && real_id >= 2000000,// Check if this is a deep relic (ID range 2000000-2019999) is_deep = 2000000 <= real_id <= 2019999,
-      size,
+      size: size || perks.filter(e => e != 4294967295).length,
       color,
       // raw: e,
     })

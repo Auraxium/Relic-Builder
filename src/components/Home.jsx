@@ -40,7 +40,7 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px] w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`}
+    <div className={`border-[1px], w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`}
       style={{ border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 75%, #333 100%)`, borderImageSlice: 1 }}
     >
       <div className="flex w-full h-[25%] border, items-center">
@@ -99,7 +99,10 @@ export default function Home({ relics = window.account?.relics || [] }) {
   // let relics_list = window.account?.relics || relics;
   let relics_list = React.useMemo(() => Object.values(relics).reverse(), [relics])
   relics_list = React.useMemo(() => {
-    if (filter['deep']) relics_list = relics_list.filter(rel => rel.deep);
+    if (filter['deep']) {
+      if(filter.deep == 1) relics_list = relics_list.filter(rel => rel.deep);
+      else relics_list = relics_list.filter(rel => !rel.deep);
+    }
     if (cols.some(c => filter[c])) relics_list = relics_list.filter(rel => filter[rel.color]);
     if (sizes.some(c => filter[+c])) relics_list = relics_list.filter(rel => filter[rel.size])
     if ('search' in filter) relics_list = relics_list.filter(rel => rel.perks.map(el => effects[el]).join(' ').toLowerCase().includes(filter.search))
@@ -142,11 +145,15 @@ export default function Home({ relics = window.account?.relics || [] }) {
         <div className={`${option_class} ms-2 `} style={{ borderColor: filter[1] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [1]: !filter[1] })}> 1 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[2] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [2]: !filter[2] })}> 2 </div>
         <div className={`${option_class}  `} style={{ borderColor: filter[3] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, [3]: !filter[3] })}> 3 </div>
-        <div className={`${option_class} ms-2`} style={{ borderColor: filter['deep'] ? '#fff' : '' }} onClick={() => setFilter({ ...filter, ['deep']: !filter['deep'] })}> deep </div>
+        <div className={`${option_class} ms-2`} style={{ borderColor: filter['deep'] == 2 ? '#E75480' : filter['deep'] == 1 ? '#3b00a6' : '' }} onClick={() => {
+          if(filter.deep >= 2) filter.deep = 0;
+          else filter.deep = (filter.deep || 0)+1;
+          setFilter({ ...filter })
+        }}> deep </div>
         <div className="flex items-center justify-end w-[250px] gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>
           <input ref={search_bar} type="text" placeholder={'Search'} defaultValue={filter.search || ''} onChange={(e => bounceSearch(e.target.value.toLowerCase()))} className="grow w-1 bg-[#444] p-1" />
-          <IconX onClick={e => search_bar.current.value = ''} />
+          <IconX onClick={e => {search_bar.current.value = ''; setFilter({...filter, search: ''})}} />
         </div>
         <div className={`${option_class} w-[content] me-4 `} onClick={() => { search_bar.current.value = ''; setFilter({}); perk_list.setPerks([]); perk_list.current.style.display = 'none' }}> Clear </div>
 

@@ -66,15 +66,15 @@ window.plus_map = {};
 
 export let chars = {
   wylder: {
-    cups: ["@Urn$rrb$rrb", "@Goblet$ygg$ygg", "@Chalice$ryw$rby", "Soot Covered @ Urn$bby$bby", "Sealed @ Urn$brr$gyy", "Decrepit @ Goblet$bgy$bgy", "@Forgotten Goblet$ygb$rgw"],
+    cups: ["@Urn$rrb$rrb", "@Goblet$ygg$ygg", "@Chalice$ryw$rby", "Soot Covered @ Urn$bby$bby", "Sealed @ Urn$brr$gyy", "Decrepit @ Goblet$bgy$bgy", "@Forgotten Goblet$ggy$rgw"],
     augs: [7033200,7010500,7032400,6500000,7020000,7030500,6640100,7032300,7033000,6640000,7031400]
   },
   guardian: {
-    cups: ["@Urn$ryy$ryy", "@Goblet$bbg$$bbg", "@Chalice$byw$yyg", "Soot Covered @Urn$rgg$rgg", "Sealed @ Urn$yyr$ggb", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
+    cups: ["@Urn$ryy$ryy", "@Goblet$bbg$bbg", "@Chalice$byw$yyg", "Soot Covered @Urn$rgg$rgg", "Sealed @ Urn$yyr$ggb", "Decrepit @ Goblet$ygg$ygg", "Forgotten @ Goblet$gbb$rbw"],
     augs: [7012000,7011400,7011000,7033400,6641000,6641100,7011100,7010000,7011600,7011900,7033300,6500100]
   },
   ironeye: {
-    cups: ["@Urn$ygg$ygg", "@Goblet$rby$rby", "@Chalice$rgw$rrg", "Soot Covered @Urn$byy$byy", "Sealed @ Urn$ggy$bbr", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
+    cups: ["@Urn$ygg$ygg", "@Goblet$rby$rby", "@Chalice$rgw$rrg", "Soot Covered @Urn$byy$byy", "Sealed @ Urn$ggy$bbr", "Decrepit @ Goblet$bbg$bbg", "Forgotten @ Goblet$ybr$ygw"],
     augs: [6642100,6642000,7280000,7034700,6500200,7034600,7270100]
   },
   duchess: {
@@ -82,27 +82,28 @@ export let chars = {
     augs: [6500300,6643100,6643000,7290000,7033600,7010700,7032700,7300000,7031800]
   },
   raider: {
-    cups: ["@Urn$rgg$rgg", "@Goblet$rby$rby", "@Chalice$rrw$ryy", "Soot Covered @Urn$bbg$bbg", "Sealed @ Urn$ggr$ybb", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
+    cups: ["@Urn$rgg$rgg", "@Goblet$rby$rby", "@Chalice$rrw$ryy", "Soot Covered @Urn$bbg$bbg", "Sealed @ Urn$ggr$ybb", "Decrepit @ Goblet$yyg$yyg", "Forgotten @ Goblet$ybr$rgw"],
+    augs: [7033800,6644100,7310000,7010800,7031300,6500400,6644000]
   },
   revenant: {
-    cups: ["@Urn$bby$bby", "@Goblet$rrg$rrg", "@Chalice$bgw$byg", "Soot Covered @Urn$ryy$ryy", "Sealed @ Urn$ybb$ggr", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
+    cups: ["@Urn$bby$bby", "@Goblet$rrg$rrg", "@Chalice$bgw$byg", "Soot Covered @Urn$ryy$ryy", "Sealed @ Urn$ybb$ggr", "Decrepit @ Goblet$rry$rry", "Forgotten @ Goblet$grr$ygw"],
     augs: [7320000, 6645000, 7031200, 7011200, 6500500, 7010900, 6645100, 7220000, 7036200]
   },
   recluse: {
-    cups: ["@Urn$bbg$bbg", "@Goblet$rby$rby", "@Chalice$ygw$bgg", "Soot Covered @Urn$rry$rry", "Sealed @ Urn$gbb$yyr", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
-    augs: []
+    cups: ["@Urn$bbg$bbg", "@Goblet$rby$rby", "@Chalice$ygw$bgg", "Soot Covered @Urn$rry$rry", "Sealed @ Urn$gbb$yyr", "Decrepit @ Goblet$yyb$yyb", "Forgotten @ Goblet$ybr$bgw"],
+    augs: [7034100,6500600,7032800,7034000,7033900,6646100,7032900,6646000]
   },
   executor: {
     cups: ["@Urn$ryy$ryy", "@Goblet$rbg$rbg", "@Chalice$byw$yyg", "Soot Covered @ Urn$rrb$rrb", 'Sealed @ Urn$yyr$ggb', "Decrepit @ Goblet$rry$rry", "Forgotten @ Goblet$gbr$ygw"],
-    augs: [7034400, 7011700, 7034500]
+    augs: [6500900,7034700,6500700,7034500,7011700,7034300,6647100,6647000,7034400,7034200]
   },
   scholar: {
-    cups: ["@Urn$$", "@Goblet$$", "@Chalice$$", "Soot Covered @Urn$$", "Sealed @ Urn$$", "Decrepit @ Goblet$$", "Forgotten @ Goblet$$"],
-    augs: [6500800, 6647300, 7036300, 7036400, 6647200, 7036200, 7036500]
+    cups: ["@Urn$rry$rry", "@Goblet$bgy$bgy", "@Chalice$rbw$ryy", "Soot Covered @Urn$bgg$bgg", "Sealed @ Urn$yrr$gbb", "Decrepit @ Goblet$bbg$bbg", "Forgotten @ Goblet$ygb$ygg"],
+    augs: [6500800,6647200,7036200,6647300,7036500,7036300,7036400]
   },
   undertaker: {
     cups: ["@Urn$bgg$bgg", "@Goblet$ryy$ryy", "@Chalice$gyw$bgy", "Soot Covered Urn$rrb$rrb", "Sealed @ Urn$ggb$yrr", "Decrepit @ Goblet$rbb$rbb", "Forgotten @ Goblet$yyr$byg"],
-    augs: [7036800, 6500900, 7037300, 6647500, 7037000, 6647400, 7036900]
+    augs: [7037000,6647400,7037300,7036800,7036900,6500900,6647500]
   },
   universal: {
     cups: ["Sacred Erdtree Grail$yyy$yyy", "Spirit Shelter Grail$ggg$ggg", "Giant's Cradle Grail$bbb$bbb", "Scadutree Grail$rrr$rrr"],
@@ -137,11 +138,12 @@ let events = {
 const ashes_of_wars = new Set(start_skill);
 const good_dupe = new Set(fine_dupe)
 export function generateBuild2(args) {
-  let { picks, char, subs, curses_avoid, raw, deep, type } = args;
+  let { picks, char, subs, curses, raw, deep, type } = args;
   console.log(picks, char);
-  if (!picks.length) picks = sybs;
+  if (!picks.length) picks = subs;
   let augs = new Set(chars[char].augs || []);
   let reccs = new Set(subs || []);
+  let curse_avoid = new Set(curses);
   let uni_possibles = ['rr', 'rrr', 'bb', 'bbb', 'gg', 'ggg', 'yy', 'yyy'];
   let colors = ['b', 'g', 'r', 'y'];
 
@@ -153,7 +155,7 @@ export function generateBuild2(args) {
 
   let scores = [...picks, ...subs].map(e => dupe_map[e] || e).reduce((acc, e) => {
     acc[e] = ((picks.has(e) * (1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)))) || reccs.has(e) * 0.07) 
-    - ((plus_map[e] || 0)/25) 
+    - ((plus_map[e] || 0)/25)
     return acc;
   }, {});
 
@@ -162,15 +164,11 @@ export function generateBuild2(args) {
   let deep_cups = [];
   raw_cups.forEach(el => { //get cups
     let c = el.split('$').slice(1,3);
-    // console.log(c)
     c[0] = c[0].split("").sort().join("");
     c[1] = c[1].split("").sort().join("");
     light_cups.push(c[0]);
     deep_cups.push(c[1]);
-    // full_cups.push(`${c[0]}x${c[1]}`);
   });
-  // let cups_map = cups.map(e => e.split('$').at(-1).split("").sort().join(""));
-  // return console.log(light_cups, deep_cups)
 
   let main = (cups, relics, debug) => { //find best pair, then a third
     // if(debug) console.log('cups:', cups, 'relics:', relics)

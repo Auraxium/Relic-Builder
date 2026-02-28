@@ -12,9 +12,11 @@ export default function PerkList({ _ref, pre_picks, searchBar, className, onChan
   let [perk_state, setPerks] = useState(_ref.picks || []);
   let [search, setSearch] = useState('');
   let [raw, setRaw] = useState(window.raw);
+  let [shrink, setShrink] = useState([])
   _ref.raw = raw;
   window.raw = raw;
   let inp = useRef();
+  let shrink_menu = useRef()
   let bounceSearch = debounce((s) => setSearch(s), 400);
   // let perk_list = Obje
   let perks = raw ? effects : cur.effects;
@@ -55,11 +57,14 @@ export default function PerkList({ _ref, pre_picks, searchBar, className, onChan
         className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, border-[1px] border-[#333] bg-[#2b2b2b] capitalize hover:bg-neutral-600 leading-[1]"
         style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
         onPointerDown={(e) => {
+          console.log(id);
+          if(id < 100) return setShrink(cur.shrink_map[id] || [])
           on ? perk_set.delete(id) : perk_set.add(id);
           onChange && onChange([...perk_set]);
           _ref.onChange && _ref.onChange([...perk_set]);
           console.log(perk_set);
           // console.log(perk.ind, perk.text);
+          setShrink([])
           setPerks([...perk_set]);
         }}
       >
@@ -70,6 +75,14 @@ export default function PerkList({ _ref, pre_picks, searchBar, className, onChan
 
   return (
     <div className={`${className} full flex flex-col p-1 `} >
+      <div ref={shrink_menu} className="z-20 items-center justify-center fixed left-0 top-0 w-full h-full  bg-[rgba(16,12,80,0.7)] " 
+      style={{display: shrink?.length ? 'flex': 'none'}}
+      onClick={e => setShrink([])}
+      >
+        <div className="w-[30%] h-[75%] bg-black/40 p-1 col gap-1 overflow-auto">
+          {shrink.map(perk => <PerkUI perk={cur.dupe_map[perk] || perk} />)}
+        </div>
+      </div>
       {searchBar ?
         <div className="flex items-center mb-2 w-full gap-2 ">
           <div className="w-[20px]"><IconSearch /> </div>

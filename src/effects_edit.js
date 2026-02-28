@@ -341,6 +341,16 @@ export let default_caster_perks = [
 
 export let hide_expand = new Set([...resistances, ...dormants, ...weapon_power, ...hp_weapon, ...fp_weapon, ...start_skill, ...weapon_3, ...start_item]);
 
+export let shrink_map = {
+  1: resistances,
+  2: dormants,
+  3: weapon_power,
+  5: hp_weapon,
+  6: fp_weapon,
+  7: weapon_3,
+  8: start_item
+}
+
 export let effects = {
   1: "Improved <Ailment> Resistance",
   2: "Dormant Power Helps Discover <Weapon>",
