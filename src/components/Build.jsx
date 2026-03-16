@@ -13,7 +13,7 @@ export default function Builds({ }) {
   let [bans, setBans] = useState({});
   let [type, setType] = useState(0);
   const [page, setPage] = useState('main')
-  let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -2);
+  let chars_list = Object.keys(chars).map(char => ({ ...chars[char], name: char })).slice(0, -1);
   let count = useRef();
   let main_pl = useRef();
   let sub_pl = useRef();
@@ -104,7 +104,7 @@ export default function Builds({ }) {
           <div className="flex gap-1 w-fit">
             {colors.map((c, i) => <img src={`./rel_${color_full[c]}.webp`} alt="" className="rounded-md flex border-[1px], bg-black/70 w-12 h-12 border-[#555]," style={{ border: i > 2 ? 'solid 1px #290073' : '' }} />)}
           </div>
-          {/* <div className="w-fit">{build.score.toFixed(2)}</div> */}
+          <div className="w-fit">{build.score.toFixed(2)}</div>
           {missing.length ?
             <div className="text-[#dfc533] text-[12px] grow w-1 overflow-hidden flex h-full flex-wrap items-center">Missing: {missing.map(e => effects[e]).join(', ')}</div>
             : <></>}
@@ -151,6 +151,9 @@ export default function Builds({ }) {
       <div className="flex cont, gap-1 border-[#666]  ">
         {chars_list.map(char => (
           <div className={`${option_class}`} style={{ borderColor: character == char.name ? 'teal' : '', color: character == char.name ? '#fff' : '' }} onPointerDown={() => {
+            account.cache[character] = [...main_pl.picks];
+            account.cache.build_subs = [...sub_pl.picks];
+            account.cache.build_curses = [...curse_pl.picks];
             main_pl.setPerks(account.cache[character] || []);
             account.cache.build_char = char.name;
             setBuilds([]);

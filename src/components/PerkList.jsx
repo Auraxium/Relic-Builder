@@ -27,7 +27,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className, onChan
       return normalize(a.text).localeCompare(normalize(b.text));
     }), [raw]);
   perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()));
-  if (search) perks_list = perks_list.filter(perk => perk.text.includes(search.toLowerCase()), [raw]);
+  if (search) perks_list = perks_list.filter(perk => perk.text.toLocaleLowerCase().includes(search.toLowerCase()), [raw]);
   else perks_list = perks_list.filter(e => !cur.hide_expand.has(e.ind))
   let perk_set = new Set(perk_state || []);
   _ref.perk_set = perk_set;
@@ -57,7 +57,7 @@ export default function PerkList({ _ref, pre_picks, searchBar, className, onChan
         className="flex p-1 h-8 items-center shrink-0, w-full min-w-fit, border-[1px] border-[#333] bg-[#2b2b2b] capitalize hover:bg-neutral-600 leading-[1]"
         style={{ fontSize: `clamp(14px, ${(window.innerWidth * 0.41) / name || 1}px, 18px)`, backgroundColor: on }}
         onPointerDown={(e) => {
-          console.log(id);
+          // console.log(id);
           if(id < 100) return setShrink(cur.shrink_map[id] || [])
           on ? perk_set.delete(id) : perk_set.add(id);
           onChange && onChange([...perk_set]);

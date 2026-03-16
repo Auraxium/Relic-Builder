@@ -487,7 +487,7 @@
     "7034100": "[Recluse] Activating Ultimate Art raises Max HP",
     "7034200": "[Executor] Attack power up while Ultimate Art is active",
     "7034300": "[Executor] Improves effect of ability but lowers resistance to status ailments",
-    "7034400": "[Executor] Character Skill Boosts Attack but Attacking Drains HP",
+    "7034400": "[Executor] Character Skill Boosts Attack but Lowers Damage Negation While Attacking",
     "7034500": "[Executor] While Character Skill is active, unlocking use of cursed sword restores HP",
     "7034600": "[Ironeye] Art Charge Activation Adds Poison Effect",
     "7034700": "[Ironeye] Boosts thrusting counterattacks after executing Art",

@@ -15,13 +15,7 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
   let rel_curses;
   if (relic.curses?.length) rel_curses = relic.curses.sort((a, b) => effects[a].length - effects[b].length)
   let name = relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`;
-  // if(relic.deep) {
-  //   name = name.split(' ');
-  //   let part = name.splice(0,1);
-  //   name = <div className="">
-  //     <span className="text-[#a349f8]">{part}</span> {name.join(' ')}
-  //   </div>
-  // }
+
 
   const List = ({ ind, curse }) => {
     let perks = curse ? rel_curses : rel_perks;
@@ -32,7 +26,10 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
     return (
       <div className="capitalize flex items-center text-[16px] text-[#c9c9c9] rounded-md w-fit h-fit hover:bg-[#555] [font-weight:100] helvetica p-[6px] leading-[90%] [border:solid_1px_#444]"
         style={{ backgroundColor: pl?.perk_set?.has(id) ? '#1d586b' : curse ? '#200059' : '#2b2b2b' }}
-        onClick={e => pl && !curse && pl.Toggle(perks[ind])}
+        onClick={e => {
+          // console.log(id);
+          if(pl && !curse) pl.Toggle(perks[ind]);
+        }}
       >
         {perk || ''}
       </div>

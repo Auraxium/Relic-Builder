@@ -62,28 +62,34 @@ export let varsAt;
 export let char_augs = new Set()
 window.plus_map = {};
 
+window.getRel = id => {
+  let r = account.relics[id];
+
+  console.log({...r, perk_names: r.perks.map(e => effects[e])});
+}
+
 // ((plus_map[e] || 0) / 90 + 1)
 
 export let chars = {
   wylder: {
     cups: ["@Urn$rrb$rrb", "@Goblet$ygg$ygg", "@Chalice$ryw$rby", "Soot Covered @ Urn$bby$bby", "Sealed @ Urn$brr$gyy", "Decrepit @ Goblet$bgy$bgy", "@Forgotten Goblet$ggy$rgw"],
-    augs: [7033200,7010500,7032400,6500000,7020000,7030500,6640100,7032300,7033000,6640000,7031400]
+    augs: [7033200, 7010500, 7032400, 6500000, 7020000, 7030500, 6640100, 7032300, 7033000, 6640000, 7031400]
   },
   guardian: {
     cups: ["@Urn$ryy$ryy", "@Goblet$bbg$bbg", "@Chalice$byw$yyg", "Soot Covered @Urn$rgg$rgg", "Sealed @ Urn$yyr$ggb", "Decrepit @ Goblet$ygg$ygg", "Forgotten @ Goblet$gbb$rbw"],
-    augs: [7012000,7011400,7011000,7033400,6641000,6641100,7011100,7010000,7011600,7011900,7033300,6500100]
+    augs: [7012000, 7011400, 7011000, 7033400, 6641000, 6641100, 7011100, 7010000, 7011600, 7011900, 7033300, 6500100]
   },
   ironeye: {
     cups: ["@Urn$ygg$ygg", "@Goblet$rby$rby", "@Chalice$rgw$rrg", "Soot Covered @Urn$byy$byy", "Sealed @ Urn$ggy$bbr", "Decrepit @ Goblet$bbg$bbg", "Forgotten @ Goblet$ybr$ygw"],
-    augs: [6642100,6642000,7280000,7034700,6500200,7034600,7270100]
+    augs: [6642100, 6642000, 7280000, 7034700, 6500200, 7034600, 7270100]
   },
   duchess: {
     cups: ["@Urn$rbb$rbb", "@Goblet$yyg$yyg", "@Chalice$byw$rby", "Soot Covered @Urn$rrg$rrg", "Sealed @ Urn$bbr$ggy", "Decrepit @ Goblet$bgg$bgg", "Forgotten @ Goblet$gyy$rgw"],
-    augs: [6500300,6643100,6643000,7290000,7033600,7010700,7032700,7300000,7031800]
+    augs: [6500300, 6643100, 6643000, 7290000, 7033600, 7010700, 7032700, 7300000, 7031800]
   },
   raider: {
     cups: ["@Urn$rgg$rgg", "@Goblet$rby$rby", "@Chalice$rrw$ryy", "Soot Covered @Urn$bbg$bbg", "Sealed @ Urn$ggr$ybb", "Decrepit @ Goblet$yyg$yyg", "Forgotten @ Goblet$ybr$rgw"],
-    augs: [7033800,6644100,7310000,7010800,7031300,6500400,6644000]
+    augs: [7033800, 6644100, 7310000, 7010800, 7031300, 6500400, 6644000]
   },
   revenant: {
     cups: ["@Urn$bby$bby", "@Goblet$rrg$rrg", "@Chalice$bgw$byg", "Soot Covered @Urn$ryy$ryy", "Sealed @ Urn$ybb$ggr", "Decrepit @ Goblet$rry$rry", "Forgotten @ Goblet$grr$ygw"],
@@ -91,19 +97,19 @@ export let chars = {
   },
   recluse: {
     cups: ["@Urn$bbg$bbg", "@Goblet$rby$rby", "@Chalice$ygw$bgg", "Soot Covered @Urn$rry$rry", "Sealed @ Urn$gbb$yyr", "Decrepit @ Goblet$yyb$yyb", "Forgotten @ Goblet$ybr$bgw"],
-    augs: [7034100,6500600,7032800,7034000,7033900,6646100,7032900,6646000]
+    augs: [7034100, 6500600, 7032800, 7034000, 7033900, 6646100, 7032900, 6646000]
   },
   executor: {
     cups: ["@Urn$ryy$ryy", "@Goblet$rbg$rbg", "@Chalice$byw$yyg", "Soot Covered @ Urn$rrb$rrb", 'Sealed @ Urn$yyr$ggb', "Decrepit @ Goblet$rry$rry", "Forgotten @ Goblet$gbr$ygw"],
-    augs: [6500900,7034700,6500700,7034500,7011700,7034300,6647100,6647000,7034400,7034200]
+    augs: [6500900, 7034700, 6500700, 7034500, 7011700, 7034300, 6647100, 6647000, 7034400, 7034200]
   },
   scholar: {
     cups: ["@Urn$rry$rry", "@Goblet$bgy$bgy", "@Chalice$rbw$ryy", "Soot Covered @Urn$bgg$bgg", "Sealed @ Urn$yrr$gbb", "Decrepit @ Goblet$bbg$bbg", "Forgotten @ Goblet$ygb$ygg"],
-    augs: [6500800,6647200,7036200,6647300,7036500,7036300,7036400]
+    augs: [6500800, 6647200, 7036200, 6647300, 7036500, 7036300, 7036400]
   },
   undertaker: {
     cups: ["@Urn$bgg$bgg", "@Goblet$ryy$ryy", "@Chalice$gyw$bgy", "Soot Covered Urn$rrb$rrb", "Sealed @ Urn$ggb$yrr", "Decrepit @ Goblet$rbb$rbb", "Forgotten @ Goblet$yyr$byg"],
-    augs: [7037000,6647400,7037300,7036800,7036900,6500900,6647500]
+    augs: [7037000, 6647400, 7037300, 7036800, 7036900, 6500900, 6647500]
   },
   universal: {
     cups: ["Sacred Erdtree Grail$yyy$yyy", "Spirit Shelter Grail$ggg$ggg", "Giant's Cradle Grail$bbb$bbb", "Scadutree Grail$rrr$rrr"],
@@ -139,7 +145,7 @@ const ashes_of_wars = new Set(start_skill);
 const good_dupe = new Set(fine_dupe)
 export function generateBuild2(args) {
   let { picks, char, subs, curses, raw, deep, type } = args;
-  console.log(picks, char);
+  console.log(picks, subs, char);
   if (!picks.length) picks = subs;
   let augs = new Set(chars[char].augs || []);
   let reccs = new Set(subs || []);
@@ -154,8 +160,11 @@ export function generateBuild2(args) {
   picks = new Set(picks);
 
   let scores = [...picks, ...subs].map(e => dupe_map[e] || e).reduce((acc, e) => {
-    acc[e] = ((picks.has(e) * (1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)))) || reccs.has(e) * 0.07) 
-    - ((plus_map[e] || 0)/25)
+    if(picks.has(e)) acc[e] = 1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)) - ((plus_map[e] || 0) / 25);
+    else if (reccs.has(e)) 0.07 - ((plus_map[e] || 0) / 25);
+    else acc[e] = 0;
+    // acc[e] = ((picks.has(e) * (1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)))) || reccs.has(e) * 0.07)
+    //   - ((plus_map[e] || 0) / 25)
     return acc;
   }, {});
 
@@ -163,7 +172,7 @@ export function generateBuild2(args) {
   let light_cups = [];
   let deep_cups = [];
   raw_cups.forEach(el => { //get cups
-    let c = el.split('$').slice(1,3);
+    let c = el.split('$').slice(1, 3);
     c[0] = c[0].split("").sort().join("");
     c[1] = c[1].split("").sort().join("");
     light_cups.push(c[0]);
@@ -224,18 +233,16 @@ export function generateBuild2(args) {
         }
         for (let e of perks2) {
           let code = dupe_map[e] || e;
-          if (seen.has(code) && !good_dupe.has(code)) {
-            score -= 1.2;
+          if (seen.has(code)) {
+            score -= good_dupe.has(code) ? -0.08 : 1.2;
             continue;
           }
           score += scores[code] || 0;
           seen.add(code);
         }
         // console.log(score)
-        if (score >= best - 121.5) { //works for some reason
-          if (score > best) best = score;
-          pairs.push([score, seen, i, j, relics[i], relics[j]]);
-        }
+        if (score > best) best = score;
+        pairs.push([score, seen, i, j, relics[i], relics[j]]);
       }
     }
 
@@ -253,22 +260,25 @@ export function generateBuild2(args) {
       return true;
     }).slice(0, 50).map(pair => [...pair, String(pair[4].color + pair[5].color).split("").sort().join("")]);
     // console.log('992s:', `${pairs.filter(e => e[4].id == 992 || e[5].id == 992).length}/${pairs.length}`, pairs)
-    if (debug) console.log('pos_pans', pos_bans);
+    // if (debug) console.log('pos_pans', pos_bans);
 
     for (let pair of pairs) { //find third
       let bans = new Set(pos_bans[pair[6]] || colors);
-      if (debug) console.log(pair[6], bans)
-      for (let three of relics.filter((e, i) => !bans.has(e.color) && caps[e.id] < 3 && i != pairs[2] && i != pairs[3])) {
+      // if (debug) console.log(pair[6], bans);
+      let seen_ids = {
+        [pair[4].id]: 1,
+        [pair[5].id]: 1,
+      }
+      for (let three of relics.filter((e, i) => !bans.has(e.color) && !seen_ids[e.id])) {
         let score = pair[0];
         let seen = pair[1];
         for (let e of three.perks) {
-          let code = dupe_map[e] || e
-          if (seen.has(code) && !good_dupe.has(code)) {
-            score -= 1.2;
+          let code = dupe_map[e] || e;
+          if (seen.has(code)) {
+            score -= good_dupe.has(code) ? -0.08 : 1.2;
             continue;
           }
           score += scores[code] || 0;
-          // pair[1].add(e);
         }
         if (score >= (final_best - 2.5)) {
           if (score > final_best) final_best = score;
@@ -280,10 +290,10 @@ export function generateBuild2(args) {
 
     // filter duplicates and map 
     let filt = new Set();
-    let caps2 = {};
-    bests = bests.sort((a, b) => b[0] - a[0]).filter(b => {// filter out dupes (shouldnt be possible for pairs)
+    bests = bests.sort((a, b) => b[0] - a[0]).slice(0,200).filter(b => {// filter out dupes (shouldnt be possible for pairs)
       let ids = [relics[b[1]], relics[b[2]], b[3]].map(e => e.id).sort();
       let join = ids.join(",");
+      b[12] = join;
       if (filt.has(join)) return false;
       filt.add(join);
       return true;
@@ -294,6 +304,7 @@ export function generateBuild2(args) {
       // if (debug) console.log(cups, colors, cups.indexOf(colors))
       let json = {
         score: e[0],
+        ids: e[12],
         rels,
         perks: rels.map(rel => rel.perks).flat(),
         colors,
@@ -309,11 +320,17 @@ export function generateBuild2(args) {
     return bests;
   };//end main
 
-  let builds = []
+  let builds = [];
   if (type == 1) builds = main(light_cups, reg_relics);
   else if (type == 2) builds = main(deep_cups, deep_relics, 0);
   else {
     let lights = main(light_cups, reg_relics);
+    let k = [929, 902, 422]; //[929, 902, 422];
+    // console.log(lights, lights.filter(e => {
+    //   let ids = e.rels.map(el => el.id);
+    //   return k.every(kl => ids.includes(kl));
+    // }));
+    // console.log('lights:', lights.find(e => e.rels.map))
     let deeps = main(deep_cups, deep_relics, 0);
 
     // rate rest of build one by one
@@ -328,7 +345,7 @@ export function generateBuild2(args) {
         for (let e of rel.perks) {
           let code = dupe_map[e] || e;
           if (seen.has(code)) {
-            score -= good_dupe.has(code) ? 0.08 : 1.2;
+            score -= good_dupe.has(code) ? -0.08 : 1.2;
             continue;
           }
           score += scores[code] || 0;
@@ -337,7 +354,7 @@ export function generateBuild2(args) {
         if (score > bests[0][0]) bests = [[score, rel]];
         else if (score == bests[0][0]) bests.push([score, rel]);
       }
-      bests.slice(0,5).forEach(best => {
+      bests.slice(0, 5).forEach(best => {
         let rel = best[1];
         if (!rel) return //console.log(filt[0]);
         let next = structuredClone(full);
@@ -380,14 +397,13 @@ export function generateBuild2(args) {
       })
     }
 
-    let caps = {};
     picks = [...picks]
-    builds = builds.sort((a, b) => b.score - a.score).slice(0, 100).filter(build => {
+    builds = builds.filter(build => {
       let perks = build.rels.map(e => e.perks).flat().map(e => dupe_map[e] || e);
       build.missing = picks.filter(e => !(perks.includes(dupe_map[e]) || perks.includes(e)));
-      // caps[missing.join()] ??= 0;
+      if(!build.missing.length) build.score += 3;
       return true
-    });
+    }).sort((a, b) => b.score - a.score).slice(0, 100);
     console.log(builds);
   }
   return builds;

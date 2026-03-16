@@ -75,8 +75,8 @@ function Config() {
         <div className={`${option_class} w-[180px] mb-4  border-[#dc3545] text-[#dc3545] mt-[10%],`} onClick={wipe}>
           Delete All Data
         </div>
-        {/* <div className="mt-auto text-[20px]">Shout out to <span className="text-teal-500 text-[24px] cursor-pointer" onClick={e => window.open('https://github.com/alfizari')}>alfizari on GitHub</span> for the save file decryption and parsing algorithms</div> */}
-        <div className="mt-auto, text-[20px]">This website's source code: <span className="text-teal-500 text-[24px] cursor-pointer" onClick={e => window.open('https://github.com/Auraxium/Relic-Builder')}>https://github.com/Auraxium/Relic-Builder</span></div>
+        {/* <div className="mt-auto text-[20px]">Shout out to <span className="text-teal-500 text-[24px] cursor-pointer" onClick={e => window.open('https://github.com/alfizari')}>alfizari on GitHub</span> for the save file decryption and parsing algorithms.</div> */}
+        <div className="mt-auto, text-[20px]">This website's source code: <span className="text-teal-500 text-[24px] cursor-pointer" onClick={e => window.open('https://github.com/Auraxium/Relic-Builder')}>https://github.com/Auraxium/Relic-Builder</span>.</div>
       </div>
     </div>
 
