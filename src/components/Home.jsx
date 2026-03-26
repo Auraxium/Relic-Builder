@@ -16,7 +16,6 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
   if (relic.curses?.length) rel_curses = relic.curses.sort((a, b) => effects[a].length - effects[b].length)
   let name = relic.name || `${size_text[relic.size]} ${color_text[relic.color]} Scene`;
 
-
   const List = ({ ind, curse }) => {
     let perks = curse ? rel_curses : rel_perks;
     let id = perks[ind];
@@ -39,6 +38,7 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
   return (
     <div className={`border-[1px], w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`}
       style={{ border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 75%, #333 100%)`, borderImageSlice: 1 }}
+      rel_id={relic.id}
     >
       <div className="flex w-full h-[25%] border, items-center">
         <div className="w-[28%] h-full flex items-center gap-4">
@@ -57,6 +57,7 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
         </div>
         <div className="w-[28%] rel_icons h-full ms-auto flex flex-row-reverse gap-1   ">
           {/* <IconPencil onClick={() => console.log(relic)} /> */}
+          {misc?.banEvent ? <IconTrash onClick={e => misc.banEvent(relic.id)} /> :<></> }
           <IconDesk className='pen' style={{backgroundColor: account.workshop[relic.id] ? '#1d586b':''}} onClick={e => {
             if(account.workshop[relic.id]) {
               e.target.style.backgroundColor = '';

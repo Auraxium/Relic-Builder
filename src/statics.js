@@ -144,9 +144,10 @@ let events = {
 const ashes_of_wars = new Set(start_skill);
 const good_dupe = new Set(fine_dupe)
 export function generateBuild2(args) {
-  let { picks, char, subs, curses, raw, deep, type } = args;
+  let { picks, char, subs, curses, raw, deep, type, perfer_dupes } = args;
   console.log(picks, subs, char);
   if (!picks.length) picks = subs;
+  // perfer_dupes = 1
   let augs = new Set(chars[char].augs || []);
   let reccs = new Set(subs || []);
   let curse_avoid = new Set(curses);
@@ -159,10 +160,11 @@ export function generateBuild2(args) {
   let ash_picked = picks.some(e => ashes_of_wars)
   picks = new Set(picks);
 
-  let scores = [...picks, ...subs].map(e => dupe_map[e] || e).reduce((acc, e) => {
-    if(picks.has(e)) acc[e] = 1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)) - ((plus_map[e] || 0) / 25);
-    else if (reccs.has(e)) 0.07 - ((plus_map[e] || 0) / 25);
-    else acc[e] = 0;
+  let scores = [...picks, ...subs].reduce((acc, e) => {
+    let code = dupe_map[e] || e;
+    if(picks.has(code)) acc[code] = 1 + ((augs.has(code) * .7) || (ashes_of_wars.has(code) * 1));
+    else if (reccs.has(code)) acc[code] = 0.07;
+    else acc[code] = 0;
     // acc[e] = ((picks.has(e) * (1 + ((augs.has(e) * .7) || (ashes_of_wars.has(e) * 1)))) || reccs.has(e) * 0.07)
     //   - ((plus_map[e] || 0) / 25)
     return acc;
@@ -178,6 +180,8 @@ export function generateBuild2(args) {
     light_cups.push(c[0]);
     deep_cups.push(c[1]);
   });
+
+  const dupe_plus = perfer_dupes ? 0.08 : 0.06;
 
   let main = (cups, relics, debug) => { //find best pair, then a third
     // if(debug) console.log('cups:', cups, 'relics:', relics)
@@ -234,10 +238,11 @@ export function generateBuild2(args) {
         for (let e of perks2) {
           let code = dupe_map[e] || e;
           if (seen.has(code)) {
-            score -= good_dupe.has(code) ? -0.08 : 1.2;
+            score -= good_dupe.has(code) ? -dupe_plus  : 1.2;
             continue;
           }
           score += scores[code] || 0;
+          score -= ((plus_map[e] || 0) / 2)
           seen.add(code);
         }
         // console.log(score)
@@ -275,10 +280,11 @@ export function generateBuild2(args) {
         for (let e of three.perks) {
           let code = dupe_map[e] || e;
           if (seen.has(code)) {
-            score -= good_dupe.has(code) ? -0.08 : 1.2;
+            score -= good_dupe.has(code) ? -dupe_plus  : 1.2;
             continue;
           }
           score += scores[code] || 0;
+          score -= ((plus_map[e] || 0) / 2)
         }
         if (score >= (final_best - 2.5)) {
           if (score > final_best) final_best = score;
@@ -345,10 +351,11 @@ export function generateBuild2(args) {
         for (let e of rel.perks) {
           let code = dupe_map[e] || e;
           if (seen.has(code)) {
-            score -= good_dupe.has(code) ? -0.08 : 1.2;
+            score -= good_dupe.has(code) ? -dupe_plus : 1.2;
             continue;
           }
           score += scores[code] || 0;
+          score -= ((plus_map[e] || 0) / 2)
           // seen.add(code);
         }
         if (score > bests[0][0]) bests = [[score, rel]];
@@ -401,9 +408,9 @@ export function generateBuild2(args) {
     builds = builds.filter(build => {
       let perks = build.rels.map(e => e.perks).flat().map(e => dupe_map[e] || e);
       build.missing = picks.filter(e => !(perks.includes(dupe_map[e]) || perks.includes(e)));
-      if(!build.missing.length) build.score += 3;
+      if(!build.missing.length) build.score += 1;
       return true
-    }).sort((a, b) => b.score - a.score).slice(0, 100);
+    }).sort((a, b) => b.score - a.score).slice(0,5000);
     console.log(builds);
   }
   return builds;
