@@ -97,7 +97,7 @@ function App() {
   if (typeof page == 'string') page = navs[page];
   let scan_card = useRef();
 
-  const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[#636363] p-1 border-[1px] h-[60px], text-[#ccc] bg-[#1f1f1f] hover:bg-[#555] rounded-sm center gap-1 capitalize text-[20px] ${className}`} onClick={() => {
+  const Nav = ({ to, comp, click, className }) => <div className={`w-full, border-[solid_1px_#636363] p-1 h-[60px], text-[#ccc] bg-[#2f2f2f] hover:bg-[#555] rounded-sm center gap-1 capitalize text-[20px] ${className}`} onClick={() => {
     click && click();
     setPage(comp)
   }}>{nav_icon[to]}{to}</div>

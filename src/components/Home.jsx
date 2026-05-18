@@ -36,7 +36,7 @@ export const Relic = ({ relic, edit, className, pl, misc, innerClassName }) => {
   }
   //b 13072c g 062609 r 260606 y 302902
   return (
-    <div className={`border-[1px], w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/50 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`}
+    <div className={`border-[1px], w-full, xl:w-[46.3%], xl:h-[175px] h-[140px] border-[#777], bg-black/65 opacity-5, gap-[2px] py-1 px-2 col box-border ${className}`}
       style={{ border: `solid 1px transparent`, borderImage: `linear-gradient(145deg, ${color_code[relic.color]} 0%, ${color_muted[relic.color]} 75%, #333 100%)`, borderImageSlice: 1 }}
       rel_id={relic.id}
     >
@@ -130,7 +130,7 @@ export default function Home({ relics = window.account?.relics || [] }) {
 
   return (
     <div className="full relative space-x-[1px] gap-x-[1px] flex flex-col py-4,">
-      <div className="flex relative [border:solid_1px_#555] items-center bg-[#111] p-1 gap-2 w-full ">
+      <div className="flex relative [border:solid_1px_#555], items-center bg-[#111] p-1 gap-2 w-full ">
         <div ref={perk_list} className="absolute p-1 w-[100%] h-[60vh] z-20 center bg-neutral-900 border-neutral-600 border-[1px] -left-[18px], top-[60px]" style={{ display: 'none' }}>
           <div className="bg-[rgba(16,12,80,0.7)] bg-black, fixed w-[100vw] h-[100vh] -left-[0%] top-[0%] " onClick={() => perk_list.current.style.display = 'none'}></div>
           <PerkList _ref={perk_list} className={'z-10  bg-black/70'} searchBar={1} />
