@@ -187,7 +187,7 @@ export default function Builds({ }) {
           <div className="w-[33%] h-full col justify-evenly gap- p-1 bg-black/40">
             {/* <div className="mb-2 p-1, text-[#444]" /> */}
             <Option name={'main'} text={'Choose main perks'} desc={`Choose up to ${type ? '9' : '18'} perks for your build.`} />
-            <Option name={'sub'} text={'Choose sub perks'} desc={'Optional. Choose perk useful, but not integral to your build. Used to resolve as tie breakers.'} />
+            <Option name={'sub'} text={'Choose sub perks'} desc={'Optional. Choose perk useful, but not integral to your build. Used to resolve tie breakers.'} />
             {/* <Option name={'curse'} text={'Manage curses'} desc={'Optional. For builds using deep relics, select curses to avoid.'} /> */}
           </div>
           <div className="grow w-1 h-full flex flex-col bg-black/40">

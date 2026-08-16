@@ -364,6 +364,7 @@ export default function File() {
 
   return (
     <div className="full flex flex-col">
+      <div className=""></div>
       <div class="full col center p-1 relative ">
         {!account.characters?.length ? <div className="w-[60%] center absolute top-[10%] text-[#cccccc] bg-black/60 mt-4 text-[20px]">Welcome to Relics QOL! Scan you Nightreign save file to begin</div> : ''}
         <div class="center grow w-full ">
